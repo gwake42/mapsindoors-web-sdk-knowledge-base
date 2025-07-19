@@ -39,8 +39,8 @@ mapView.getMap().addControl({
 - The floor selector automatically updates when building changes
 
 ### Gotchas / Notes
-🛠️ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
-🛠️ The floor selector won't appear until a building is loaded
+ð ï¸ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
+ð ï¸ The floor selector won't appear until a building is loaded
 
 ---
 
@@ -78,8 +78,8 @@ if (location) {
 - Coordinates are in [lng, lat] format (not [lat, lng])
 
 ### Gotchas / Notes
-🛠️ Always set floor before flying to location
-🛠️ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
+ð ï¸ Always set floor before flying to location
+ð ï¸ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
 
 ---
 
@@ -126,8 +126,8 @@ mapsIndoorsInstance.setDisplayRule(null, {
 - Display rules persist until changed
 
 ### Gotchas / Notes
-🛠️ Setting display rule on `null` affects all locations not explicitly styled
-🛠️ The `take` parameter limits results (default is 10)
+ð ï¸ Setting display rule on `null` affects all locations not explicitly styled
+ð ï¸ The `take` parameter limits results (default is 10)
 
 ---
 
@@ -168,8 +168,8 @@ mapsIndoorsInstance.addListener('click', async (event) => {
 - Can apply temporary highlight styling
 
 ### Gotchas / Notes
-🛠️ Click event only provides `id`, not full location data
-🛠️ Always check if `event` and `event.id` exist
+ð ï¸ Click event only provides `id`, not full location data
+ð ï¸ Always check if `event` and `event.id` exist
 
 ---
 
@@ -229,8 +229,8 @@ async function searchLocations(query) {
 - Fits map bounds to show all results
 
 ### Gotchas / Notes
-🛠️ Search is case-insensitive but requires minimum 2 characters
-🛠️ `orderBy: 'relevance'` gives better results than alphabetical
+ð ï¸ Search is case-insensitive but requires minimum 2 characters
+ð ï¸ `orderBy: 'relevance'` gives better results than alphabetical
 
 ---
 
@@ -280,8 +280,8 @@ if (nearbyLocations.length > 0) {
 - Returns distance in meters and duration in seconds
 
 ### Gotchas / Notes
-🛠️ Distance Matrix requires the venue's graph ID
-🛠️ Matrix coordinate format is different from location format
+ð ï¸ Distance Matrix requires the venue's graph ID
+ð ï¸ Matrix coordinate format is different from location format
 
 ---
 
@@ -328,8 +328,8 @@ mapsIndoorsInstance.addListener('building_changed', () => {
 - Floor 0 typically represents ground floor
 
 ### Gotchas / Notes
-🛠️ Floor indices can be negative (basements)
-🛠️ Floor change event fires before tiles load
+ð ï¸ Floor indices can be negative (basements)
+ð ï¸ Floor change event fires before tiles load
 
 ---
 
@@ -359,7 +359,7 @@ customLocations.forEach(async (locationId) => {
     // Create custom marker element
     const el = document.createElement('div');
     el.className = 'custom-marker';
-    el.innerHTML = '📍';
+    el.innerHTML = 'ð';
     el.style.fontSize = '24px';
     el.style.cursor = 'pointer';
     
@@ -382,8 +382,8 @@ customLocations.forEach(async (locationId) => {
 - Can use any HTML/CSS for marker styling
 
 ### Gotchas / Notes
-🛠️ Custom markers don't respect floor visibility automatically
-🛠️ Must manually show/hide markers on floor change
+ð ï¸ Custom markers don't respect floor visibility automatically
+ð ï¸ Must manually show/hide markers on floor change
 
 ---
 
@@ -426,8 +426,8 @@ async function initializeApp() {
 - Solution config available after ready
 
 ### Gotchas / Notes
-🛠️ Don't call `getBuilding()` or `getVenue()` before ready
-🛠️ Display rules can be set before ready but won't apply
+ð ï¸ Don't call `getBuilding()` or `getVenue()` before ready
+ð ï¸ Display rules can be set before ready but won't apply
 
 ---
 
@@ -478,8 +478,8 @@ if (route) {
 - Each leg represents a route segment
 
 ### Gotchas / Notes
-🛠️ Maximum 25 waypoints per route
-🛠️ Floor transitions require accessible paths in venue data
+ð ï¸ Maximum 25 waypoints per route
+ð ï¸ Floor transitions require accessible paths in venue data
 
 ---
 
@@ -532,8 +532,8 @@ document.getElementById('toggle-labels').addEventListener('click', () => {
 - Can toggle all labels with null selector
 
 ### Gotchas / Notes
-🛠️ Label collision detection works within zoom levels
-🛠️ Labels follow language settings from SolutionConfig
+ð ï¸ Label collision detection works within zoom levels
+ð ï¸ Labels follow language settings from SolutionConfig
 
 ---
 
@@ -608,8 +608,8 @@ function updateNavigationUI() {
 - Can track progress through route
 
 ### Gotchas / Notes
-🛠️ `nextLeg()` and `previousLeg()` don't return values
-🛠️ Floor changes happen at leg boundaries
+ð ï¸ `nextLeg()` and `previousLeg()` don't return values
+ð ï¸ Floor changes happen at leg boundaries
 
 ---
 
@@ -674,8 +674,8 @@ async function exportMapAsImage(scale = 2) {
 - Always restore original dimensions
 
 ### Gotchas / Notes
-🛠️ Enable `preserveDrawingBuffer: true` in Mapbox options
-🛠️ Some browsers limit maximum canvas size
+ð ï¸ Enable `preserveDrawingBuffer: true` in Mapbox options
+ð ï¸ Some browsers limit maximum canvas size
 
 ---
 
@@ -732,8 +732,8 @@ const resultsByBuilding = allResults.reduce((groups, location) => {
 - Categories filter requires exact match
 
 ### Gotchas / Notes
-🛠️ Venue ID is different from venue name
-🛠️ Floor filter applies across all buildings
+ð ï¸ Venue ID is different from venue name
+ð ï¸ Floor filter applies across all buildings
 
 ---
 
@@ -809,8 +809,8 @@ function updateLiveMarkerVisibility() {
 - CSS animations indicate live status
 
 ### Gotchas / Notes
-🛠️ GPS positions may need indoor mapping corrections
-🛠️ Frequent updates can impact performance
+ð ï¸ GPS positions may need indoor mapping corrections
+ð ï¸ Frequent updates can impact performance
 
 ---
 
@@ -901,8 +901,8 @@ console.log(`Distance: ${nearest.distance} meters`);
 - Can be used for any amenity type
 
 ### Gotchas / Notes
-🛠️ Distance Matrix has a limit on origin/destination combinations
-🛠️ Consider caching Distance Matrix results for performance
+ð ï¸ Distance Matrix has a limit on origin/destination combinations
+ð ï¸ Consider caching Distance Matrix results for performance
 
 ---
 
@@ -1104,4 +1104,26 @@ Perfect for: Airport navigation systems, large venue wayfinding, AI-powered loca
 
 Technologies: MapsIndoors SDK 4.40.0, Mapbox GL JS 3.8.0, Google Gemini 1.5 Flash API, JavaScript ES6+ (async/await)
 
+
+
+---
+
+## Use Case: floor management Implementation
+
+### Problem
+You need to implement custom floor switching functionality in your MapsIndoors application.
+
+### Code Example
+```js
+mapsIndoorsInstance.setFloor(2);
+mapView.getMap().flyTo({center: [lng, lat], zoom: 20, duration: 1000});
+```
+
+### Explanation
+- Demonstrates MapsIndoors implementation patterns
+- Provides reusable code for common use cases
+
+### Gotchas / Notes
+🛠️ Test thoroughly in your specific MapsIndoors environment
+🛠️ Verify API compatibility with your MapsIndoors SDK version
 
