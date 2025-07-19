@@ -1111,3 +1111,20 @@ Testing if commits actually go to GitHub
 ### Test Upload
 
 Testing the commit endpoint functionality
+
+### map initialization Implementation
+
+Testing updated contribute endpoint
+
+This implementation demonstrates: map initialization.
+
+Contributed by the MapsIndoors community for real-world usage patterns.
+
+```javascript
+const test = new mapsindoors.MapView({element: document.getElementById("map")});
+```
+
+**Use Cases:** Indoor Mapping, Custom Implementation
+
+**Patterns:** map initialization
+
