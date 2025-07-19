@@ -914,3 +914,7 @@ This series provides practical, annotated examples covering the most common Maps
 ### Test Commit - Building Data Retrieval
 
 Testing if the commit endpoint is working properly by adding a simple building data example.
+
+### Debug Test Commit
+
+Testing to see if commits are working properly with detailed error logging.
