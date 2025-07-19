@@ -1,4 +1,4 @@
-I'll create a series of annotated, real-world usage examples for MapsIndoors SDK v4.41.1. These will be perfect for chunking and embedding in an AI assistant context.
+
 
 ---
 
