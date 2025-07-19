@@ -994,3 +994,7 @@ Perfect for: Backend processing, building inventories, facility management, data
 ### MapsIndoors Building Data Normalization
 
 Data normalization pattern for processing raw VenuesService.getBuildings() data into clean, standardized format with fallback values and floor processing. Includes comprehensive error handling and data validation from real-world implementation.
+
+### VERIFICATION TEST - Simple Building Example
+
+This is a test to verify the commit functionality is working properly. If you can see this text in the GitHub repository, then the commit process is functional and we can proceed with adding the real building data examples from the codeExample.html file.
