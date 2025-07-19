@@ -990,3 +990,7 @@ async function getBuildingsViaVenues() {
 ```
 
 Perfect for: Backend processing, building inventories, facility management, data analysis applications that need building metadata without map visualization.
+
+### MapsIndoors Building Data Normalization
+
+Data normalization pattern for processing raw VenuesService.getBuildings() data into clean, standardized format with fallback values and floor processing. Includes comprehensive error handling and data validation from real-world implementation.
