@@ -907,3 +907,10 @@ console.log(`Distance: ${nearest.distance} meters`);
 ---
 
 This series provides practical, annotated examples covering the most common MapsIndoors SDK use cases. Each example is self-contained and includes the specific gotchas developers often encounter. The format is consistent and ideal for chunking into an AI assistant's context.
+
+## Review Queue
+
+
+### Test Commit - Building Data Retrieval
+
+Testing if the commit endpoint is working properly by adding a simple building data example.
