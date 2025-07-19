@@ -990,3 +990,7 @@ Perfect for: Backend processing, building inventories, facility management, data
 ### Test Commit Verification
 
 Testing if commits actually go to GitHub
+
+### Test Upload
+
+Testing the commit endpoint functionality
