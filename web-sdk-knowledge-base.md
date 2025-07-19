@@ -987,6 +987,123 @@ Perfect for: Backend processing, building inventories, facility management, data
 
 
 
+### AI-Powered Airport Navigation Chatbot with Natural Language Search
+
+Complete implementation of an intelligent airport navigation system that combines Gemini AI with MapsIndoors for natural language location search, multi-strategy filtering, and conversational routing instructions.
+
+Key features:
+- Natural language query processing using Gemini AI
+- Multi-strategy location search (gate matching, type filtering, proximity search)
+- Real-time distance matrix calculations for travel times
+- Conversational route instructions with turn-by-turn guidance
+- Gate-specific regex matching for airport terminals
+- Error handling with fallback mechanisms
+
+Core implementation:
+```javascript
+// 1. AI-Enhanced Query Processing
+async function parseInstructionsFromGemini(query) {
+  const prompt = `Analyze this airport query: "${query}"
+  Return JSON with searchQuery, queryType, floor, etc.`;
+  
+  const response = await fetch(GEMINI_API_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: 1024 }
+    })
+  });
+  
+  const data = await response.json();
+  return JSON.parse(data.candidates[0].content.parts[0].text);
+}
+
+// 2. Multi-Strategy Location Search
+async function searchLocations(query, options = {}) {
+  const instructions = await parseInstructionsFromGemini(query);
+  
+  const baseSearchParams = {
+    venue: '76949746a5873f0090fd8d8e839d8726',
+    take: options.take || 100,
+    near: { lat: USER_POSITION.lat, lng: USER_POSITION.lng },
+    radius: options.radius || 500,
+    floor: USER_POSITION.floor
+  };
+  
+  // Strategy 1: Gate-specific regex matching
+  const gateMatch = query.match(/(?:gate\s*)?([A-Z]\d+)/i);
+  if (gateMatch) {
+    const gateNumber = gateMatch[1].toUpperCase();
+    const gateSearchParams = { ...baseSearchParams };
+    gateSearchParams.q = gateNumber;
+    locations = await mapsindoors.services.LocationsService.getLocations(gateSearchParams);
+  }
+  
+  // Strategy 2: Type-based search for categories
+  else if (query.toLowerCase().includes('restaurant')) {
+    const restaurantSearchParams = { ...baseSearchParams };
+    restaurantSearchParams.types = ['Restaurants'];
+    locations = await mapsindoors.services.LocationsService.getLocations(restaurantSearchParams);
+  }
+  
+  // Strategy 3: General text search with proximity
+  else {
+    const searchParams = { ...baseSearchParams };
+    searchParams.q = instructions.searchQuery;
+    locations = await mapsindoors.services.LocationsService.getLocations(searchParams);
+  }
+  
+  // Calculate travel times using distance matrix
+  const origins = [`${USER_POSITION.lat},${USER_POSITION.lng},${USER_POSITION.floor}`];
+  const destinations = locations.map(loc => {
+    const coords = loc.properties.anchor.coordinates;
+    return `${coords[1]},${coords[0]},${loc.properties.floor}`;
+  });
+  
+  const matrix = await mapsindoors.services.DistanceMatrixService.getDistanceMatrix({
+    graphId: "airport_graph",
+    origins: origins,
+    destinations: destinations,
+    travelMode: "walking"
+  });
+  
+  return locations.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+}
+
+// 3. Conversational Route Display
+async function showRouteToLocation(location) {
+  const coords = location.properties.anchor.coordinates;
+  
+  const route = await miDirectionsService.getRoute({
+    origin: { lat: USER_POSITION.lat, lng: USER_POSITION.lng, floor: USER_POSITION.floor },
+    destination: { lat: coords[1], lng: coords[0], floor: location.properties.floor },
+    graphId: "airport_graph",
+    travelMode: "walking"
+  });
+  
+  // Display conversational route instructions
+  const distance = formatDistance(route.distance.value);
+  const time = formatDuration(route.duration.value);
+  
+  addAIMessage(`Route to ${location.properties.name}: ${distance} in ${time}\n${formatRouteInstructions(route)}`);
+  
+  miDirectionsRenderer.setRoute(route);
+  
+  // Highlight destination
+  mapsIndoorsInstance.setDisplayRule(location.id, {
+    iconVisible: true,
+    polygonVisible: true,
+    polygonFillColor: "#4ade80",
+    polygonFillOpacity: 0.4
+  });
+}
+```
+
+Perfect for: Airport navigation systems, large venue wayfinding, AI-powered location search, conversational interfaces, transportation hubs, and any application requiring natural language interaction with indoor mapping.
+
+Technologies: MapsIndoors SDK 4.40.0, Mapbox GL JS 3.8.0, Google Gemini 1.5 Flash API, JavaScript ES6+ (async/await)
+
 ### Test Commit Verification
 
 Testing if commits actually go to GitHub
