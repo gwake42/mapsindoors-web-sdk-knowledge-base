@@ -910,15 +910,6 @@ This series provides practical, annotated examples covering the most common Maps
 
 ## Review Queue
 
-
-### Test Commit - Building Data Retrieval
-
-Testing if the commit endpoint is working properly by adding a simple building data example.
-
-### Debug Test Commit
-
-Testing to see if commits are working properly with detailed error logging.
-
 ### VenuesService Building Data Retrieval
 
 Complete example from codeExample.html showing how to fetch building data using VenuesService.getBuildings() without map rendering. Includes data normalization, floor sorting, and performance tracking.
@@ -931,6 +922,7 @@ Key features:
 - Performance measurement
 
 Example usage:
+```javascript
 const buildings = await mapsindoors.services.VenuesService.getBuildings();
 const processed = buildings.map(building => ({
   id: building.id,
@@ -938,6 +930,7 @@ const processed = buildings.map(building => ({
   floors: Object.keys(building.floors || {}).sort((a,b) => parseInt(a) - parseInt(b)),
   floorCount: Object.keys(building.floors || {}).length
 }));
+```
 
 Perfect for backend data processing, building inventories, and facility management systems.
 
@@ -991,10 +984,5 @@ async function getBuildingsViaVenues() {
 
 Perfect for: Backend processing, building inventories, facility management, data analysis applications that need building metadata without map visualization.
 
-### MapsIndoors Building Data Normalization
 
-Data normalization pattern for processing raw VenuesService.getBuildings() data into clean, standardized format with fallback values and floor processing. Includes comprehensive error handling and data validation from real-world implementation.
 
-### VERIFICATION TEST - Simple Building Example
-
-This is a test to verify the commit functionality is working properly. If you can see this text in the GitHub repository, then the commit process is functional and we can proceed with adding the real building data examples from the codeExample.html file.
