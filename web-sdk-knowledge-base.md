@@ -918,3 +918,25 @@ Testing if the commit endpoint is working properly by adding a simple building d
 ### Debug Test Commit
 
 Testing to see if commits are working properly with detailed error logging.
+
+### VenuesService Building Data Retrieval
+
+Complete example from codeExample.html showing how to fetch building data using VenuesService.getBuildings() without map rendering. Includes data normalization, floor sorting, and performance tracking.
+
+Key features:
+- No map initialization required
+- Comprehensive building metadata extraction
+- Floor data processing and sorting
+- Error handling and fallback values
+- Performance measurement
+
+Example usage:
+const buildings = await mapsindoors.services.VenuesService.getBuildings();
+const processed = buildings.map(building => ({
+  id: building.id,
+  name: building.name || `Building ${building.id}`,
+  floors: Object.keys(building.floors || {}).sort((a,b) => parseInt(a) - parseInt(b)),
+  floorCount: Object.keys(building.floors || {}).length
+}));
+
+Perfect for backend data processing, building inventories, and facility management systems.
