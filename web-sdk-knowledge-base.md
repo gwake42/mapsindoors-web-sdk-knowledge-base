@@ -940,3 +940,53 @@ const processed = buildings.map(building => ({
 }));
 
 Perfect for backend data processing, building inventories, and facility management systems.
+
+### Building Data Retrieval Without Map - Complete Implementation
+
+Real-world example from codeExample.html showing comprehensive building data fetching using VenuesService.getBuildings() without map rendering. Includes data processing, normalization, performance tracking, and UI display.
+
+Code demonstrates:
+- Async building data retrieval
+- Data normalization with fallbacks
+- Floor data sorting and processing
+- Performance measurement
+- Error handling
+- Statistical calculations
+- UI display patterns
+
+Core function:
+```javascript
+async function getBuildingsViaVenues() {
+    try {
+        const buildings = await mapsindoors.services.VenuesService.getBuildings();
+        const processedBuildings = [];
+        
+        if (buildings && buildings.length > 0) {
+            buildings.forEach(building => {
+                const floors = building.floors ? 
+                    Object.keys(building.floors).sort((a, b) => parseInt(a) - parseInt(b)) : [];
+                
+                processedBuildings.push({
+                    id: building.id,
+                    name: building.name || building.buildingInfo?.name || `Building ${building.id}`,
+                    floors: floors,
+                    floorCount: floors.length,
+                    address: building.address || building.buildingInfo?.address,
+                    geometry: building.geometry,
+                    bbox: building.bbox,
+                    anchor: building.anchor,
+                    venue: building.venue || building.venueId,
+                    floorData: building.floors
+                });
+            });
+        }
+        
+        return processedBuildings;
+    } catch (error) {
+        console.error("Error fetching buildings via VenuesService:", error);
+        throw error;
+    }
+}
+```
+
+Perfect for: Backend processing, building inventories, facility management, data analysis applications that need building metadata without map visualization.
