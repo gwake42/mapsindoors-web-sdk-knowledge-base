@@ -39,8 +39,8 @@ mapView.getMap().addControl({
 - The floor selector automatically updates when building changes
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ The floor selector won't appear until a building is loaded
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ The floor selector won't appear until a building is loaded
 
 ---
 
@@ -78,8 +78,8 @@ if (location) {
 - Coordinates are in [lng, lat] format (not [lat, lng])
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Always set floor before flying to location
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Always set floor before flying to location
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
 
 ---
 
@@ -126,8 +126,8 @@ mapsIndoorsInstance.setDisplayRule(null, {
 - Display rules persist until changed
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Setting display rule on `null` affects all locations not explicitly styled
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ The `take` parameter limits results (default is 10)
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Setting display rule on `null` affects all locations not explicitly styled
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ The `take` parameter limits results (default is 10)
 
 ---
 
@@ -168,8 +168,8 @@ mapsIndoorsInstance.addListener('click', async (event) => {
 - Can apply temporary highlight styling
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Click event only provides `id`, not full location data
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Always check if `event` and `event.id` exist
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Click event only provides `id`, not full location data
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Always check if `event` and `event.id` exist
 
 ---
 
@@ -229,8 +229,8 @@ async function searchLocations(query) {
 - Fits map bounds to show all results
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Search is case-insensitive but requires minimum 2 characters
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ `orderBy: 'relevance'` gives better results than alphabetical
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Search is case-insensitive but requires minimum 2 characters
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ `orderBy: 'relevance'` gives better results than alphabetical
 
 ---
 
@@ -280,8 +280,8 @@ if (nearbyLocations.length > 0) {
 - Returns distance in meters and duration in seconds
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Distance Matrix requires the venue's graph ID
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Matrix coordinate format is different from location format
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Distance Matrix requires the venue's graph ID
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Matrix coordinate format is different from location format
 
 ---
 
@@ -328,8 +328,8 @@ mapsIndoorsInstance.addListener('building_changed', () => {
 - Floor 0 typically represents ground floor
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor indices can be negative (basements)
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor change event fires before tiles load
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor indices can be negative (basements)
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor change event fires before tiles load
 
 ---
 
@@ -359,7 +359,7 @@ customLocations.forEach(async (locationId) => {
     // Create custom marker element
     const el = document.createElement('div');
     el.className = 'custom-marker';
-    el.innerHTML = 'ÃÂ°ÃÂÃÂÃÂ';
+    el.innerHTML = 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ';
     el.style.fontSize = '24px';
     el.style.cursor = 'pointer';
     
@@ -382,8 +382,8 @@ customLocations.forEach(async (locationId) => {
 - Can use any HTML/CSS for marker styling
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Custom markers don't respect floor visibility automatically
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Must manually show/hide markers on floor change
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Custom markers don't respect floor visibility automatically
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Must manually show/hide markers on floor change
 
 ---
 
@@ -426,8 +426,8 @@ async function initializeApp() {
 - Solution config available after ready
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Don't call `getBuilding()` or `getVenue()` before ready
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Display rules can be set before ready but won't apply
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Don't call `getBuilding()` or `getVenue()` before ready
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Display rules can be set before ready but won't apply
 
 ---
 
@@ -478,8 +478,8 @@ if (route) {
 - Each leg represents a route segment
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Maximum 25 waypoints per route
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor transitions require accessible paths in venue data
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Maximum 25 waypoints per route
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor transitions require accessible paths in venue data
 
 ---
 
@@ -532,8 +532,8 @@ document.getElementById('toggle-labels').addEventListener('click', () => {
 - Can toggle all labels with null selector
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Label collision detection works within zoom levels
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Labels follow language settings from SolutionConfig
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Label collision detection works within zoom levels
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Labels follow language settings from SolutionConfig
 
 ---
 
@@ -608,8 +608,8 @@ function updateNavigationUI() {
 - Can track progress through route
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ `nextLeg()` and `previousLeg()` don't return values
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor changes happen at leg boundaries
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ `nextLeg()` and `previousLeg()` don't return values
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor changes happen at leg boundaries
 
 ---
 
@@ -674,8 +674,8 @@ async function exportMapAsImage(scale = 2) {
 - Always restore original dimensions
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Enable `preserveDrawingBuffer: true` in Mapbox options
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Some browsers limit maximum canvas size
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Enable `preserveDrawingBuffer: true` in Mapbox options
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Some browsers limit maximum canvas size
 
 ---
 
@@ -732,8 +732,8 @@ const resultsByBuilding = allResults.reduce((groups, location) => {
 - Categories filter requires exact match
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Venue ID is different from venue name
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor filter applies across all buildings
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Venue ID is different from venue name
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor filter applies across all buildings
 
 ---
 
@@ -809,8 +809,8 @@ function updateLiveMarkerVisibility() {
 - CSS animations indicate live status
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ GPS positions may need indoor mapping corrections
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Frequent updates can impact performance
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ GPS positions may need indoor mapping corrections
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Frequent updates can impact performance
 
 ---
 
@@ -901,8 +901,8 @@ console.log(`Distance: ${nearest.distance} meters`);
 - Can be used for any amenity type
 
 ### Gotchas / Notes
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Distance Matrix has a limit on origin/destination combinations
-ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Consider caching Distance Matrix results for performance
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Distance Matrix has a limit on origin/destination combinations
+ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Consider caching Distance Matrix results for performance
 
 ---
 
@@ -1106,6 +1106,409 @@ Technologies: MapsIndoors SDK 4.40.0, Mapbox GL JS 3.8.0, Google Gemini 1.5 Flas
 
 ---
 
+---
+
+## Use Case: MapsIndoors Custom Implementation
+
+### Context
+General MapsIndoors implementation - context shared through Claude Desktop conversation
+
+
+
+### Problem
+You need to implement custom functionality in your MapsIndoors application.
+
+### Code Example
+```js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors Buildings - No Map</title>
+    <!-- MapsIndoors JavaScript -->
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=5d0f9d73dc5d4ca299a1eee3"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #c33;
+        }
+
+        .success {
+            background-color: #efe;
+            border: 1px solid #cfc;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            color: #3c3;
+        }
+
+        .building-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            transition: transform 0.2s;
+        }
+
+        .building-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .building-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 10px;
+        }
+
+        .building-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border-left: 3px solid #2c5aa0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .info-value {
+            color: #333;
+            margin-top: 2px;
+        }
+
+        .floors-list {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .floor-tag {
+            display: inline-block;
+            background: #2c5aa0;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            margin: 2px;
+            font-size: 0.85em;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+            font-size: 1em;
+        }
+
+        .btn:hover {
+            background: #1e3f73;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            background: #e8f4fd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c5aa0;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MapsIndoors Buildings Data</h1>
+        
+        <div class="controls">
+            <button class="btn" id="fetch-buildings">Fetch Buildings</button>
+            <button class="btn" id="clear-results">Clear Results</button>
+        </div>
+
+        <div id="status" class="loading">
+            Click "Fetch Buildings" to load building data...
+        </div>
+
+        <div id="stats" class="stats" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-buildings">0</div>
+                    <div class="stat-label">Total Buildings</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="total-floors">0</div>
+                    <div class="stat-label">Total Floors</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="avg-floors">0</div>
+                    <div class="stat-label">Avg Floors/Building</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="load-time">0ms</div>
+                    <div class="stat-label">Load Time</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Using VenuesService.getBuildings() to get buildings
+        async function getBuildingsViaVenues() {
+            try {
+                console.log('Fetching buildings using VenuesService.getBuildings()...');
+                const buildings = await mapsindoors.services.VenuesService.getBuildings();
+                console.log('Buildings data:', buildings);
+                
+                const processedBuildings = [];
+                
+                if (buildings && buildings.length > 0) {
+                    buildings.forEach(building => {
+                        const floors = building.floors ? Object.keys(building.floors).sort((a, b) => parseInt(a) - parseInt(b)) : [];
+                        
+                        processedBuildings.push({
+                            id: building.id,
+                            name: building.name || building.buildingInfo?.name || `Building ${building.id}`,
+                            floors: floors,
+                            floorCount: floors.length,
+                            address: building.address || building.buildingInfo?.address,
+                            geometry: building.geometry,
+                            bbox: building.bbox,
+                            anchor: building.anchor,
+                            venue: building.venue || building.venueId,
+                            floorData: building.floors
+                        });
+                    });
+                } else {
+                    console.log('No buildings found or empty response');
+                }
+                
+                console.log('Processed buildings:', processedBuildings);
+                return processedBuildings;
+                
+            } catch (error) {
+                console.error('Error fetching buildings via VenuesService:', error);
+                throw error;
+            }
+        }
+                
+        // Main fetch function
+        async function fetchBuildings() {
+            const startTime = Date.now();
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            const fetchBtn = document.getElementById('fetch-buildings');
+            
+            // Reset UI
+            statusDiv.innerHTML = '<div class="loading">Loading buildings...</div>';
+            resultsDiv.innerHTML = '';
+            document.getElementById('stats').style.display = 'none';
+            fetchBtn.disabled = true;
+            
+            try {
+                const buildings = await getBuildingsViaVenues();
+                const loadTime = Date.now() - startTime;
+                
+                if (!buildings || buildings.length === 0) {
+                    statusDiv.innerHTML = '<div class="error">No buildings found or service returned empty result.</div>';
+                    return;
+                }
+                
+                // Display success message
+                statusDiv.innerHTML = `<div class="success">Successfully loaded ${buildings.length} building${buildings.length !== 1 ? 's' : ''} using VenuesService.getBuildings()</div>`;
+                
+                // Display buildings
+                displayBuildings(buildings);
+                
+                // Update stats
+                updateStats(buildings, loadTime);
+                
+            } catch (error) {
+                console.error('Failed to fetch buildings:', error);
+                statusDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                fetchBtn.disabled = false;
+            }
+        }
+
+        function displayBuildings(buildings) {
+            const resultsDiv = document.getElementById('results');
+            
+            buildings.forEach(building => {
+                const buildingCard = document.createElement('div');
+                buildingCard.className = 'building-card';
+                
+                let floorsDisplay = '';
+                if (building.floors && building.floors.length > 0) {
+                    floorsDisplay = `
+                        <div class="floors-list">
+                            <strong>Floors:</strong><br>
+                            ${building.floors.map(floor => `<span class="floor-tag">Floor ${floor}</span>`).join('')}
+                        </div>
+                    `;
+                }
+                
+                buildingCard.innerHTML = `
+                    <div class="building-name">${building.name}</div>
+                    <div class="building-info">
+                        <div class="info-item">
+                            <div class="info-label">Building ID</div>
+                            <div class="info-value">${building.id}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Floor Count</div>
+                            <div class="info-value">${building.floorCount}</div>
+                        </div>
+                        ${building.venue ? `
+                            <div class="info-item">
+                                <div class="info-label">Venue</div>
+                                <div class="info-value">${building.venue}</div>
+                            </div>
+                        ` : ''}
+                        ${building.address ? `
+                            <div class="info-item">
+                                <div class="info-label">Address</div>
+                                <div class="info-value">${building.address}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${floorsDisplay}
+                `;
+                
+                resultsDiv.appendChild(buildingCard);
+            });
+        }
+
+        function updateStats(buildings, loadTime) {
+            const totalFloors = buildings.reduce((sum, building) => sum + (building.floorCount || 0), 0);
+            const avgFloors = buildings.length > 0 ? (totalFloors / buildings.length).toFixed(1) : 0;
+            
+            document.getElementById('total-buildings').textContent = buildings.length;
+            document.getElementById('total-floors').textContent = totalFloors;
+            document.getElementById('avg-floors').textContent = avgFloors;
+            document.getElementById('load-time').textContent = loadTime + 'ms';
+            document.getElementById('stats').style.display = 'block';
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('status').innerHTML = 'Click "Fetch Buildings" to load building data...';
+            document.getElementById('stats').style.display = 'none';
+        }
+
+        // Event listeners
+        document.getElementById('fetch-buildings').addEventListener('click', fetchBuildings);
+        document.getElementById('clear-results').addEventListener('click', clearResults);
+
+        // Auto-fetch on page load (with delay to ensure MapsIndoors is ready)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('Page loaded, MapsIndoors should be ready');
+                // Uncomment the line below to auto-fetch on page load
+                // fetchBuildings();
+            }, 1500);
+        });
+
+        // Debug: Log when MapsIndoors is available
+        if (typeof mapsindoors !== 'undefined') {
+            console.log('MapsIndoors is available:', mapsindoors);
+        } else {
+            console.log('MapsIndoors not yet loaded, waiting...');
+        }
+    </script>
+</body>
+</html>
+```
+
+### Explanation
+- Uses event listeners for interactive functionality
+- Implements asynchronous operations for better performance
+- Includes proper error handling and recovery
+
+### Gotchas / Notes
+🛠️ Always check if DOM elements exist before using them
+
+
 ## Use Case: MapsIndoors Custom Implementation
 
 ### Problem
@@ -1122,7 +1525,7 @@ You need to implement custom functionality in your MapsIndoors application.
 - Provides reusable code for common use cases
 
 ### Gotchas / Notes
-🛠️ Add error handling for network requests
+ð ï¸ Add error handling for network requests
 
 
 ## Use Case: floor management Implementation
