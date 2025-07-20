@@ -94,11 +94,11 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Additional setTimeout may be needed for complex solutions
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Keep visible: true to maintain location data accessibility
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Additional setTimeout may be needed for complex solutions
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Keep visible: true to maintain location data accessibility
 
 
 ---
@@ -224,17 +224,17 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 };
 
                 const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-                debugLog('ÃÂ¢ÃÂÃÂ MapboxV3View created', 'success');
+                debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapboxV3View created', 'success');
 
                 debugLog('Creating MapsIndoors instance...', 'info');
                 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
                     mapView: mapView
                 });
-                debugLog('ÃÂ¢ÃÂÃÂ MapsIndoors instance created', 'success');
+                debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapsIndoors instance created', 'success');
 
                 // Add ready listener
                 mapsIndoorsInstance.addListener('ready', () => {
-                    debugLog('ÃÂ¢ÃÂÃÂ MapsIndoors is READY!', 'success');
+                    debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapsIndoors is READY!', 'success');
                     
                     // Add floor selector
                     const floorSelectorElement = document.createElement('div');
@@ -246,7 +246,7 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                         onRemove: function() {}
                     });
                     
-                    debugLog('ÃÂ¢ÃÂÃÂ Floor selector added', 'success');
+                    debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Floor selector added', 'success');
                     debugLog('Mall demo ready!', 'success');
                 });
 
@@ -270,14 +270,14 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
                 return false;
             }
-            debugLog('ÃÂ¢ÃÂÃÂ Mapbox GL JS loaded', 'success');
+            debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Mapbox GL JS loaded', 'success');
 
             debugLog('Checking for MapsIndoors SDK...', 'info');
             if (typeof mapsindoors === 'undefined') {
                 debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
                 return false;
             }
-            debugLog('ÃÂ¢ÃÂÃÂ MapsIndoors SDK loaded', 'success');
+            debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapsIndoors SDK loaded', 'success');
 
             return true;
         }
@@ -319,10 +319,10 @@ This is a basic MapsIndoors mall demo with debugging capabilities to help troubl
 - Debugging script loading problems
 
 ### Important Notes
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ The MapboxV3View must be used instead of the older MapboxView
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Debug console helps identify exactly where initialization fails
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ The MapboxV3View must be used instead of the older MapboxView
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Debug console helps identify exactly where initialization fails
 
 
 ---
@@ -388,10 +388,10 @@ This establishes the correct initialization pattern for MapsIndoors with Mapbox.
 - SDK integration
 
 ### Important Notes
-Ã¢ÂÂ Ã¯Â¸Â Must use MapboxV3View not MapboxView
-Ã¢ÂÂ Ã¯Â¸Â Load Mapbox scripts before MapsIndoors
-Ã¢ÂÂ Ã¯Â¸Â Wait for 'ready' event before using features
-Ã¢ÂÂ Ã¯Â¸Â Floor selector requires proper control setup
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Must use MapboxV3View not MapboxView
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Load Mapbox scripts before MapsIndoors
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Wait for 'ready' event before using features
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor selector requires proper control setup
 
 
 ---
@@ -493,10 +493,10 @@ This pattern enables dynamic visual feedback by applying different colors and st
 - Asset tracking interfaces
 
 ### Important Notes
-â ï¸ setDisplayRule accepts both single IDs and arrays
-â ï¸ Display rules are cumulative - later rules override earlier ones
-â ï¸ zoomFrom parameter controls when styling appears
-â ï¸ polygonStrokeWidth affects visual hierarchy
+Ã¢ÂÂ Ã¯Â¸Â setDisplayRule accepts both single IDs and arrays
+Ã¢ÂÂ Ã¯Â¸Â Display rules are cumulative - later rules override earlier ones
+Ã¢ÂÂ Ã¯Â¸Â zoomFrom parameter controls when styling appears
+Ã¢ÂÂ Ã¯Â¸Â polygonStrokeWidth affects visual hierarchy
 
 
 ---
@@ -625,8 +625,133 @@ This creates a time-controlled heatmap overlay using Mapbox's native heatmap lay
 - Space utilization studies
 
 ### Important Notes
-⚠️ Heatmap layer must be added after map loads
-⚠️ GeoJSON features need 'intensity' property for heatmap-weight
-⚠️ Radius scales with zoom level for proper visualization
-⚠️ Filter data by time before updating source
+â ï¸ Heatmap layer must be added after map loads
+â ï¸ GeoJSON features need 'intensity' property for heatmap-weight
+â ï¸ Radius scales with zoom level for proper visualization
+â ï¸ Filter data by time before updating source
+
+
+---
+
+## Multi-Stop Route Optimization with Step-by-Step Navigation
+
+### Context
+Application where users need to visit multiple locations in an optimal order, such as facility maintenance, cleaning routes, or guided tours
+
+### Industry
+healthcare
+
+### Problem
+Need to efficiently route through multiple locations with automatic optimization and step-by-step navigation
+
+### Solution
+```javascript
+// Multi-stop route optimization with MapsIndoors Directions API
+async function calculateOptimizedRoute(originId, destinationId, waypointIds) {
+    try {
+        // Get location data for all points
+        const origin = await mapsindoors.services.LocationsService.getLocation(originId);
+        const destination = await mapsindoors.services.LocationsService.getLocation(destinationId);
+        
+        const waypoints = [];
+        for (const id of waypointIds) {
+            const location = await mapsindoors.services.LocationsService.getLocation(id);
+            if (location) {
+                waypoints.push({
+                    lat: location.properties.anchor.coordinates[1],
+                    lng: location.properties.anchor.coordinates[0],
+                    floor: location.properties.floor
+                });
+            }
+        }
+
+        // Configure route request with optimization
+        const routeRequest = {
+            origin: {
+                lat: origin.properties.anchor.coordinates[1],
+                lng: origin.properties.anchor.coordinates[0],
+                floor: origin.properties.floor
+            },
+            destination: {
+                lat: destination.properties.anchor.coordinates[1],
+                lng: destination.properties.anchor.coordinates[0],
+                floor: destination.properties.floor
+            },
+            stops: waypoints,
+            optimize: true // Enable route optimization
+        };
+
+        // Calculate optimized route
+        const routeResult = await miDirectionsService.getRoute(routeRequest);
+        
+        if (routeResult && routeResult.legs) {
+            // Display route on map
+            miDirectionsRenderer.setRoute(routeResult);
+            
+            // Enable step-by-step navigation
+            setupRouteNavigation(routeResult);
+            
+            return routeResult;
+        }
+    } catch (error) {
+        console.error('Route calculation failed:', error);
+        throw error;
+    }
+}
+
+// Step-by-step route navigation
+function setupRouteNavigation(route) {
+    let currentLegIndex = 0;
+    
+    document.getElementById('next-step').onclick = () => {
+        if (currentLegIndex < route.legs.length - 1) {
+            currentLegIndex++;
+            miDirectionsRenderer.nextLeg();
+            updateNavigationUI(route, currentLegIndex);
+        }
+    };
+    
+    document.getElementById('prev-step').onclick = () => {
+        if (currentLegIndex > 0) {
+            currentLegIndex--;
+            miDirectionsRenderer.previousLeg();
+            updateNavigationUI(route, currentLegIndex);
+        }
+    };
+    
+    // Set initial floor for route start
+    if (route.legs[0] && route.legs[0].start_location) {
+        mapsIndoorsInstance.setFloor(route.legs[0].start_location.zLevel);
+    }
+}
+
+function updateNavigationUI(route, legIndex) {
+    const isFirst = legIndex <= 0;
+    const isLast = legIndex >= route.legs.length - 1;
+    
+    document.getElementById('prev-step').disabled = isFirst;
+    document.getElementById('next-step').disabled = isLast;
+    
+    // Update floor to current leg
+    const currentLeg = route.legs[legIndex];
+    if (currentLeg && currentLeg.start_location) {
+        mapsIndoorsInstance.setFloor(currentLeg.start_location.zLevel);
+    }
+}
+```
+
+### Explanation
+This implements multi-stop route optimization using MapsIndoors Directions API. The optimize parameter automatically reorders waypoints for the most efficient path. The DirectionsRenderer provides step-by-step navigation with leg controls, and floors are automatically updated as users navigate through different levels.
+
+### Use Cases
+- Cleaning route optimization
+- Maintenance task routing
+- Emergency evacuation planning
+- Guided facility tours
+
+### Important Notes
+⚠️ optimize: true reorders waypoints automatically
+⚠️ Use anchor coordinates for precise positioning
+⚠️ nextLeg/previousLeg controls require valid route
+⚠️ Floor changes must be handled manually during navigation
 
