@@ -1104,12 +1104,6 @@ Perfect for: Airport navigation systems, large venue wayfinding, AI-powered loca
 
 Technologies: MapsIndoors SDK 4.40.0, Mapbox GL JS 3.8.0, Google Gemini 1.5 Flash API, JavaScript ES6+ (async/await)
 
-
-
----
-
----
-
 ---
 
 ## Use Case: MapsIndoors Custom Implementation
@@ -1131,29 +1125,10 @@ You need to implement custom functionality in your MapsIndoors application.
 🛠️ Add error handling for network requests
 
 
-## Use Case: MapsIndoors Custom Implementation
-
-### Problem
-You need to implement custom functionality in your MapsIndoors application.
-
-### Code Example
-```js
-// External script reference: https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.0/mapsindoors-4.41.0.js.gz
-// Note: This script would need to be fetched separately for full analysis
-```
-
-### Explanation
-- Demonstrates MapsIndoors implementation patterns
-- Provides reusable code for common use cases
-
-### Gotchas / Notes
-ð ï¸ Add error handling for network requests
-
-
 ## Use Case: floor management Implementation
 
 ### Problem
-You need to implement custom floor switching functionality in your MapsIndoors application.
+You need to implement custom floor switching behavior functionality in your MapsIndoors application.
 
 ### Code Example
 ```js
@@ -1166,6 +1141,6 @@ mapView.getMap().flyTo({center: [lng, lat], zoom: 20, duration: 1000});
 - Provides reusable code for common use cases
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Test thoroughly in your specific MapsIndoors environment
-Ã°ÂÂÂ Ã¯Â¸Â Verify API compatibility with your MapsIndoors SDK version
+Test thoroughly in your specific MapsIndoors environment
+Verify API compatibility with your MapsIndoors SDK version
 
