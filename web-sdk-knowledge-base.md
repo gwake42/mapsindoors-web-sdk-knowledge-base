@@ -488,3 +488,127 @@ Custom floor selector components give you complete control over appearance and b
 ⚠️ Check for empty floors object before rendering
 ⚠️ Use building_changed listener to update floor list
 
+
+---
+
+## Draggable Markers with Location Assignment
+
+### Context
+Draggable markers enable interactive asset assignment and location-based content management
+
+### Industry
+healthcare
+
+### Problem
+Interactive assignment of assets or resources to specific indoor locations
+
+### Solution
+```javascript
+// Interactive draggable markers with location assignment
+function addDraggableMarker(mapboxInstance, mapsIndoorsInstance) {
+    const center = mapboxInstance.getCenter();
+    
+    // Create custom marker element
+    const customMarkerElement = document.createElement('div');
+    customMarkerElement.style.cssText = `
+        background-image: url('https://media.mapsindoors.com/57e4e4992e74800ef8b69718/media/room-occupied.svg');
+        background-size: cover;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+    `;
+    
+    // Create draggable marker
+    const marker = new mapboxgl.Marker({ 
+        element: customMarkerElement,
+        draggable: true 
+    })
+    .setLngLat([center.lng, center.lat])
+    .addTo(mapboxInstance);
+
+    // Create popup for location assignment
+    const popup = new mapboxgl.Popup({
+        closeButton: true,
+        closeOnClick: false
+    }); 
+    
+    marker.setPopup(popup);
+
+    // Handle drag end to find nearest location
+    marker.on('dragend', async () => {
+        const lngLat = marker.getLngLat();
+        console.log('Marker dragged to:', lngLat);
+
+        try {
+            // Find locations near the marker position
+            const locations = await mapsindoors.services.LocationsService.getLocations({
+                near: { lat: lngLat.lat, lng: lngLat.lng },
+                radius: 1,
+                take: 1
+            });
+
+            if (locations.length > 0) {
+                const nearestLocation = locations[0];
+                
+                // Show assignment popup
+                popup.setHTML(`
+                    <div style="padding: 10px;">
+                        <p>Assign to: ${nearestLocation.properties.name}</p>
+                        <button id="assignButton" style="margin-top: 10px; padding: 5px 10px;">
+                            Assign Asset
+                        </button>
+                    </div>
+                `);
+                popup.addTo(mapboxInstance);
+
+                // Handle assignment
+                document.getElementById('assignButton').addEventListener('click', () => {
+                    // Apply visual feedback to assigned location
+                    mapsIndoorsInstance.setDisplayRule(nearestLocation.id, {
+                        polygonVisible: true,
+                        polygonFillOpacity: 1,
+                        polygonFillColor: "#7D49F3",
+                        visible: true,
+                        icon: "https://media.mapsindoors.com/57e4e4992e74800ef8b69718/media/room-occupied.svg"
+                    });
+                    
+                    popup.remove();
+                    console.log('Asset assigned to:', nearestLocation.properties.name);
+                });
+            } else {
+                popup.setHTML('<p>No nearby locations found</p>');
+                popup.addTo(mapboxInstance);
+            }
+        } catch (error) {
+            console.error('Error finding locations:', error);
+            popup.setHTML('<p>Error finding nearby locations</p>');
+            popup.addTo(mapboxInstance);
+        }
+    });
+    
+    return marker;
+}
+
+// Usage
+document.getElementById('addMarkerButton').addEventListener('click', () => {
+    addDraggableMarker(mapboxInstance, mapsIndoorsInstance);
+});
+```
+
+### Explanation
+This pattern creates interactive draggable markers that automatically detect the nearest MapsIndoors location when moved. Users can assign assets, equipment, or other resources to specific locations through an intuitive drag-and-drop interface with immediate visual feedback.
+
+### Use Cases
+- Asset management and tracking
+- Equipment assignment
+- Resource allocation
+- Interactive space planning
+- Emergency equipment placement
+
+### Important Notes
+⚠️ Use small radius (1m) for precise location detection
+⚠️ Handle async location search errors gracefully
+⚠️ Remove event listeners to prevent memory leaks
+⚠️ Provide visual feedback for successful assignments
+⚠️ Consider floor-aware location searches
+
