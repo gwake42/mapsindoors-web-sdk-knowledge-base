@@ -2882,3 +2882,362 @@ This system creates heatmap visualizations using Mapbox's native heatmap layer w
 ⚠️ Building geometry is required for realistic point generation
 ⚠️ Heatmap intensity values should be normalized for best visual results
 
+
+---
+
+## MapsIndoors PDF Export with Preview System
+
+### Context
+Users need to export MapsIndoors maps as high-quality images or PDFs for reports, documentation, or offline use. This provides a complete export system with preview functionality and quality controls.
+
+### Industry
+corporate
+
+### Problem
+Users need to export MapsIndoors floor plans as high-quality PDFs or PNG images with custom quality settings and preview functionality
+
+### Solution
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors Export System</title>
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    <!-- MapsIndoors CSS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=YOUR_API_KEY"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div id="map" style="width: 100vw; height: 100vh;"></div>
+    
+    <div class="export-controls" style="position: absolute; top: 20px; left: 20px; z-index: 1000; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+        <button id="preview-btn" class="btn">Preview Export</button>
+        <button id="png-btn" class="btn">Export PNG</button>
+        <button id="pdf-btn" class="btn">Export PDF</button>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="preview-modal" class="modal-backdrop" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background: white; margin: 5% auto; padding: 20px; border-radius: 8px; max-width: 800px; width: 80%;">
+            <h2>Export Preview</h2>
+            <div class="quality-control" style="margin: 15px 0;">
+                <label>Quality Scale: <span id="scale-value">2x</span></label>
+                <input type="range" id="scale-slider" min="1" max="4" value="2" style="width: 100%;">
+            </div>
+            <div class="preview-container" style="text-align: center; border: 2px dashed #ccc; padding: 20px;">
+                <img id="preview-image" style="max-width: 100%; max-height: 400px;">
+                <p id="preview-dimensions">Dimensions: --</p>
+            </div>
+            <div class="export-actions" style="margin-top: 20px; text-align: right;">
+                <button id="modal-png-btn" class="btn">Export PNG</button>
+                <button id="modal-pdf-btn" class="btn">Export PDF</button>
+                <button id="close-preview" class="btn" style="background: #666;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MapsIndoorsExporter {
+            constructor() {
+                this.mapViewInstance = null;
+                this.mapsIndoorsInstance = null;
+                this.mapboxInstance = null;
+                this.currentScale = 2;
+            }
+
+            async initialize() {
+                // Initialize MapsIndoors with preserveDrawingBuffer for export
+                const mapViewOptions = {
+                    accessToken: 'pk.eyJ1IjoiZ2V3YS1tYXBzcGVvcGxlIiwiYSI6ImNsZzJudDB4ZTAwcnEzZnAwb2VvbTYwYnIifQ.w-cnsU-xP9jaly_qrgy_iA',
+                    element: document.getElementById('map'),
+                    center: { lat: 30.3603212, lng: -97.7422623 },
+                    zoom: 19,
+                    maxZoom: 24,
+                    preserveDrawingBuffer: true // Critical for canvas export
+                };
+
+                this.mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+                this.mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+                    mapView: this.mapViewInstance
+                });
+                this.mapboxInstance = this.mapViewInstance.getMap();
+
+                // Add floor selector
+                const floorSelectorElement = document.createElement('div');
+                new mapsindoors.FloorSelector(floorSelectorElement, this.mapsIndoorsInstance);
+                this.mapboxInstance.addControl({
+                    onAdd: function () { return floorSelectorElement },
+                    onRemove: function () { }
+                });
+
+                this.setupEventListeners();
+                await this.waitForReady();
+            }
+
+            async waitForReady() {
+                return new Promise((resolve) => {
+                    this.mapsIndoorsInstance.addListener('ready', () => {
+                        console.log('MapsIndoors ready for export');
+                        resolve();
+                    });
+                });
+            }
+
+            setupEventListeners() {
+                document.getElementById('preview-btn').addEventListener('click', () => this.showPreview());
+                document.getElementById('png-btn').addEventListener('click', () => this.exportPNG(4));
+                document.getElementById('pdf-btn').addEventListener('click', () => this.exportPDF(4));
+                
+                document.getElementById('modal-png-btn').addEventListener('click', () => this.exportPNG(this.currentScale));
+                document.getElementById('modal-pdf-btn').addEventListener('click', () => this.exportPDF(this.currentScale));
+                document.getElementById('close-preview').addEventListener('click', () => this.hidePreview());
+                
+                document.getElementById('scale-slider').addEventListener('input', (e) => {
+                    this.currentScale = parseInt(e.target.value);
+                    document.getElementById('scale-value').textContent = `${this.currentScale}x`;
+                    this.updatePreview();
+                });
+            }
+
+            async showPreview() {
+                document.getElementById('preview-modal').style.display = 'block';
+                await this.updatePreview();
+            }
+
+            hidePreview() {
+                document.getElementById('preview-modal').style.display = 'none';
+            }
+
+            async updatePreview() {
+                try {
+                    const preview = await this.generatePreview(this.currentScale);
+                    if (preview) {
+                        document.getElementById('preview-image').src = preview.dataUrl;
+                        document.getElementById('preview-dimensions').textContent = 
+                            `Dimensions: ${preview.dimensions.width} × ${preview.dimensions.height} pixels`;
+                    }
+                } catch (error) {
+                    console.error('Error generating preview:', error);
+                }
+            }
+
+            async generatePreview(scale) {
+                const mapContainer = document.getElementById('map');
+                const originalStyle = {
+                    width: mapContainer.style.width,
+                    height: mapContainer.style.height
+                };
+
+                // Store original state
+                const originalCenter = this.mapboxInstance.getCenter();
+                const originalZoom = this.mapboxInstance.getZoom();
+
+                try {
+                    // Calculate preview dimensions
+                    const previewWidth = window.innerWidth * scale;
+                    const previewHeight = window.innerHeight * scale;
+                    
+                    // Temporarily resize map for high-res capture
+                    mapContainer.style.width = `${previewWidth}px`;
+                    mapContainer.style.height = `${previewHeight}px`;
+                    
+                    // Update map and wait for stabilization
+                    this.mapboxInstance.resize();
+                    this.mapboxInstance.setCenter(originalCenter);
+                    this.mapboxInstance.setZoom(originalZoom);
+                    
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Generate data URL from canvas
+                    const canvas = this.mapboxInstance.getCanvas();
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                    
+                    return {
+                        dataUrl,
+                        dimensions: { 
+                            width: Math.round(previewWidth), 
+                            height: Math.round(previewHeight) 
+                        }
+                    };
+                } finally {
+                    // Reset map to original state
+                    mapContainer.style.width = originalStyle.width;
+                    mapContainer.style.height = originalStyle.height;
+                    this.mapboxInstance.resize();
+                    this.mapboxInstance.setCenter(originalCenter);
+                    this.mapboxInstance.setZoom(originalZoom);
+                }
+            }
+
+            async exportPNG(scale) {
+                const mapContainer = document.getElementById('map');
+                const originalStyle = {
+                    width: mapContainer.style.width,
+                    height: mapContainer.style.height
+                };
+
+                try {
+                    // Store original map state
+                    const originalCenter = this.mapboxInstance.getCenter();
+                    const originalZoom = this.mapboxInstance.getZoom();
+                    const currentFloor = this.mapsIndoorsInstance.getFloor();
+                    const floorName = currentFloor !== null ? `Floor_${currentFloor}` : 'Ground_Floor';
+
+                    // Set larger dimensions for high-res export
+                    mapContainer.style.width = `${window.innerWidth * scale}px`;
+                    mapContainer.style.height = `${window.innerHeight * scale}px`;
+
+                    // Resize and stabilize map
+                    this.mapboxInstance.resize();
+                    this.mapboxInstance.setCenter(originalCenter);
+                    this.mapboxInstance.setZoom(originalZoom);
+
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Generate high-res canvas export
+                    const canvas = this.mapboxInstance.getCanvas();
+                    const dataUrl = canvas.toDataURL('image/png', 1.0);
+
+                    // Create download
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = dataUrl;
+                    downloadLink.download = `mapsindoors_${floorName}_${Date.now()}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+
+                    console.log('PNG export completed');
+                } finally {
+                    // Reset map dimensions
+                    mapContainer.style.width = originalStyle.width;
+                    mapContainer.style.height = originalStyle.height;
+                    this.mapboxInstance.resize();
+                    this.hidePreview();
+                }
+            }
+
+            async exportPDF(scale) {
+                const { jsPDF } = window.jspdf;
+                const mapContainer = document.getElementById('map');
+                const originalStyle = {
+                    width: mapContainer.style.width,
+                    height: mapContainer.style.height
+                };
+
+                try {
+                    // Store original map state
+                    const originalCenter = this.mapboxInstance.getCenter();
+                    const originalZoom = this.mapboxInstance.getZoom();
+                    const currentFloor = this.mapsIndoorsInstance.getFloor();
+                    const floorName = currentFloor !== null ? `Floor_${currentFloor}` : 'Ground_Floor';
+
+                    // Set larger dimensions for higher quality
+                    mapContainer.style.width = `${window.innerWidth * scale}px`;
+                    mapContainer.style.height = `${window.innerHeight * scale}px`;
+
+                    // Resize and stabilize map
+                    this.mapboxInstance.resize();
+                    this.mapboxInstance.setCenter(originalCenter);
+                    this.mapboxInstance.setZoom(originalZoom);
+
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
+                    // Generate canvas data URL
+                    const canvas = this.mapboxInstance.getCanvas();
+                    const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+
+                    // Create PDF in landscape orientation
+                    const pdf = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    // Set PDF metadata
+                    pdf.setProperties({
+                        title: `MapsIndoors Floor Plan - ${floorName}`,
+                        subject: 'Floor Plan Export',
+                        creator: 'MapsIndoors Export Tool',
+                        author: 'MapsIndoors'
+                    });
+
+                    // Calculate dimensions to fit page while maintaining aspect ratio
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    const imgWidth = canvas.width;
+                    const imgHeight = canvas.height;
+                    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                    
+                    // Center the image on the page
+                    const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                    const imgY = (pdfHeight - imgHeight * ratio) / 2;
+
+                    // Add image to PDF
+                    pdf.addImage(dataUrl, 'JPEG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+
+                    // Save the PDF
+                    pdf.save(`mapsindoors_floorplan_${floorName}_${Date.now()}.pdf`);
+
+                    console.log('PDF export completed');
+                } finally {
+                    // Reset map dimensions
+                    mapContainer.style.width = originalStyle.width;
+                    mapContainer.style.height = originalStyle.height;
+                    this.mapboxInstance.resize();
+                    this.hidePreview();
+                }
+            }
+        }
+
+        // Initialize the exporter
+        const exporter = new MapsIndoorsExporter();
+        window.addEventListener('load', () => {
+            exporter.initialize();
+        });
+    </script>
+
+    <style>
+        .btn {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #1976D2;
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</body>
+</html>
+```
+
+### Explanation
+This code creates a comprehensive export system for MapsIndoors maps. Key features include: 1) Canvas-based high-resolution image generation using preserveDrawingBuffer, 2) Preview modal with quality scaling controls, 3) PNG export with downloadable links, 4) PDF generation using jsPDF library with proper aspect ratio handling, 5) Temporary map resizing for high-quality exports while preserving original view state. The system maintains map center and zoom during export operations.
+
+### Use Cases
+- Corporate floor plan documentation
+- Emergency evacuation plan creation
+- Facility management reports
+- Real estate marketing materials
+- Offline map reference creation
+
+### Important Notes
+⚠️ Must set preserveDrawingBuffer: true in MapboxV3View options for canvas export to work
+⚠️ Temporary map resizing requires proper cleanup to avoid UI issues
+⚠️ Large scale exports may consume significant memory
+⚠️ PDF export requires jsPDF library to be loaded
+⚠️ Export quality directly impacts file size - balance quality vs file size needs
+
