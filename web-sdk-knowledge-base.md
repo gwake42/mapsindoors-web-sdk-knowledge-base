@@ -248,3 +248,102 @@ The LocationsService provides powerful spatial query capabilities using the 'nea
 ⚠️ Limit results with take parameter to improve response time
 ⚠️ Handle async errors gracefully
 
+
+---
+
+## Route Optimization for Multi-Stop Indoor Navigation
+
+### Context
+Route optimization is crucial for efficiency in cleaning rounds, maintenance tasks, and guided tours
+
+### Industry
+healthcare
+
+### Problem
+Calculate optimized multi-stop routes for efficient navigation through indoor spaces
+
+### Solution
+```javascript
+// Multi-stop route optimization with DirectionsService
+const miDirectionsService = new mapsindoors.services.DirectionsService();
+const miDirectionsRenderer = new mapsindoors.directions.DirectionsRenderer({
+    mapsIndoors: mapsIndoorsInstance,
+    fitBounds: true,
+    fitBoundsPadding: 100
+});
+
+async function calculateOptimizedRoute(startRoom, endRoom, waypointRooms) {
+    const routeRequest = {
+        origin: {
+            lat: startRoom.location.lat,
+            lng: startRoom.location.lng,
+            floor: startRoom.floor
+        },
+        destination: {
+            lat: endRoom.location.lat,
+            lng: endRoom.location.lng,
+            floor: endRoom.floor
+        },
+        stops: waypointRooms.map(room => ({
+            lat: room.location.lat,
+            lng: room.location.lng,
+            floor: room.floor
+        })),
+        optimize: true // Automatically reorders stops for efficiency
+    };
+    
+    try {
+        const route = await miDirectionsService.getRoute(routeRequest);
+        
+        if (route && route.legs && route.legs.length > 0) {
+            // Display the route on the map
+            miDirectionsRenderer.setRoute(route);
+            
+            // Log the optimized order
+            console.log(`Route optimized: ${route.legs.length} legs`);
+            
+            return route;
+        } else {
+            throw new Error('No valid route found');
+        }
+    } catch (error) {
+        console.error('Route calculation failed:', error);
+        return null;
+    }
+}
+
+// Navigate through route legs
+let currentLegIndex = 0;
+
+function nextLeg() {
+    if (currentRoute && currentLegIndex < currentRoute.legs.length - 1) {
+        currentLegIndex++;
+        miDirectionsRenderer.nextLeg();
+    }
+}
+
+function previousLeg() {
+    if (currentRoute && currentLegIndex > 0) {
+        currentLegIndex--;
+        miDirectionsRenderer.previousLeg();
+    }
+}
+```
+
+### Explanation
+The DirectionsService can optimize multi-stop routes by automatically reordering waypoints for maximum efficiency. Setting optimize: true calculates the best order to visit all stops, reducing travel time and distance. The DirectionsRenderer provides visual feedback and step-by-step navigation.
+
+### Use Cases
+- Cleaning route optimization
+- Maintenance task scheduling
+- Guided facility tours
+- Emergency response planning
+- Asset collection routes
+
+### Important Notes
+⚠️ Include floor parameter for proper 3D navigation
+⚠️ Handle route calculation failures gracefully
+⚠️ The optimize parameter reorders stops automatically
+⚠️ Use DirectionsRenderer for visual route display
+⚠️ Check for valid route before proceeding
+
