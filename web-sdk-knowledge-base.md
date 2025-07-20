@@ -4214,3 +4214,290 @@ This code creates a complete real-time location update system using WebSockets. 
 
 
 
+
+---
+
+## MapsIndoors Venues Service Tester - No Map Required
+
+### Context
+Developer needed a lightweight way to test MapsIndoors API keys and see what venues are available in their solution without the overhead of initializing maps and complex UI components
+
+
+### Problem
+Need to quickly test MapsIndoors API keys and explore available venues without setting up a full map interface
+
+### Solution
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors Venues Tester</title>
+    <!-- MapsIndoors SDK -->
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .venue-card {
+            background-color: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4CAF50;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .venue-name {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .venue-details {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #f44336;
+        }
+
+        .raw-response pre {
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MapsIndoors Venues Tester</h1>
+            <p>Enter your MapsIndoors API key to test the getVenues service</p>
+        </div>
+
+        <div class="input-group">
+            <label for="apiKey">MapsIndoors API Key:</label>
+            <input type="text" id="apiKey" placeholder="Enter your API key here..." value="mapspeople">
+        </div>
+
+        <button class="btn" id="testBtn" onclick="testGetVenues()">
+            Test Get Venues
+        </button>
+
+        <div id="loading" style="display: none;">
+            <p>Loading venues...</p>
+        </div>
+
+        <div id="results" style="display: none;">
+            <h3>Results</h3>
+            <div id="resultsContent">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('testBtn').disabled = true;
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('testBtn').disabled = false;
+        }
+
+        function showResults(content) {
+            document.getElementById('resultsContent').innerHTML = content;
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorContent = `<div class="error"><strong>Error:</strong> ${message}</div>`;
+            showResults(errorContent);
+        }
+
+        function showSuccess(venues, rawResponse) {
+            let content = '';
+
+            if (venues && venues.length > 0) {
+                content += `<div class="success"><strong>Success!</strong> Found ${venues.length} venue${venues.length !== 1 ? 's' : ''}.</div>`;
+
+                venues.forEach(venue => {
+                    content += `
+                        <div class="venue-card">
+                            <div class="venue-name">${venue.name || 'Unnamed Venue'}</div>
+                            <div class="venue-details">
+                                <div><strong>ID:</strong> ${venue.id || 'N/A'}</div>
+                                <div><strong>Country:</strong> ${venue.country || 'N/A'}</div>
+                                <div><strong>City:</strong> ${venue.city || 'N/A'}</div>
+                                <div><strong>Address:</strong> ${venue.address || 'N/A'}</div>
+                                <div><strong>Default Floor:</strong> ${venue.defaultFloor !== undefined ? venue.defaultFloor : 'N/A'}</div>
+                                <div><strong>Has Tiles:</strong> ${venue.tilesUrl ? 'Yes' : 'No'}</div>
+                                ${venue.anchor ? `<div><strong>Coordinates:</strong> ${venue.anchor.coordinates ? venue.anchor.coordinates.join(', ') : 'N/A'}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                content += `<div class="success"><strong>Success!</strong> API call completed but no venues found.</div>`;
+            }
+
+            content += `
+                <div class="raw-response">
+                    <h4>Raw API Response:</h4>
+                    <pre>${JSON.stringify(rawResponse, null, 2)}</pre>
+                </div>
+            `;
+
+            showResults(content);
+        }
+
+        async function testGetVenues() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            
+            if (!apiKey) {
+                showError('Please enter an API key');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                console.log('Testing venues service with API key:', apiKey);
+                
+                // Create a temporary script element with the API key
+                const script = document.createElement('script');
+                script.src = `https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=${apiKey}`;
+                document.head.appendChild(script);
+
+                // Wait for script to load
+                await new Promise((resolve, reject) => {
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('Failed to load MapsIndoors SDK'));
+                });
+
+                // Test the venues service
+                const venues = await mapsindoors.services.VenuesService.getVenues();
+                console.log('Venues response:', venues);
+
+                // Clean up
+                document.head.removeChild(script);
+
+                // Show results
+                showSuccess(venues, venues);
+
+            } catch (error) {
+                console.error('Error testing venues:', error);
+                
+                let errorMessage = 'Unknown error occurred';
+                
+                if (error.message) {
+                    errorMessage = error.message;
+                } else if (error.status) {
+                    errorMessage = `HTTP ${error.status}: ${error.statusText || 'Request failed'}`;
+                }
+
+                if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+                    errorMessage = 'Invalid API key or unauthorized access';
+                } else if (errorMessage.includes('404')) {
+                    errorMessage = 'API endpoint not found - check your API key';
+                }
+
+                showError(errorMessage);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Allow Enter key to trigger test
+        document.getElementById('apiKey').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                testGetVenues();
+            }
+        });
+    </script>
+</body>
+</html>
+```
+
+### Explanation
+This tool provides a simple HTML interface to test the MapsIndoors VenuesService.getVenues() method. It dynamically loads the MapsIndoors SDK with the provided API key and displays venue information in a user-friendly format. The tool shows both formatted venue cards and raw JSON responses for debugging purposes.
+
+### Use Cases
+- API key validation
+- Venue discovery
+- Quick data exploration
+- Debugging venue data
+- Demo for stakeholders
+
+### Important Notes
+⚠️ Must include API key in SDK URL for proper authentication
+⚠️ Requires internet connection to load SDK
+⚠️ Some venues may not have all properties populated
+⚠️ Error handling should account for various API response scenarios
+
