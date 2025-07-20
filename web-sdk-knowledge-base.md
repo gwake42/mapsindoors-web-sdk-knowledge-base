@@ -39,8 +39,8 @@ mapView.getMap().addControl({
 - The floor selector automatically updates when building changes
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ The floor selector won't appear until a building is loaded
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ The floor selector won't appear until a building is loaded
 
 ---
 
@@ -78,8 +78,8 @@ if (location) {
 - Coordinates are in [lng, lat] format (not [lat, lng])
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Always set floor before flying to location
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Always set floor before flying to location
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
 
 ---
 
@@ -126,8 +126,8 @@ mapsIndoorsInstance.setDisplayRule(null, {
 - Display rules persist until changed
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Setting display rule on `null` affects all locations not explicitly styled
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ The `take` parameter limits results (default is 10)
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Setting display rule on `null` affects all locations not explicitly styled
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ The `take` parameter limits results (default is 10)
 
 ---
 
@@ -168,8 +168,8 @@ mapsIndoorsInstance.addListener('click', async (event) => {
 - Can apply temporary highlight styling
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Click event only provides `id`, not full location data
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Always check if `event` and `event.id` exist
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Click event only provides `id`, not full location data
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Always check if `event` and `event.id` exist
 
 ---
 
@@ -229,8 +229,8 @@ async function searchLocations(query) {
 - Fits map bounds to show all results
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Search is case-insensitive but requires minimum 2 characters
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ `orderBy: 'relevance'` gives better results than alphabetical
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Search is case-insensitive but requires minimum 2 characters
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ `orderBy: 'relevance'` gives better results than alphabetical
 
 ---
 
@@ -280,8 +280,8 @@ if (nearbyLocations.length > 0) {
 - Returns distance in meters and duration in seconds
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Distance Matrix requires the venue's graph ID
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Matrix coordinate format is different from location format
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Distance Matrix requires the venue's graph ID
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Matrix coordinate format is different from location format
 
 ---
 
@@ -328,8 +328,8 @@ mapsIndoorsInstance.addListener('building_changed', () => {
 - Floor 0 typically represents ground floor
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor indices can be negative (basements)
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor change event fires before tiles load
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Floor indices can be negative (basements)
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Floor change event fires before tiles load
 
 ---
 
@@ -359,7 +359,7 @@ customLocations.forEach(async (locationId) => {
     // Create custom marker element
     const el = document.createElement('div');
     el.className = 'custom-marker';
-    el.innerHTML = 'ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ';
+    el.innerHTML = 'ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ';
     el.style.fontSize = '24px';
     el.style.cursor = 'pointer';
     
@@ -382,8 +382,8 @@ customLocations.forEach(async (locationId) => {
 - Can use any HTML/CSS for marker styling
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Custom markers don't respect floor visibility automatically
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Must manually show/hide markers on floor change
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Custom markers don't respect floor visibility automatically
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Must manually show/hide markers on floor change
 
 ---
 
@@ -426,8 +426,8 @@ async function initializeApp() {
 - Solution config available after ready
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Don't call `getBuilding()` or `getVenue()` before ready
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Display rules can be set before ready but won't apply
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Don't call `getBuilding()` or `getVenue()` before ready
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Display rules can be set before ready but won't apply
 
 ---
 
@@ -478,8 +478,8 @@ if (route) {
 - Each leg represents a route segment
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Maximum 25 waypoints per route
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor transitions require accessible paths in venue data
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Maximum 25 waypoints per route
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Floor transitions require accessible paths in venue data
 
 ---
 
@@ -532,8 +532,8 @@ document.getElementById('toggle-labels').addEventListener('click', () => {
 - Can toggle all labels with null selector
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Label collision detection works within zoom levels
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Labels follow language settings from SolutionConfig
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Label collision detection works within zoom levels
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Labels follow language settings from SolutionConfig
 
 ---
 
@@ -608,8 +608,8 @@ function updateNavigationUI() {
 - Can track progress through route
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ `nextLeg()` and `previousLeg()` don't return values
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor changes happen at leg boundaries
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ `nextLeg()` and `previousLeg()` don't return values
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Floor changes happen at leg boundaries
 
 ---
 
@@ -674,8 +674,8 @@ async function exportMapAsImage(scale = 2) {
 - Always restore original dimensions
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Enable `preserveDrawingBuffer: true` in Mapbox options
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Some browsers limit maximum canvas size
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Enable `preserveDrawingBuffer: true` in Mapbox options
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Some browsers limit maximum canvas size
 
 ---
 
@@ -732,8 +732,8 @@ const resultsByBuilding = allResults.reduce((groups, location) => {
 - Categories filter requires exact match
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Venue ID is different from venue name
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor filter applies across all buildings
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Venue ID is different from venue name
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Floor filter applies across all buildings
 
 ---
 
@@ -809,8 +809,8 @@ function updateLiveMarkerVisibility() {
 - CSS animations indicate live status
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ GPS positions may need indoor mapping corrections
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Frequent updates can impact performance
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ GPS positions may need indoor mapping corrections
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Frequent updates can impact performance
 
 ---
 
@@ -901,8 +901,8 @@ console.log(`Distance: ${nearest.distance} meters`);
 - Can be used for any amenity type
 
 ### Gotchas / Notes
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Distance Matrix has a limit on origin/destination combinations
-ÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Consider caching Distance Matrix results for performance
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Distance Matrix has a limit on origin/destination combinations
+ÃÂÃÂÃÂÃÂ°ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Consider caching Distance Matrix results for performance
 
 ---
 
@@ -1107,6 +1107,1089 @@ Technologies: MapsIndoors SDK 4.40.0, Mapbox GL JS 3.8.0, Google Gemini 1.5 Flas
 ---
 
 ---
+
+---
+
+## Use Case: Floor Management System
+
+### Context
+General MapsIndoors implementation - context shared through Claude Desktop conversation
+
+
+
+### Problem
+You need to implement location search functionality for your indoor map.
+
+### Code Example
+```js
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Austin Office Amenity Finder</title>
+    
+    <!-- Mapbox CSS (load first) -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0066cc;
+            --primary-dark: #004499;
+            --secondary-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 380px;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 20px;
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Search Section */
+        .search-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--dark-gray);
+            cursor: pointer;
+            display: none;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            padding: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 12px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+            background-color: #f0f8ff;
+        }
+
+        .filter-btn.active {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .filter-btn.show-all {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--secondary-color), #20a742);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .filter-btn.show-all:hover {
+            background: linear-gradient(135deg, #20a742, #1e7e34);
+        }
+
+        .filter-btn.show-all.active {
+            background: linear-gradient(135deg, #1e7e34, #155724);
+        }
+
+        /* Results Section */
+        .results-section {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .results-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .results-count {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .location-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .location-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .location-card.selected {
+            border-left-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+        }
+
+        .location-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .location-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .location-type {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .location-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+
+        .location-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Map Controls */
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .map-control-btn {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .map-control-btn:hover {
+            background-color: var(--light-gray);
+            transform: scale(1.05);
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 20px;
+            width: 300px;
+            z-index: 100;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .info-panel.visible {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .info-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .info-panel-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .info-panel-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            cursor: pointer;
+        }
+
+        .info-panel-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .info-detail i {
+            color: var(--primary-color);
+            width: 16px;
+        }
+
+        /* Status Messages */
+        .status-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--dark-gray);
+        }
+
+        .status-message i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--medium-gray);
+        }
+
+        .status-message h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--medium-gray);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: 50vh;
+            }
+
+            .map-container {
+                height: 50vh;
+            }
+
+            .info-panel {
+                width: calc(100% - 40px);
+                left: 20px;
+                right: 20px;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Amenity Finder
+                </div>
+                <div class="sidebar-subtitle">Find restrooms, meeting rooms, and facilities in the Austin Office</div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search locations..." id="searchInput">
+                    <button class="clear-search" id="clearSearch">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-title">Filter by Amenity Type</div>
+                <div class="filter-grid" id="filterGrid">
+                    <button class="filter-btn show-all active" data-type="all">
+                        <i class="fas fa-th-large"></i>
+                        Show All
+                    </button>
+                    <!-- Dynamic filter buttons will be added here -->
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section">
+                <div class="results-header">
+                    <div class="results-title">Locations</div>
+                    <div class="results-count" id="resultsCount">0</div>
+                </div>
+                <div id="locationsList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+
+            <!-- Map Controls -->
+            <div class="map-controls">
+                <button class="map-control-btn" id="zoomIn" title="Zoom In">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button class="map-control-btn" id="zoomOut" title="Zoom Out">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button class="map-control-btn" id="recenter" title="Recenter Map">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <button class="map-control-btn" id="clearHighlights" title="Clear Highlights">
+                    <i class="fas fa-eye-slash"></i>
+                </button>
+            </div>
+
+            <!-- Info Panel -->
+            <div class="info-panel" id="infoPanel">
+                <div class="info-panel-header">
+                    <div class="info-panel-title" id="infoPanelTitle">Location Details</div>
+                    <button class="info-panel-close" id="infoPanelClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="info-panel-content" id="infoPanelContent">
+                    <!-- Dynamic content will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts (load in correct order) -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=mapspeople"></script>
+
+    <script>
+        class AmenityFinder {
+            constructor() {
+                this.mapsIndoorsInstance = null;
+                this.mapboxInstance = null;
+                this.allLocations = [];
+                this.filteredLocations = [];
+                this.selectedLocationId = null;
+                this.currentFilter = 'all';
+                this.searchTerm = '';
+                this.locationTypes = new Map();
+                
+                // Type icons mapping
+                this.typeIcons = {
+                    'Restroom': 'fas fa-restroom',
+                    'MeetingRoom': 'fas fa-users',
+                    'MeetingRoom Small': 'fas fa-user-friends',
+                    'MeetingRoom Medium': 'fas fa-users',
+                    'MeetingRoom Large': 'fas fa-users-cog',
+                    'MeetingRoom Extra Small': 'fas fa-user',
+                    'Canteen': 'fas fa-utensils',
+                    'Kitchen': 'fas fa-utensils',
+                    'Elevator': 'fas fa-arrows-alt-v',
+                    'Stairs': 'fas fa-walking',
+                    'Entrance': 'fas fa-door-open',
+                    'Exit': 'fas fa-sign-out-alt',
+                    'Phone Booth': 'fas fa-phone',
+                    'Default': 'fas fa-map-marker-alt'
+                };
+
+                this.init();
+            }
+
+            async init() {
+                try {
+                    await this.initializeMap();
+                    this.setupEventListeners();
+                } catch (error) {
+                    console.error('Error initializing AmenityFinder:', error);
+                    this.showError('Failed to initialize the application. Please refresh the page.');
+                }
+            }
+
+            async initializeMap() {
+                // Initialize Mapbox and MapsIndoors
+                const mapViewOptions = {
+                    accessToken: 'pk.eyJ1IjoiZ2V3YS1tYXBzcGVvcGxlIiwiYSI6ImNsZzJudDB4ZTAwcnEzZnAwb2VvbTYwYnIifQ.w-cnsU-xP9jaly_qrgy_iA',
+                    element: document.getElementById('map'),
+                    center: { lat: 30.3603212, lng: -97.7422623 }, // Austin Office
+                    zoom: 20,
+                    maxZoom: 22,
+                };
+
+                const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+                this.mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+                    mapView: mapViewInstance,
+                });
+                this.mapboxInstance = mapViewInstance.getMap();
+
+                // Add floor selector
+                const floorSelectorElement = document.createElement('div');
+                new mapsindoors.FloorSelector(floorSelectorElement, this.mapsIndoorsInstance);
+                this.mapboxInstance.addControl({ 
+                    onAdd: function () { return floorSelectorElement },
+                    onRemove: function () { }
+                });
+
+                // Wait for MapsIndoors to be ready
+                return new Promise((resolve, reject) => {
+                    this.mapsIndoorsInstance.addListener('ready', async () => {
+                        console.log('MapsIndoors is ready');
+                        try {
+                            await this.loadLocations();
+                            this.setupMapEventListeners();
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+
+                    this.mapsIndoorsInstance.addListener('error', (error) => {
+                        console.error('MapsIndoors error:', error);
+                        reject(error);
+                    });
+                });
+            }
+
+            async loadLocations() {
+                try {
+                    console.log('Loading locations...');
+                    
+                    // Get all locations from Austin Office
+                    const locations = await mapsindoors.services.LocationsService.getLocations({
+                        venue: 'AUSTINOFFICE',
+                        take: 500 // Increase limit to get more locations
+                    });
+
+                    console.log(`Loaded ${locations.length} locations`);
+                    
+                    // Process and filter relevant locations
+                    this.allLocations = locations.filter(location => {
+                        // Only include locations with meaningful types and names
+                        const hasType = location.properties.type && location.properties.type.trim() !== '';
+                        const hasName = location.properties.name && location.properties.name.trim() !== '';
+                        const hasGeometry = location.geometry && 
+                            (location.geometry.type === 'Polygon' || 
+                             location.geometry.type === 'Point' || 
+                             location.geometry.type === 'MultiPolygon');
+                        
+                        return hasType && hasName && hasGeometry;
+                    }).map(location => ({
+                        id: location.id,
+                        name: location.properties.name,
+                        type: location.properties.type,
+                        floor: location.properties.floor || 0,
+                        building: location.properties.building,
+                        venue: location.properties.venue,
+                        coordinates: location.properties.anchor.coordinates,
+                        geometry: location.geometry,
+                        description: location.properties.description || ''
+                    }));
+
+                    console.log(`Processed ${this.allLocations.length} relevant locations`);
+
+                    // Build location types map
+                    this.buildLocationTypesMap();
+                    
+                    // Create filter buttons
+                    this.createFilterButtons();
+                    
+                    // Initially show all locations
+                    this.applyFilters();
+                    
+                } catch (error) {
+                    console.error('Error loading locations:', error);
+                    this.showError('Failed to load location data.');
+                }
+            }
+
+            buildLocationTypesMap() {
+                // Count locations by type
+                const typeCounts = {};
+                this.allLocations.forEach(location => {
+                    const type = location.type;
+                    typeCounts[type] = (typeCounts[type] || 0) + 1;
+                });
+
+                // Convert to Map and sort by count (descending)
+                this.locationTypes = new Map(
+                    Object.entries(typeCounts)
+                        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+                        .filter(([type, count]) => count > 0) // Only include types with locations
+                );
+
+                console.log('Location types:', this.locationTypes);
+            }
+
+            createFilterButtons() {
+                const filterGrid = document.getElementById('filterGrid');
+                
+                // Clear existing buttons except "Show All"
+                const showAllBtn = filterGrid.querySelector('.show-all');
+                filterGrid.innerHTML = '';
+                filterGrid.appendChild(showAllBtn);
+
+                // Add filter buttons for each location type
+                this.locationTypes.forEach((count, type) => {
+                    const button = document.createElement('button');
+                    button.className = 'filter-btn';
+                    button.dataset.type = type;
+                    
+                    const icon = this.typeIcons[type] || this.typeIcons['Default'];
+                    button.innerHTML = `
+                        <i class="${icon}"></i>
+                        <span>${type} (${count})</span>
+                    `;
+                    
+                    filterGrid.appendChild(button);
+                });
+            }
+
+            setupEventListeners() {
+                // Search input
+                const searchInput = document.getElementById('searchInput');
+                const clearSearch = document.getElementById('clearSearch');
+                
+                searchInput.addEventListener('input', (e) => {
+                    this.searchTerm = e.target.value;
+                    this.applyFilters();
+                    
+                    // Show/hide clear button
+                    clearSearch.style.display = this.searchTerm ? 'block' : 'none';
+                });
+
+                clearSearch.addEventListener('click', () => {
+                    searchInput.value = '';
+                    this.searchTerm = '';
+                    clearSearch.style.display = 'none';
+                    this.applyFilters();
+                });
+
+                // Filter buttons
+                document.getElementById('filterGrid').addEventListener('click', (e) => {
+                    const filterBtn = e.target.closest('.filter-btn');
+                    if (!filterBtn) return;
+
+                    // Update active state
+                    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                    filterBtn.classList.add('active');
+
+                    // Update current filter
+                    this.currentFilter = filterBtn.dataset.type;
+                    this.applyFilters();
+                });
+
+                // Map controls
+                document.getElementById('zoomIn').addEventListener('click', () => {
+                    this.mapboxInstance.zoomIn();
+                });
+
+                document.getElementById('zoomOut').addEventListener('click', () => {
+                    this.mapboxInstance.zoomOut();
+                });
+
+                document.getElementById('recenter').addEventListener('click', () => {
+                    this.recenterMap();
+                });
+
+                document.getElementById('clearHighlights').addEventListener('click', () => {
+                    this.clearHighlights();
+                });
+
+                // Info panel close
+                document.getElementById('infoPanelClose').addEventListener('click', () => {
+                    this.hideInfoPanel();
+                });
+            }
+
+            setupMapEventListeners() {
+                // Location click event
+                this.mapsIndoorsInstance.addListener('click', (event) => {
+                    if (event && event.id) {
+                        const location = this.allLocations.find(loc => loc.id === event.id);
+                        if (location) {
+                            this.selectLocation(location.id);
+                        }
+                    }
+                });
+            }
+
+            applyFilters() {
+                // Filter locations based on current filter and search term
+                this.filteredLocations = this.allLocations.filter(location => {
+                    // Filter by type
+                    const matchesType = this.currentFilter === 'all' || location.type === this.currentFilter;
+                    
+                    // Filter by search term
+                    const matchesSearch = !this.searchTerm || 
+                        location.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                        location.type.toLowerCase().includes(this.searchTerm.toLowerCase());
+                    
+                    return matchesType && matchesSearch;
+                });
+
+                console.log(`Filtered to ${this.filteredLocations.length} locations`);
+
+                // Update display
+                this.updateLocationsList();
+                this.updateMapDisplay();
+            }
+
+            updateLocationsList() {
+                const locationsList = document.getElementById('locationsList');
+                const resultsCount = document.getElementById('resultsCount');
+                
+                // Update count
+                resultsCount.textContent = this.filteredLocations.length;
+
+                // Clear current list
+                locationsList.innerHTML = '';
+
+                if (this.filteredLocations.length === 0) {
+                    locationsList.innerHTML = `
+                        <div class="status-message">
+                            <i class="fas fa-search"></i>
+                            <h3>No locations found</h3>
+                            <p>Try adjusting your search or filter criteria.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Group locations by floor for better organization
+                const locationsByFloor = this.groupLocationsByFloor(this.filteredLocations);
+
+                // Create location cards grouped by floor
+                Object.entries(locationsByFloor)
+                    .sort((a, b) => parseInt(a[0]) - parseInt(b[0])) // Sort floors numerically
+                    .forEach(([floor, locations]) => {
+                        // Add floor header if there are multiple floors
+                        if (Object.keys(locationsByFloor).length > 1) {
+                            const floorHeader = document.createElement('div');
+                            floorHeader.style.cssText = `
+                                font-weight: 600;
+                                color: var(--dark-gray);
+                                padding: 10px 0 5px 0;
+                                font-size: 0.9rem;
+                                border-bottom: 1px solid var(--medium-gray);
+                                margin-bottom: 10px;
+                            `;
+                            floorHeader.textContent = `Floor ${floor}`;
+                            locationsList.appendChild(floorHeader);
+                        }
+
+                        // Add location cards for this floor
+                        locations.forEach(location => {
+                            const locationCard = this.createLocationCard(location);
+                            locationsList.appendChild(locationCard);
+                        });
+                    });
+            }
+
+            groupLocationsByFloor(locations) {
+                return locations.reduce((groups, location) => {
+                    const floor = location.floor || 0;
+                    if (!groups[floor]) {
+                        groups[floor] = [];
+                    }
+                    groups[floor].push(location);
+                    return groups;
+                }, {});
+            }
+
+            createLocationCard(location) {
+                const card = document.createElement('div');
+                card.className = `location-card ${this.selectedLocationId === location.id ? 'selected' : ''}`;
+                card.dataset.locationId = location.id;
+
+                const icon = this.typeIcons[location.type] || this.typeIcons['Default'];
+
+                card.innerHTML = `
+                    <div class="location-header">
+                        <div class="location-name">${location.name}</div>
+                        <div class="location-type">${location.type}</div>
+                    </div>
+                    <div class="location-details">
+                        <div class="location-detail">
+                            <i class="${icon}"></i>
+                            <span>${location.type}</span>
+                        </div>
+                        <div class="location-detail">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Floor ${location.floor}</span>
+                        </div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => {
+                    this.selectLocation(location.id);
+                });
+
+                return card;
+            }
+
+            selectLocation(locationId) {
+                this.selectedLocationId = locationId;
+                const location = this.allLocations.find(loc => loc.id === locationId);
+                
+                if (!location) return;
+
+                console.log('Selected location:', location);
+
+                // Update card selection state
+                document.querySelectorAll('.location-card').forEach(card => {
+                    if (card.dataset.locationId === locationId) {
+                        card.classList.add('selected');
+                        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                });
+
+                // Highlight location on map
+                this.highlightLocation(location);
+
+                // Show info panel
+                this.showInfoPanel(location);
+
+                // Set floor and center on location
+                this.mapsIndoorsInstance.setFloor(location.floor);
+                this.mapboxInstance.flyTo({
+                    center: location.coordinates,
+                    zoom: 21,
+                    duration: 1000
+                });
+            }
+
+            highlightLocation(location) {
+                // When selecting individual location, clear group highlights first
+                this.mapsIndoorsInstance.highlight([]);
+                
+                // Then highlight just the selected location
+                this.mapsIndoorsInstance.highlight([location.id]);
+                
+                console.log(`Highlighting individual location: ${location.id} (${location.name})`);
+            }
+
+            showInfoPanel(location) {
+                const infoPanel = document.getElementById('infoPanel');
+                const title = document.getElementById('infoPanelTitle');
+                const content = document.getElementById('infoPanelContent');
+
+                title.textContent = location.name;
+
+                const icon = this.typeIcons[location.type] || this.typeIcons['Default'];
+
+                content.innerHTML = `
+                    <div class="info-detail">
+                        <i class="${icon}"></i>
+                        <span>${location.type}</span>
+                    </div>
+                    <div class="info-detail">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Floor ${location.floor}</span>
+                    </div>
+                    <div class="info-detail">
+                        <i class="fas fa-building"></i>
+                        <span>${location.building || 'Austin Office'}</span>
+                    </div>
+                    ${location.description ? `
+                        <div class="info-detail">
+                            <i class="fas fa-info-circle"></i>
+                            <span>${location.description}</span>
+                        </div>
+                    ` : ''}
+                `;
+
+                infoPanel.classList.add('visible');
+            }
+
+            hideInfoPanel() {
+                document.getElementById('infoPanel').classList.remove('visible');
+                this.selectedLocationId = null;
+                
+                // Update card selection state
+                document.querySelectorAll('.location-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Clear highlights
+                this.clearHighlights();
+            }
+
+            updateMapDisplay() {
+                // Get all location IDs currently loaded
+                const allLocationIds = this.allLocations.map(loc => loc.id);
+                
+                // Hide all locations first
+                this.mapsIndoorsInstance.setDisplayRule(allLocationIds, { visible: false });
+
+                // Show and highlight only filtered locations
+                if (this.filteredLocations.length > 0) {
+                    const filteredLocationIds = this.filteredLocations.map(loc => loc.id);
+                    
+                    // Make filtered locations visible
+                    this.mapsIndoorsInstance.setDisplayRule(filteredLocationIds, { 
+                        visible: true,
+                        iconVisible: true,
+                        labelVisible: true,
+                        polygonVisible: true
+                    });
+
+                    // Highlight the filtered locations (this works with arrays of location IDs)
+                    this.mapsIndoorsInstance.highlight(filteredLocationIds);
+                    
+                    console.log(`Highlighting ${filteredLocationIds.length} locations:`, filteredLocationIds);
+                } else {
+                    // Clear highlights when no locations match
+                    this.mapsIndoorsInstance.highlight([]);
+                }
+            }
+
+            clearHighlights() {
+                this.mapsIndoorsInstance.highlight([]);
+                this.hideInfoPanel();
+                console.log('All highlights cleared');
+            }
+
+            recenterMap() {
+                if (this.filteredLocations.length === 0) {
+                    // Default center for Austin Office
+                    this.mapboxInstance.flyTo({
+                        center: [-97.7422623, 30.3603212],
+                        zoom: 20,
+                        duration: 1000
+                    });
+                    return;
+                }
+
+                // Calculate bounds for filtered locations
+                const bounds = new mapboxgl.LngLatBounds();
+                this.filteredLocations.forEach(location => {
+                    bounds.extend(location.coordinates);
+                });
+
+                // Fit map to bounds
+                this.mapboxInstance.fitBounds(bounds, {
+                    padding: { top: 50, bottom: 50, left: 430, right: 50 }, // Account for sidebar
+                    duration: 1000
+                });
+            }
+
+            showError(message) {
+                document.getElementById('locationsList').innerHTML = `
+                    <div class="status-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Error</h3>
+                        <p>${message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AmenityFinder();
+        });
+    </script>
+</body>
+</html>
+```
+
+### Explanation
+- Initializes MapsIndoors with proper map view configuration
+- Uses event listeners for interactive functionality
+- Implements asynchronous operations for better performance
+- Includes proper error handling and recovery
+
+### Gotchas / Notes
+🛠️ Ensure proper API key configuration before initialization
+🛠️ Map container element must exist in DOM before creating map view
+
 
 ## Use Case: MapsIndoors Custom Implementation
 
@@ -1506,7 +2589,7 @@ You need to implement custom functionality in your MapsIndoors application.
 - Includes proper error handling and recovery
 
 ### Gotchas / Notes
-🛠️ Always check if DOM elements exist before using them
+ð ï¸ Always check if DOM elements exist before using them
 
 
 ## Use Case: MapsIndoors Custom Implementation
@@ -1525,7 +2608,7 @@ You need to implement custom functionality in your MapsIndoors application.
 - Provides reusable code for common use cases
 
 ### Gotchas / Notes
-ð ï¸ Add error handling for network requests
+Ã°ÂÂÂ Ã¯Â¸Â Add error handling for network requests
 
 
 ## Use Case: floor management Implementation
