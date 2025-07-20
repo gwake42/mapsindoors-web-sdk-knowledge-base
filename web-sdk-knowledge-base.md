@@ -39,8 +39,8 @@ mapView.getMap().addControl({
 - The floor selector automatically updates when building changes
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
-Ã°ÂÂÂ Ã¯Â¸Â The floor selector won't appear until a building is loaded
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Always use `MapboxV3View` instead of `MapboxView` for SDK v4.41.1
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ The floor selector won't appear until a building is loaded
 
 ---
 
@@ -78,8 +78,8 @@ if (location) {
 - Coordinates are in [lng, lat] format (not [lat, lng])
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Always set floor before flying to location
-Ã°ÂÂÂ Ã¯Â¸Â MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Always set floor before flying to location
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ MapsIndoors uses [lng, lat] while some APIs use [lat, lng]
 
 ---
 
@@ -126,8 +126,8 @@ mapsIndoorsInstance.setDisplayRule(null, {
 - Display rules persist until changed
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Setting display rule on `null` affects all locations not explicitly styled
-Ã°ÂÂÂ Ã¯Â¸Â The `take` parameter limits results (default is 10)
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Setting display rule on `null` affects all locations not explicitly styled
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ The `take` parameter limits results (default is 10)
 
 ---
 
@@ -168,8 +168,8 @@ mapsIndoorsInstance.addListener('click', async (event) => {
 - Can apply temporary highlight styling
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Click event only provides `id`, not full location data
-Ã°ÂÂÂ Ã¯Â¸Â Always check if `event` and `event.id` exist
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Click event only provides `id`, not full location data
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Always check if `event` and `event.id` exist
 
 ---
 
@@ -229,8 +229,8 @@ async function searchLocations(query) {
 - Fits map bounds to show all results
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Search is case-insensitive but requires minimum 2 characters
-Ã°ÂÂÂ Ã¯Â¸Â `orderBy: 'relevance'` gives better results than alphabetical
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Search is case-insensitive but requires minimum 2 characters
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ `orderBy: 'relevance'` gives better results than alphabetical
 
 ---
 
@@ -280,8 +280,8 @@ if (nearbyLocations.length > 0) {
 - Returns distance in meters and duration in seconds
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Distance Matrix requires the venue's graph ID
-Ã°ÂÂÂ Ã¯Â¸Â Matrix coordinate format is different from location format
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Distance Matrix requires the venue's graph ID
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Matrix coordinate format is different from location format
 
 ---
 
@@ -328,8 +328,8 @@ mapsIndoorsInstance.addListener('building_changed', () => {
 - Floor 0 typically represents ground floor
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Floor indices can be negative (basements)
-Ã°ÂÂÂ Ã¯Â¸Â Floor change event fires before tiles load
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor indices can be negative (basements)
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor change event fires before tiles load
 
 ---
 
@@ -359,7 +359,7 @@ customLocations.forEach(async (locationId) => {
     // Create custom marker element
     const el = document.createElement('div');
     el.className = 'custom-marker';
-    el.innerHTML = 'Ã°ÂÂÂ';
+    el.innerHTML = 'ÃÂ°ÃÂÃÂÃÂ';
     el.style.fontSize = '24px';
     el.style.cursor = 'pointer';
     
@@ -382,8 +382,8 @@ customLocations.forEach(async (locationId) => {
 - Can use any HTML/CSS for marker styling
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Custom markers don't respect floor visibility automatically
-Ã°ÂÂÂ Ã¯Â¸Â Must manually show/hide markers on floor change
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Custom markers don't respect floor visibility automatically
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Must manually show/hide markers on floor change
 
 ---
 
@@ -426,8 +426,8 @@ async function initializeApp() {
 - Solution config available after ready
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Don't call `getBuilding()` or `getVenue()` before ready
-Ã°ÂÂÂ Ã¯Â¸Â Display rules can be set before ready but won't apply
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Don't call `getBuilding()` or `getVenue()` before ready
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Display rules can be set before ready but won't apply
 
 ---
 
@@ -478,8 +478,8 @@ if (route) {
 - Each leg represents a route segment
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Maximum 25 waypoints per route
-Ã°ÂÂÂ Ã¯Â¸Â Floor transitions require accessible paths in venue data
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Maximum 25 waypoints per route
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor transitions require accessible paths in venue data
 
 ---
 
@@ -532,8 +532,8 @@ document.getElementById('toggle-labels').addEventListener('click', () => {
 - Can toggle all labels with null selector
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Label collision detection works within zoom levels
-Ã°ÂÂÂ Ã¯Â¸Â Labels follow language settings from SolutionConfig
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Label collision detection works within zoom levels
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Labels follow language settings from SolutionConfig
 
 ---
 
@@ -608,8 +608,8 @@ function updateNavigationUI() {
 - Can track progress through route
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â `nextLeg()` and `previousLeg()` don't return values
-Ã°ÂÂÂ Ã¯Â¸Â Floor changes happen at leg boundaries
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ `nextLeg()` and `previousLeg()` don't return values
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor changes happen at leg boundaries
 
 ---
 
@@ -674,8 +674,8 @@ async function exportMapAsImage(scale = 2) {
 - Always restore original dimensions
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Enable `preserveDrawingBuffer: true` in Mapbox options
-Ã°ÂÂÂ Ã¯Â¸Â Some browsers limit maximum canvas size
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Enable `preserveDrawingBuffer: true` in Mapbox options
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Some browsers limit maximum canvas size
 
 ---
 
@@ -732,8 +732,8 @@ const resultsByBuilding = allResults.reduce((groups, location) => {
 - Categories filter requires exact match
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Venue ID is different from venue name
-Ã°ÂÂÂ Ã¯Â¸Â Floor filter applies across all buildings
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Venue ID is different from venue name
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor filter applies across all buildings
 
 ---
 
@@ -809,8 +809,8 @@ function updateLiveMarkerVisibility() {
 - CSS animations indicate live status
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â GPS positions may need indoor mapping corrections
-Ã°ÂÂÂ Ã¯Â¸Â Frequent updates can impact performance
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ GPS positions may need indoor mapping corrections
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Frequent updates can impact performance
 
 ---
 
@@ -901,8 +901,8 @@ console.log(`Distance: ${nearest.distance} meters`);
 - Can be used for any amenity type
 
 ### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Distance Matrix has a limit on origin/destination combinations
-Ã°ÂÂÂ Ã¯Â¸Â Consider caching Distance Matrix results for performance
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Distance Matrix has a limit on origin/destination combinations
+ÃÂ°ÃÂÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Consider caching Distance Matrix results for performance
 
 ---
 
@@ -1110,6 +1110,27 @@ Technologies: MapsIndoors SDK 4.40.0, Mapbox GL JS 3.8.0, Google Gemini 1.5 Flas
 
 ---
 
+---
+
+## Use Case: MapsIndoors Custom Implementation
+
+### Problem
+You need to implement custom functionality in your MapsIndoors application.
+
+### Code Example
+```js
+// External script reference: https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js
+// Note: This script would need to be fetched separately for full analysis
+```
+
+### Explanation
+- Demonstrates MapsIndoors implementation patterns
+- Provides reusable code for common use cases
+
+### Gotchas / Notes
+🛠️ Add error handling for network requests
+
+
 ## Use Case: MapsIndoors Custom Implementation
 
 ### Problem
@@ -1126,7 +1147,7 @@ You need to implement custom functionality in your MapsIndoors application.
 - Provides reusable code for common use cases
 
 ### Gotchas / Notes
-🛠️ Add error handling for network requests
+ð ï¸ Add error handling for network requests
 
 
 ## Use Case: floor management Implementation
@@ -1145,6 +1166,6 @@ mapView.getMap().flyTo({center: [lng, lat], zoom: 20, duration: 1000});
 - Provides reusable code for common use cases
 
 ### Gotchas / Notes
-ð ï¸ Test thoroughly in your specific MapsIndoors environment
-ð ï¸ Verify API compatibility with your MapsIndoors SDK version
+Ã°ÂÂÂ Ã¯Â¸Â Test thoroughly in your specific MapsIndoors environment
+Ã°ÂÂÂ Ã¯Â¸Â Verify API compatibility with your MapsIndoors SDK version
 
