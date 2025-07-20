@@ -163,3 +163,88 @@ Display rules allow dynamic visual styling of locations based on their status. T
 ⚠️ Group locations by status for efficient batch updates
 ⚠️ Use consistent color schemes across your application
 
+
+---
+
+## Spatial Queries with MapsIndoors LocationsService
+
+### Context
+Spatial queries are essential for location-aware applications that need to find nearby points of interest
+
+### Industry
+corporate
+
+### Problem
+Finding relevant locations based on proximity and spatial context
+
+### Solution
+```javascript
+// Proximity search with LocationsService
+async function findNearbyLocations(lat, lng, floor) {
+    try {
+        const locations = await mapsindoors.services.LocationsService.getLocations({
+            near: { lat: lat, lng: lng },
+            radius: 5, // meters
+            floor: floor,
+            venue: 'AUSTINOFFICE',
+            types: ['MeetingRoom', 'MeetingRoom Small', 'MeetingRoom Medium', 'MeetingRoom Large'],
+            take: 10
+        });
+        
+        return locations;
+    } catch (error) {
+        console.error('Error finding nearby locations:', error);
+        return [];
+    }
+}
+
+// Usage with draggable marker
+marker.on('dragend', async () => {
+    const lngLat = marker.getLngLat();
+    const currentFloor = mapsIndoors.getFloor();
+    
+    const nearbyLocations = await findNearbyLocations(
+        lngLat.lat, 
+        lngLat.lng, 
+        currentFloor
+    );
+    
+    if (nearbyLocations.length > 0) {
+        const closest = nearbyLocations[0];
+        console.log('Closest location:', closest.properties.name);
+        
+        // Update UI with nearest location info
+        popup.setHTML(`
+            <div>
+                <p>Nearest: ${closest.properties.name}</p>
+                <p>Distance: ~${Math.round(calculateDistance(lngLat, closest))}m</p>
+            </div>
+        `);
+    }
+});
+
+// Filter locations by type and venue
+const meetingRooms = await mapsindoors.services.LocationsService.getLocations({
+    types: ['MeetingRoom'],
+    venue: 'AUSTINOFFICE',
+    take: 100
+});
+```
+
+### Explanation
+The LocationsService provides powerful spatial query capabilities using the 'near' parameter with coordinates and radius. This enables finding locations within a specific distance of a point, essential for asset tracking, room finding, and proximity-based features in indoor mapping applications.
+
+### Use Cases
+- Asset tracking and assignment
+- Room finder applications
+- Wayfinding to nearest amenities
+- Location-based content delivery
+- Emergency evacuation routing
+
+### Important Notes
+⚠️ Radius parameter is in meters
+⚠️ Always include floor parameter to limit results to current floor
+⚠️ Use venue parameter for better performance and relevant results
+⚠️ Limit results with take parameter to improve response time
+⚠️ Handle async errors gracefully
+
