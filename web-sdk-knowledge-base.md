@@ -2010,3 +2010,436 @@ This creates a comprehensive asset tracking system where markers move autonomous
 ⚠️ Asset movement should be throttled to avoid performance issues
 ⚠️ Selected asset state needs to be cleared when asset is deleted
 
+
+---
+
+## Corporate Room Booking with Availability Visualization
+
+### Context
+Building a corporate room booking system with real-time availability visualization and integrated booking workflow
+
+### Industry
+corporate
+
+### Problem
+Corporate offices need efficient room booking systems with visual availability indicators and streamlined booking workflows
+
+### Solution
+```javascript
+// Corporate room booking system with availability visualization
+class CorporateRoomBooking {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.rooms = [];
+        this.selectedRoomId = null;
+        
+        // Mock booking data structure
+        this.bookings = new Map();
+        this.availabilityColors = {
+            'available': '#4CAF50',
+            'busy': '#f44336',
+            'waitlist': '#ff9800'
+        };
+    }
+
+    async loadRooms() {
+        try {
+            const locations = await mapsindoors.services.LocationsService.getLocations({
+                types: ['MeetingRoom', 'MeetingRoom Small', 'MeetingRoom Medium', 'MeetingRoom Large'],
+                venue: 'AUSTINOFFICE',
+                take: 100
+            });
+
+            this.rooms = locations.map(location => {
+                const capacity = this.getRoomCapacity(location.properties.type);
+                return {
+                    id: location.id,
+                    name: location.properties.name || 'Unnamed Room',
+                    type: location.properties.type || 'MeetingRoom',
+                    capacity: capacity,
+                    floor: location.properties.floor,
+                    features: this.getRoomFeatures(location.properties.type),
+                    location: {
+                        lat: location.properties.anchor.coordinates[1],
+                        lng: location.properties.anchor.coordinates[0]
+                    },
+                    availability: this.generateAvailability()
+                };
+            });
+
+            this.generateTimeSlots();
+            this.updateRoomDisplayRules();
+            this.renderRoomList();
+
+        } catch (error) {
+            console.error('Error loading rooms:', error);
+        }
+    }
+
+    generateTimeSlots() {
+        const timeSlots = ['9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM'];
+        
+        this.rooms.forEach(room => {
+            room.timeSlots = {};
+            timeSlots.forEach(time => {
+                // Random availability for demo
+                const statuses = ['available', 'busy', 'available', 'available']; // Weight toward available
+                room.timeSlots[time] = statuses[Math.floor(Math.random() * statuses.length)];
+            });
+            
+            // Set current availability based on current time slot
+            const currentHour = new Date().getHours();
+            const currentTimeSlot = timeSlots.find(slot => {
+                const hour = slot.includes('PM') && !slot.includes('12PM') ? 
+                    parseInt(slot) + 12 : parseInt(slot);
+                return hour === currentHour;
+            });
+            
+            room.currentAvailability = currentTimeSlot ? 
+                room.timeSlots[currentTimeSlot] : 'available';
+        });
+    }
+
+    updateRoomDisplayRules() {
+        // Group rooms by current availability
+        const availableRooms = this.rooms.filter(room => room.currentAvailability === 'available').map(r => r.id);
+        const busyRooms = this.rooms.filter(room => room.currentAvailability === 'busy').map(r => r.id);
+        
+        // Apply availability-based colors
+        this.mapsIndoors.setDisplayRule(availableRooms, {
+            polygonVisible: true,
+            polygonFillColor: this.availabilityColors.available,
+            polygonFillOpacity: 0.4,
+            polygonStrokeColor: this.availabilityColors.available,
+            polygonStrokeOpacity: 0.8,
+            polygonStrokeWidth: 1,
+            zoomFrom: 16
+        });
+
+        this.mapsIndoors.setDisplayRule(busyRooms, {
+            polygonVisible: true,
+            polygonFillColor: this.availabilityColors.busy,
+            polygonFillOpacity: 0.4,
+            polygonStrokeColor: this.availabilityColors.busy,
+            polygonStrokeOpacity: 0.8,
+            polygonStrokeWidth: 1,
+            zoomFrom: 16
+        });
+    }
+
+    renderRoomList() {
+        const roomList = document.getElementById('room-list');
+        if (!roomList) return;
+
+        roomList.innerHTML = '';
+
+        // Sort rooms by availability (available first)
+        const sortedRooms = [...this.rooms].sort((a, b) => {
+            if (a.currentAvailability === 'available' && b.currentAvailability !== 'available') return -1;
+            if (a.currentAvailability !== 'available' && b.currentAvailability === 'available') return 1;
+            return a.name.localeCompare(b.name);
+        });
+
+        sortedRooms.forEach(room => {
+            const roomCard = document.createElement('div');
+            roomCard.className = `room-card ${room.currentAvailability} ${this.selectedRoomId === room.id ? 'selected' : ''}`;
+            roomCard.dataset.id = room.id;
+
+            const availabilityText = room.currentAvailability === 'available' ? 'Available Now' : 'Currently Busy';
+            const statusIcon = room.currentAvailability === 'available' ? 'fas fa-check-circle' : 'fas fa-clock';
+
+            roomCard.innerHTML = `
+                <div class="room-header">
+                    <div class="room-name">${room.name}</div>
+                    <div class="room-type">${this.formatRoomType(room.type)}</div>
+                </div>
+                <div class="room-details">
+                    <div class="room-detail">
+                        <i class="fas fa-users"></i>
+                        <span>Capacity: ${room.capacity} people</span>
+                    </div>
+                    <div class="room-detail">
+                        <i class="fas fa-building"></i>
+                        <span>Floor ${room.floor}</span>
+                    </div>
+                    <div class="room-detail">
+                        <i class="fas fa-list-ul"></i>
+                        <span>${room.features.slice(0, 2).join(', ')}</span>
+                    </div>
+                </div>
+                <div class="room-status">
+                    <span class="availability ${room.currentAvailability}">
+                        <i class="${statusIcon}"></i>
+                        ${availabilityText}
+                    </span>
+                    <button class="waitlist-btn" onclick="bookingSystem.openBookingModal('${room.id}')">
+                        <i class="fas fa-calendar-plus"></i>
+                        ${room.currentAvailability === 'available' ? 'Book Now' : 'Join Waitlist'}
+                    </button>
+                </div>
+            `;
+
+            roomCard.addEventListener('click', () => {
+                this.selectRoom(room.id);
+            });
+
+            roomList.appendChild(roomCard);
+        });
+    }
+
+    selectRoom(roomId) {
+        this.selectedRoomId = roomId;
+        const room = this.rooms.find(r => r.id === roomId);
+        if (!room) return;
+
+        // Highlight selected room
+        this.mapsIndoors.setDisplayRule(roomId, {
+            polygonVisible: true,
+            polygonFillColor: '#2196F3',
+            polygonFillOpacity: 0.6,
+            polygonStrokeColor: '#2196F3',
+            polygonStrokeOpacity: 1,
+            polygonStrokeWidth: 2,
+            zoomFrom: 16
+        });
+
+        // Center map on room
+        this.mapsIndoors.setFloor(room.floor);
+        
+        // Show room details panel
+        this.showRoomDetails(room);
+        
+        // Update room cards selection
+        document.querySelectorAll('.room-card').forEach(card => {
+            if (card.dataset.id === roomId) {
+                card.classList.add('selected');
+            } else {
+                card.classList.remove('selected');
+            }
+        });
+    }
+
+    showRoomDetails(room) {
+        const detailPanel = document.getElementById('detail-panel');
+        if (!detailPanel) return;
+
+        // Update room info
+        document.getElementById('detail-title').textContent = room.name;
+        document.getElementById('detail-subtitle').textContent = `Floor ${room.floor} • ${this.formatRoomType(room.type)}`;
+
+        // Update features
+        const featureList = document.getElementById('feature-list');
+        featureList.innerHTML = `
+            <div class="feature-item">
+                <i class="fas fa-users"></i>
+                <span>Capacity: ${room.capacity} people</span>
+            </div>
+        `;
+        
+        room.features.forEach(feature => {
+            const icon = this.getFeatureIcon(feature);
+            featureList.innerHTML += `
+                <div class="feature-item">
+                    <i class="${icon}"></i>
+                    <span>${feature}</span>
+                </div>
+            `;
+        });
+
+        // Update availability timeline
+        const timeline = document.getElementById('availability-timeline');
+        timeline.innerHTML = '';
+        
+        Object.entries(room.timeSlots).forEach(([time, status]) => {
+            const timeSlot = document.createElement('div');
+            timeSlot.className = `time-slot ${status}`;
+            timeSlot.innerHTML = `<span>${time}</span>`;
+            timeline.appendChild(timeSlot);
+        });
+
+        // Update time slot dropdown
+        const timeSlotSelect = document.getElementById('time-slot');
+        timeSlotSelect.innerHTML = '<option value="">Select a time slot</option>';
+        
+        Object.entries(room.timeSlots).forEach(([time, status]) => {
+            const option = document.createElement('option');
+            option.value = time;
+            option.textContent = `${time} (${status === 'available' ? 'Available' : 'Waitlist'})`;
+            timeSlotSelect.appendChild(option);
+        });
+
+        // Update availability status
+        const availabilityEl = document.getElementById('room-availability');
+        availabilityEl.textContent = room.currentAvailability === 'available' ? 'Available Now' : 'Currently Busy';
+        availabilityEl.className = `availability ${room.currentAvailability}`;
+
+        // Show panel
+        detailPanel.classList.add('visible');
+    }
+
+    openBookingModal(roomId) {
+        const room = this.rooms.find(r => r.id === roomId);
+        if (!room) return;
+
+        const modal = document.getElementById('booking-modal');
+        if (!modal) return;
+
+        // Populate modal with room details
+        document.getElementById('modal-room').value = room.name;
+        
+        // Show modal
+        modal.classList.add('show');
+    }
+
+    submitBooking(bookingData) {
+        const { roomId, timeSlot, attendees, purpose, name, email } = bookingData;
+        
+        // Validate booking data
+        if (!roomId || !timeSlot || !name || !email) {
+            throw new Error('Missing required booking information');
+        }
+
+        // Create booking record
+        const bookingId = Date.now().toString();
+        const booking = {
+            id: bookingId,
+            roomId,
+            timeSlot,
+            attendees: parseInt(attendees) || 1,
+            purpose,
+            bookedBy: { name, email },
+            timestamp: new Date(),
+            status: 'confirmed'
+        };
+
+        // Store booking
+        this.bookings.set(bookingId, booking);
+
+        // Update room availability
+        const room = this.rooms.find(r => r.id === roomId);
+        if (room && room.timeSlots[timeSlot]) {
+            room.timeSlots[timeSlot] = 'busy';
+            
+            // Update current availability if this is the current time slot
+            const currentHour = new Date().getHours();
+            const timeHour = timeSlot.includes('PM') && !timeSlot.includes('12PM') ? 
+                parseInt(timeSlot) + 12 : parseInt(timeSlot);
+            
+            if (timeHour === currentHour) {
+                room.currentAvailability = 'busy';
+                this.updateRoomDisplayRules();
+            }
+        }
+
+        // Update UI
+        this.renderRoomList();
+        if (this.selectedRoomId === roomId) {
+            this.showRoomDetails(room);
+        }
+
+        return booking;
+    }
+
+    // Helper methods
+    getRoomCapacity(type) {
+        const capacities = {
+            'MeetingRoom Small': Math.floor(Math.random() * 3) + 2, // 2-4
+            'MeetingRoom Extra Small': Math.floor(Math.random() * 2) + 2, // 2-3
+            'MeetingRoom Medium': Math.floor(Math.random() * 4) + 5, // 5-8
+            'MeetingRoom Large': Math.floor(Math.random() * 8) + 10, // 10-17
+            'MeetingRoom': Math.floor(Math.random() * 6) + 6 // 6-11
+        };
+        return capacities[type] || 8;
+    }
+
+    getRoomFeatures(type) {
+        const allFeatures = ['Video Conferencing', 'Whiteboard', 'Display Screen', 'High-Speed Wi-Fi', 'Phone', 'AV Equipment'];
+        const baseFeatures = ['High-Speed Wi-Fi'];
+        
+        if (type?.includes('Large')) {
+            return [...baseFeatures, 'Video Conferencing', 'Whiteboard', 'Display Screen', 'AV Equipment'];
+        } else if (type?.includes('Medium')) {
+            return [...baseFeatures, 'Video Conferencing', 'Display Screen', 'Whiteboard'];
+        } else if (type?.includes('Small')) {
+            return [...baseFeatures, 'Display Screen'];
+        }
+        
+        return [...baseFeatures, 'Video Conferencing', 'Display Screen'];
+    }
+
+    formatRoomType(type) {
+        return type?.replace('MeetingRoom', 'Meeting Room') || 'Meeting Room';
+    }
+
+    getFeatureIcon(feature) {
+        const icons = {
+            'Video Conferencing': 'fas fa-video',
+            'Whiteboard': 'fas fa-chalkboard',
+            'Display Screen': 'fas fa-tv',
+            'High-Speed Wi-Fi': 'fas fa-wifi',
+            'Phone': 'fas fa-phone',
+            'AV Equipment': 'fas fa-volume-up'
+        };
+        return icons[feature] || 'fas fa-check';
+    }
+
+    generateAvailability() {
+        return Math.random() > 0.3 ? 'available' : 'busy';
+    }
+}
+
+// Usage
+let bookingSystem;
+
+mapsIndoorsInstance.addListener('ready', () => {
+    bookingSystem = new CorporateRoomBooking(mapsIndoorsInstance);
+    bookingSystem.loadRooms();
+    
+    // Make globally accessible for onclick handlers
+    window.bookingSystem = bookingSystem;
+});
+
+// Handle booking modal submission
+document.getElementById('submit-booking')?.addEventListener('click', () => {
+    try {
+        const bookingData = {
+            roomId: bookingSystem.selectedRoomId,
+            timeSlot: document.getElementById('time-slot').value,
+            attendees: document.getElementById('attendees').value,
+            purpose: document.getElementById('meeting-purpose').value,
+            name: document.getElementById('modal-name').value,
+            email: document.getElementById('modal-email').value
+        };
+
+        const booking = bookingSystem.submitBooking(bookingData);
+        
+        // Show success notification
+        console.log('Booking confirmed:', booking);
+        document.getElementById('booking-modal').classList.remove('show');
+        
+        // Reset form
+        document.querySelectorAll('#booking-modal input, #booking-modal select').forEach(el => el.value = '');
+        
+    } catch (error) {
+        console.error('Booking error:', error);
+        alert('Booking failed: ' + error.message);
+    }
+});
+```
+
+### Explanation
+This system provides a comprehensive room booking interface with color-coded availability display, detailed room information, and booking workflow integration. Rooms are visually differentiated by availability status, and users can view detailed room features, time slot availability, and submit bookings. The system handles room capacity, features, and availability management with visual feedback through MapsIndoors display rules.
+
+### Use Cases
+- Meeting room reservations
+- Workspace hot-desking
+- Conference room scheduling
+- Equipment room booking
+- Client meeting space management
+
+### Important Notes
+⚠️ Room availability should be refreshed periodically
+⚠️ Booking validation must check for conflicts
+⚠️ Room features should be customizable per room type
+⚠️ Time slot generation should align with business hours
+
