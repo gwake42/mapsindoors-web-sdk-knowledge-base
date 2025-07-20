@@ -2592,41 +2592,4 @@ You need to implement custom functionality in your MapsIndoors application.
 ð ï¸ Always check if DOM elements exist before using them
 
 
-## Use Case: MapsIndoors Custom Implementation
-
-### Problem
-You need to implement custom functionality in your MapsIndoors application.
-
-### Code Example
-```js
-// External script reference: https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js
-// Note: This script would need to be fetched separately for full analysis
-```
-
-### Explanation
-- Demonstrates MapsIndoors implementation patterns
-- Provides reusable code for common use cases
-
-### Gotchas / Notes
-Ã°ÂÂÂ Ã¯Â¸Â Add error handling for network requests
-
-
-## Use Case: floor management Implementation
-
-### Problem
-You need to implement custom floor switching behavior functionality in your MapsIndoors application.
-
-### Code Example
-```js
-mapsIndoorsInstance.setFloor(2);
-mapView.getMap().flyTo({center: [lng, lat], zoom: 20, duration: 1000});
-```
-
-### Explanation
-- Demonstrates MapsIndoors implementation patterns
-- Provides reusable code for common use cases
-
-### Gotchas / Notes
-Test thoroughly in your specific MapsIndoors environment
-Verify API compatibility with your MapsIndoors SDK version
 
