@@ -347,3 +347,144 @@ The DirectionsService can optimize multi-stop routes by automatically reordering
 ⚠️ Use DirectionsRenderer for visual route display
 ⚠️ Check for valid route before proceeding
 
+
+---
+
+## Custom Floor Selector Component
+
+### Context
+Custom floor selectors provide branded styling and enhanced functionality beyond the default MapsIndoors component
+
+### Industry
+corporate
+
+### Problem
+Create custom-styled floor navigation that matches application branding
+
+### Solution
+```javascript
+// Custom floor selector implementation
+class CustomFloorSelector {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.element = this.createSelectorElement();
+        this.floors = {};
+    }
+
+    createSelectorElement() {
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 30, 30, 0.8);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        `;
+        return container;
+    }
+
+    onShow() {
+        this.element.style.display = 'flex';
+        this.updateFloorButtons();
+    }
+
+    onHide() {
+        this.element.style.display = 'none';
+    }
+
+    updateFloorButtons() {
+        this.element.innerHTML = '';
+        const currentFloor = this.mapsIndoors.getFloor();
+
+        if (Object.keys(this.floors).length === 0) {
+            const noFloorsMessage = document.createElement('div');
+            noFloorsMessage.textContent = 'No floors available';
+            this.element.appendChild(noFloorsMessage);
+            return;
+        }
+
+        // Sort floors in descending order (highest first)
+        const sortedFloors = Object.entries(this.floors)
+            .sort(([a], [b]) => Number(b) - Number(a));
+
+        sortedFloors.forEach(([floorIndex, floorName]) => {
+            const button = document.createElement('button');
+            button.textContent = floorName;
+            button.style.cssText = `
+                margin: 5px 0;
+                padding: 10px 20px;
+                border: none;
+                background-color: ${floorIndex === currentFloor ? '#c8a028' : '#3c3c3c'};
+                color: white;
+                cursor: pointer;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+            `;
+            button.onclick = () => this.changeFloor(floorIndex);
+            this.element.appendChild(button);
+        });
+    }
+
+    changeFloor(floorIndex) {
+        this.mapsIndoors.setFloor(floorIndex);
+        this.updateFloorButtons();
+    }
+
+    updateFloors(floors) {
+        if (floors) {
+            this.floors = Object.entries(floors).reduce((acc, [index, floorInfo]) => {
+                acc[index] = floorInfo.name || `Floor ${index}`;
+                return acc;
+            }, {});
+        } else {
+            this.floors = {};
+        }
+        this.updateFloorButtons();
+    }
+
+    updateWithCurrentBuilding() {
+        const currentBuilding = this.mapsIndoors.getBuilding();
+        if (currentBuilding) {
+            this.updateFloors(currentBuilding.floors);
+        } else {
+            this.updateFloors(null);
+        }
+    }
+}
+
+// Usage
+const customFloorSelector = new CustomFloorSelector(mapsIndoorsInstance);
+document.body.appendChild(customFloorSelector.element);
+
+mapsIndoorsInstance.addListener('ready', () => {
+    customFloorSelector.onShow();
+    customFloorSelector.updateWithCurrentBuilding();
+});
+
+mapsIndoorsInstance.addListener('building_changed', () => {
+    customFloorSelector.updateWithCurrentBuilding();
+});
+```
+
+### Explanation
+Custom floor selector components give you complete control over appearance and behavior. This pattern creates a reusable class that handles floor display, selection, and building changes while providing custom styling that matches your application's design.
+
+### Use Cases
+- Branded floor navigation
+- Mobile-optimized interfaces
+- Dashboard integrations
+- Custom UI themes
+- Enhanced accessibility features
+
+### Important Notes
+⚠️ Sort floors in descending order for intuitive display
+⚠️ Update buttons when floor changes via setFloor
+⚠️ Handle building changes to refresh available floors
+⚠️ Check for empty floors object before rendering
+⚠️ Use building_changed listener to update floor list
+
