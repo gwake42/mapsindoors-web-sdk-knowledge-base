@@ -94,11 +94,11 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Must wait for MapsIndoors ready event before applying display rules
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Additional setTimeout may be needed for complex solutions
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Use MapboxV3View instead of deprecated MapboxView
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Set multiple opacity and visibility properties to ensure complete hiding
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Keep visible: true to maintain location data accessibility
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Additional setTimeout may be needed for complex solutions
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Keep visible: true to maintain location data accessibility
 
 
 ---
@@ -224,17 +224,17 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 };
 
                 const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-                debugLog('Ã¢ÂÂ MapboxV3View created', 'success');
+                debugLog('ÃÂ¢ÃÂÃÂ MapboxV3View created', 'success');
 
                 debugLog('Creating MapsIndoors instance...', 'info');
                 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
                     mapView: mapView
                 });
-                debugLog('Ã¢ÂÂ MapsIndoors instance created', 'success');
+                debugLog('ÃÂ¢ÃÂÃÂ MapsIndoors instance created', 'success');
 
                 // Add ready listener
                 mapsIndoorsInstance.addListener('ready', () => {
-                    debugLog('Ã¢ÂÂ MapsIndoors is READY!', 'success');
+                    debugLog('ÃÂ¢ÃÂÃÂ MapsIndoors is READY!', 'success');
                     
                     // Add floor selector
                     const floorSelectorElement = document.createElement('div');
@@ -246,7 +246,7 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                         onRemove: function() {}
                     });
                     
-                    debugLog('Ã¢ÂÂ Floor selector added', 'success');
+                    debugLog('ÃÂ¢ÃÂÃÂ Floor selector added', 'success');
                     debugLog('Mall demo ready!', 'success');
                 });
 
@@ -270,14 +270,14 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
                 return false;
             }
-            debugLog('Ã¢ÂÂ Mapbox GL JS loaded', 'success');
+            debugLog('ÃÂ¢ÃÂÃÂ Mapbox GL JS loaded', 'success');
 
             debugLog('Checking for MapsIndoors SDK...', 'info');
             if (typeof mapsindoors === 'undefined') {
                 debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
                 return false;
             }
-            debugLog('Ã¢ÂÂ MapsIndoors SDK loaded', 'success');
+            debugLog('ÃÂ¢ÃÂÃÂ MapsIndoors SDK loaded', 'success');
 
             return true;
         }
@@ -319,10 +319,10 @@ This is a basic MapsIndoors mall demo with debugging capabilities to help troubl
 - Debugging script loading problems
 
 ### Important Notes
-Ã¢ÂÂ Ã¯Â¸Â Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
-Ã¢ÂÂ Ã¯Â¸Â The MapboxV3View must be used instead of the older MapboxView
-Ã¢ÂÂ Ã¯Â¸Â A timeout is needed to ensure scripts are fully loaded before initialization
-Ã¢ÂÂ Ã¯Â¸Â Debug console helps identify exactly where initialization fails
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ The MapboxV3View must be used instead of the older MapboxView
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Debug console helps identify exactly where initialization fails
 
 
 ---
@@ -388,10 +388,10 @@ This establishes the correct initialization pattern for MapsIndoors with Mapbox.
 - SDK integration
 
 ### Important Notes
-â ï¸ Must use MapboxV3View not MapboxView
-â ï¸ Load Mapbox scripts before MapsIndoors
-â ï¸ Wait for 'ready' event before using features
-â ï¸ Floor selector requires proper control setup
+Ã¢ÂÂ Ã¯Â¸Â Must use MapboxV3View not MapboxView
+Ã¢ÂÂ Ã¯Â¸Â Load Mapbox scripts before MapsIndoors
+Ã¢ÂÂ Ã¯Â¸Â Wait for 'ready' event before using features
+Ã¢ÂÂ Ã¯Â¸Â Floor selector requires proper control setup
 
 
 ---
@@ -493,8 +493,140 @@ This pattern enables dynamic visual feedback by applying different colors and st
 - Asset tracking interfaces
 
 ### Important Notes
-⚠️ setDisplayRule accepts both single IDs and arrays
-⚠️ Display rules are cumulative - later rules override earlier ones
-⚠️ zoomFrom parameter controls when styling appears
-⚠️ polygonStrokeWidth affects visual hierarchy
+â ï¸ setDisplayRule accepts both single IDs and arrays
+â ï¸ Display rules are cumulative - later rules override earlier ones
+â ï¸ zoomFrom parameter controls when styling appears
+â ï¸ polygonStrokeWidth affects visual hierarchy
+
+
+---
+
+## Time-Controlled Heatmap Visualization with Mapbox Integration
+
+### Context
+Analytics dashboard showing foot traffic or density patterns throughout a building over different time periods
+
+### Industry
+retail
+
+### Problem
+Need to visualize density or activity patterns that change over time periods within indoor spaces
+
+### Solution
+```javascript
+// Add heatmap source and layer to Mapbox
+mapboxInstance.addSource('heatmap-source', {
+    'type': 'geojson',
+    'data': {
+        type: "FeatureCollection",
+        features: [] // Will be populated with data points
+    }
+});
+
+mapboxInstance.addLayer({
+    'id': 'heatmap-layer',
+    'type': 'heatmap',
+    'source': 'heatmap-source',
+    'paint': {
+        'heatmap-weight': [
+            'interpolate',
+            ['linear'],
+            ['get', 'intensity'],
+            0, 0,
+            5, 0.5,
+            10, 1
+        ],
+        'heatmap-intensity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0, 1,
+            9, 3,
+            16, 5,
+            22, 10
+        ],
+        'heatmap-color': [
+            'interpolate',
+            ['linear'],
+            ['heatmap-density'],
+            0, 'rgba(33,102,172,0)',
+            0.2, 'rgb(103,169,207)',
+            0.4, 'rgb(209,229,240)',
+            0.6, 'rgb(253,219,199)',
+            0.8, 'rgb(239,138,98)',
+            1, 'rgb(178,24,43)'
+        ],
+        'heatmap-radius': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0, 2,
+            9, 20,
+            16, 40,
+            22, 80
+        ],
+        'heatmap-opacity': 0.8
+    }
+});
+
+// Update heatmap with time-filtered data
+function updateHeatmap(hour) {
+    const filteredData = heatmapData.filter(feature => feature.properties.Hour === hour);
+    
+    const geojsonData = {
+        type: "FeatureCollection",
+        features: filteredData
+    };
+
+    mapboxInstance.getSource('heatmap-source').setData(geojsonData);
+}
+
+// Time slider control
+const timeSlider = document.createElement('input');
+timeSlider.type = 'range';
+timeSlider.min = 8;
+timeSlider.max = 22;
+timeSlider.value = 12;
+timeSlider.oninput = (e) => {
+    const hour = parseInt(e.target.value);
+    updateHeatmap(hour);
+};
+
+// Generate sample data points within building bounds
+function generateHeatmapData() {
+    const data = [];
+    for (let hour = 8; hour <= 22; hour++) {
+        for (let i = 0; i < 100; i++) {
+            const point = getRandomPointInBuilding();
+            data.push({
+                type: "Feature",
+                properties: {
+                    intensity: Math.floor(Math.random() * 10) + 1,
+                    Hour: hour
+                },
+                geometry: {
+                    type: "Point",
+                    coordinates: point
+                }
+            });
+        }
+    }
+    return data;
+}
+```
+
+### Explanation
+This creates a time-controlled heatmap overlay using Mapbox's native heatmap layer. The heatmap visualizes density data that changes over time, with a slider control allowing users to see patterns at different hours. The intensity property controls heat values, and the layer styling creates smooth color gradients from low to high density areas.
+
+### Use Cases
+- Foot traffic analysis
+- Equipment usage patterns
+- Crowd density monitoring
+- Space utilization studies
+
+### Important Notes
+⚠️ Heatmap layer must be added after map loads
+⚠️ GeoJSON features need 'intensity' property for heatmap-weight
+⚠️ Radius scales with zoom level for proper visualization
+⚠️ Filter data by time before updating source
 
