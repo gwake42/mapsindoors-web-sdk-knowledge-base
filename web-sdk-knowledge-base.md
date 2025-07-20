@@ -734,3 +734,132 @@ Distance Matrix is ideal for bulk distance calculations and finding nearest loca
 ⚠️ Format coordinates as 'lat,lng,floor' strings for Distance Matrix
 ⚠️ Directions API provides route geometry and turn instructions
 
+
+---
+
+## MapsIndoors Event Handling Patterns
+
+### Context
+Proper event handling ensures responsive and interactive MapsIndoors applications
+
+### Industry
+corporate
+
+### Problem
+Creating responsive and interactive indoor mapping applications
+
+### Solution
+```javascript
+// Event handling patterns for MapsIndoors
+mapsIndoorsInstance.addListener('ready', () => {
+    console.log('MapsIndoors is ready');
+    
+    // Safe to call MapsIndoors methods after ready event
+    const building = mapsIndoorsInstance.getBuilding();
+    const floor = mapsIndoorsInstance.getFloor();
+    
+    // Set initial display rules
+    mapsIndoorsInstance.setDisplayRule(locationIds, {
+        visible: true,
+        iconVisible: false,
+        polygonVisible: true
+    });
+});
+
+// Handle location clicks
+mapsIndoorsInstance.addListener('click', (event) => {
+    if (event && event.id) {
+        console.log('Clicked location:', event.id);
+        
+        // Get location details
+        const location = event.location;
+        if (location) {
+            showLocationInfo(location);
+        }
+    }
+});
+
+// Handle floor changes
+mapsIndoorsInstance.addListener('floor_changed', (event) => {
+    const newFloor = event.floor;
+    console.log('Floor changed to:', newFloor);
+    
+    // Update UI elements that depend on current floor
+    updateFloorDependentContent(newFloor);
+    updateMarkerVisibility(newFloor);
+});
+
+// Handle building changes
+mapsIndoorsInstance.addListener('building_changed', (event) => {
+    const newBuilding = event.building;
+    console.log('Building changed to:', newBuilding?.id);
+    
+    // Update building-specific content
+    if (newBuilding) {
+        updateBuildingInfo(newBuilding);
+        updateAvailableFloors(newBuilding.floors);
+    }
+});
+
+// Handle mouse events for interactive features
+mapsIndoorsInstance.addListener('mouse_over', (event) => {
+    if (event && event.id) {
+        showLocationTooltip(event);
+    }
+});
+
+mapsIndoorsInstance.addListener('mouse_out', () => {
+    hideLocationTooltip();
+});
+
+// Error handling
+mapsIndoorsInstance.addListener('error', (error) => {
+    console.error('MapsIndoors error:', error);
+    
+    // Handle different types of errors
+    if (error.type === 'authentication') {
+        showAuthError();
+    } else if (error.type === 'network') {
+        showNetworkError();
+    } else {
+        showGenericError(error.message);
+    }
+});
+
+// Helper functions for event responses
+function updateMarkerVisibility(currentFloor) {
+    markers.forEach(marker => {
+        const markerFloor = marker.floor;
+        marker.getElement().style.display = 
+            markerFloor === currentFloor ? 'block' : 'none';
+    });
+}
+
+function showLocationInfo(location) {
+    const infoPanel = document.getElementById('location-info');
+    infoPanel.innerHTML = `
+        <h3>${location.properties.name}</h3>
+        <p>Floor: ${location.properties.floor}</p>
+        <p>Type: ${location.properties.type}</p>
+    `;
+    infoPanel.style.display = 'block';
+}
+```
+
+### Explanation
+MapsIndoors provides several event listeners for building interactive applications. The 'ready' event is crucial for initialization, while 'click', 'floor_changed', and 'building_changed' events enable responsive user interactions. Mouse events add hover effects and tooltips for enhanced user experience.
+
+### Use Cases
+- Interactive location selection
+- Floor-aware content updates
+- Hover effects and tooltips
+- Error handling and user feedback
+- Building navigation interfaces
+
+### Important Notes
+⚠️ Always wait for 'ready' event before calling MapsIndoors methods
+⚠️ Check if event.id exists before using it
+⚠️ Handle error events to provide user feedback
+⚠️ Floor and building change events may fire during initialization
+⚠️ Remove event listeners when cleaning up components
+
