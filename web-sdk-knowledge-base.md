@@ -863,3 +863,161 @@ MapsIndoors provides several event listeners for building interactive applicatio
 ⚠️ Floor and building change events may fire during initialization
 ⚠️ Remove event listeners when cleaning up components
 
+
+---
+
+## Real-time Data Sync with Integration API
+
+### Context
+Integration API enables real-time synchronization of external data with MapsIndoors locations
+
+### Industry
+healthcare
+
+### Problem
+Synchronizing real-time external data with MapsIndoors location database
+
+### Solution
+```javascript
+// Integration API for real-time data synchronization
+const apiConfig = {
+    bearerToken: 'your-bearer-token',
+    solutionId: 'your-solution-id',
+    datasetId: 'your-dataset-id',
+    baseUrl: 'https://integration.mapsindoors.com'
+};
+
+// Format location data for MapsIndoors Integration API
+function formatLocationData(locations) {
+    return locations.map(location => ({
+        parentId: location.parentId, // Floor ID
+        datasetId: apiConfig.datasetId,
+        solutionId: apiConfig.solutionId,
+        baseType: "poi",
+        displayTypeId: location.displayTypeId,
+        geometry: {
+            coordinates: [location.lng, location.lat],
+            type: "Point"
+        },
+        anchor: {
+            coordinates: [location.lng, location.lat],
+            type: "Point"
+        },
+        aliases: [],
+        categories: [],
+        status: 3,
+        baseTypeProperties: {
+            administrativeid: location.id,
+            capacity: "0"
+        },
+        properties: {
+            "name@en": location.name,
+            "description@en": location.description || "",
+            "name@generic": "generic"
+        }
+    }));
+}
+
+// Sync data to MapsIndoors
+async function syncDataToMapsIndoors(locationData) {
+    try {
+        const formattedData = formatLocationData(locationData);
+        
+        const response = await fetch(`${apiConfig.baseUrl}/${apiConfig.solutionId}/api/geodata`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiConfig.bearerToken}`,
+                'accept': 'application/json'
+            },
+            body: JSON.stringify(formattedData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('Sync successful:', result);
+
+        // Trigger content synchronization to update the map
+        await mapsindoors.MapsIndoors.synchronizeContent();
+        console.log('Content synchronized');
+        
+        return result;
+    } catch (error) {
+        console.error('Sync error:', error);
+        throw error;
+    }
+}
+
+// Real-time data update pattern
+async function updateLocationFromExternalAPI(externalApiData) {
+    try {
+        // Process external data
+        const mappedLocations = externalApiData.map(item => ({
+            id: item.deviceId,
+            name: item.deviceName,
+            lat: item.coordinates.latitude,
+            lng: item.coordinates.longitude,
+            parentId: getFloorId(item.floor),
+            displayTypeId: 'your-display-type-id',
+            description: `Status: ${item.status}`
+        }));
+
+        // Sync to MapsIndoors
+        await syncDataToMapsIndoors(mappedLocations);
+        
+        // Update local UI
+        updateLocationMarkers(mappedLocations);
+        
+        console.log(`Updated ${mappedLocations.length} locations`);
+        
+    } catch (error) {
+        console.error('Failed to update locations:', error);
+    }
+}
+
+// Periodic sync example
+function startPeriodicSync(intervalMinutes = 5) {
+    setInterval(async () => {
+        try {
+            // Fetch latest data from your external API
+            const externalData = await fetchExternalLocationData();
+            
+            // Update MapsIndoors
+            await updateLocationFromExternalAPI(externalData);
+            
+        } catch (error) {
+            console.error('Periodic sync failed:', error);
+        }
+    }, intervalMinutes * 60 * 1000);
+}
+
+// Helper function to get floor ID from floor number
+function getFloorId(floorNumber) {
+    const building = mapsIndoorsInstance.getBuilding();
+    if (building && building.floors && building.floors[floorNumber]) {
+        return building.floors[floorNumber].id;
+    }
+    throw new Error(`Floor ${floorNumber} not found`);
+}
+```
+
+### Explanation
+The MapsIndoors Integration API allows you to programmatically create, update, and delete location data. This pattern shows how to format external data (IoT devices, assets, etc.) for the Integration API and keep MapsIndoors synchronized with real-time information from external systems.
+
+### Use Cases
+- IoT device tracking
+- Asset management systems
+- Real-time occupancy data
+- Equipment status monitoring
+- Dynamic content updates
+
+### Important Notes
+⚠️ Bearer token required for authentication
+⚠️ Call synchronizeContent() after API updates
+⚠️ Format coordinates as [lng, lat] for geometry
+⚠️ Use correct parentId (floor ID) for location hierarchy
+⚠️ Handle API rate limits and failures gracefully
+
