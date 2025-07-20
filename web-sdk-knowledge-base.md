@@ -94,11 +94,11 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-Ã¢ÂÂ Ã¯Â¸Â Must wait for MapsIndoors ready event before applying display rules
-Ã¢ÂÂ Ã¯Â¸Â Additional setTimeout may be needed for complex solutions
-Ã¢ÂÂ Ã¯Â¸Â Use MapboxV3View instead of deprecated MapboxView
-Ã¢ÂÂ Ã¯Â¸Â Set multiple opacity and visibility properties to ensure complete hiding
-Ã¢ÂÂ Ã¯Â¸Â Keep visible: true to maintain location data accessibility
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Must wait for MapsIndoors ready event before applying display rules
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Additional setTimeout may be needed for complex solutions
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Use MapboxV3View instead of deprecated MapboxView
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Set multiple opacity and visibility properties to ensure complete hiding
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Keep visible: true to maintain location data accessibility
 
 
 ---
@@ -224,17 +224,17 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 };
 
                 const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-                debugLog('â MapboxV3View created', 'success');
+                debugLog('Ã¢ÂÂ MapboxV3View created', 'success');
 
                 debugLog('Creating MapsIndoors instance...', 'info');
                 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
                     mapView: mapView
                 });
-                debugLog('â MapsIndoors instance created', 'success');
+                debugLog('Ã¢ÂÂ MapsIndoors instance created', 'success');
 
                 // Add ready listener
                 mapsIndoorsInstance.addListener('ready', () => {
-                    debugLog('â MapsIndoors is READY!', 'success');
+                    debugLog('Ã¢ÂÂ MapsIndoors is READY!', 'success');
                     
                     // Add floor selector
                     const floorSelectorElement = document.createElement('div');
@@ -246,7 +246,7 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                         onRemove: function() {}
                     });
                     
-                    debugLog('â Floor selector added', 'success');
+                    debugLog('Ã¢ÂÂ Floor selector added', 'success');
                     debugLog('Mall demo ready!', 'success');
                 });
 
@@ -270,14 +270,14 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
                 return false;
             }
-            debugLog('â Mapbox GL JS loaded', 'success');
+            debugLog('Ã¢ÂÂ Mapbox GL JS loaded', 'success');
 
             debugLog('Checking for MapsIndoors SDK...', 'info');
             if (typeof mapsindoors === 'undefined') {
                 debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
                 return false;
             }
-            debugLog('â MapsIndoors SDK loaded', 'success');
+            debugLog('Ã¢ÂÂ MapsIndoors SDK loaded', 'success');
 
             return true;
         }
@@ -319,10 +319,10 @@ This is a basic MapsIndoors mall demo with debugging capabilities to help troubl
 - Debugging script loading problems
 
 ### Important Notes
-â ï¸ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
-â ï¸ The MapboxV3View must be used instead of the older MapboxView
-â ï¸ A timeout is needed to ensure scripts are fully loaded before initialization
-â ï¸ Debug console helps identify exactly where initialization fails
+Ã¢ÂÂ Ã¯Â¸Â Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+Ã¢ÂÂ Ã¯Â¸Â The MapboxV3View must be used instead of the older MapboxView
+Ã¢ÂÂ Ã¯Â¸Â A timeout is needed to ensure scripts are fully loaded before initialization
+Ã¢ÂÂ Ã¯Â¸Â Debug console helps identify exactly where initialization fails
 
 
 ---
@@ -388,8 +388,113 @@ This establishes the correct initialization pattern for MapsIndoors with Mapbox.
 - SDK integration
 
 ### Important Notes
-⚠️ Must use MapboxV3View not MapboxView
-⚠️ Load Mapbox scripts before MapsIndoors
-⚠️ Wait for 'ready' event before using features
-⚠️ Floor selector requires proper control setup
+â ï¸ Must use MapboxV3View not MapboxView
+â ï¸ Load Mapbox scripts before MapsIndoors
+â ï¸ Wait for 'ready' event before using features
+â ï¸ Floor selector requires proper control setup
+
+
+---
+
+## Interactive Location Highlighting with Status-Based Display Rules
+
+### Context
+Interactive dashboard where users need to visualize different room statuses and select specific rooms for detailed interaction
+
+### Industry
+healthcare
+
+### Problem
+Need to visually represent different room statuses (clean, dirty, in-progress) and allow users to interact with specific rooms
+
+### Solution
+```javascript
+// Dynamic room highlighting with status-based colors
+function updateRoomDisplayRules(rooms, selectedRoomId = null) {
+    // Group rooms by status
+    const roomsByStatus = {
+        clean: rooms.filter(room => room.status === 'clean').map(room => room.id),
+        needsCleaning: rooms.filter(room => room.status === 'needs-cleaning').map(room => room.id),
+        inProgress: rooms.filter(room => room.status === 'in-progress').map(room => room.id)
+    };
+
+    // Apply status-based display rules
+    mapsIndoorsInstance.setDisplayRule(roomsByStatus.clean, {
+        polygonVisible: true,
+        polygonFillColor: '#4CAF50', // Green for clean
+        polygonFillOpacity: 0.3,
+        polygonStrokeColor: '#4CAF50',
+        polygonStrokeOpacity: 0.8,
+        polygonStrokeWidth: 1,
+        zoomFrom: 16
+    });
+
+    mapsIndoorsInstance.setDisplayRule(roomsByStatus.needsCleaning, {
+        polygonVisible: true,
+        polygonFillColor: '#f44336', // Red for needs cleaning
+        polygonFillOpacity: 0.3,
+        polygonStrokeColor: '#f44336',
+        polygonStrokeOpacity: 0.8,
+        polygonStrokeWidth: 1,
+        zoomFrom: 16
+    });
+
+    mapsIndoorsInstance.setDisplayRule(roomsByStatus.inProgress, {
+        polygonVisible: true,
+        polygonFillColor: '#ff9800', // Orange for in progress
+        polygonFillOpacity: 0.3,
+        polygonStrokeColor: '#ff9800',
+        polygonStrokeOpacity: 0.8,
+        polygonStrokeWidth: 1,
+        zoomFrom: 16
+    });
+
+    // Highlight selected room with enhanced styling
+    if (selectedRoomId) {
+        mapsIndoorsInstance.setDisplayRule(selectedRoomId, {
+            polygonVisible: true,
+            polygonFillOpacity: 0.6,
+            polygonStrokeOpacity: 1,
+            polygonStrokeWidth: 3,
+            zoomFrom: 16
+        });
+    }
+}
+
+// Click handler for room selection
+mapsIndoorsInstance.addListener('click', (event) => {
+    if (event && event.id) {
+        const room = rooms.find(r => r.id === event.id);
+        if (room) {
+            selectRoom(room.id);
+            updateRoomDisplayRules(rooms, room.id);
+        }
+    }
+});
+
+// Update room status and refresh display
+function updateRoomStatus(roomId, newStatus) {
+    const room = rooms.find(r => r.id === roomId);
+    if (room) {
+        room.status = newStatus;
+        room.lastUpdated = new Date();
+        updateRoomDisplayRules(rooms, roomId);
+    }
+}
+```
+
+### Explanation
+This pattern enables dynamic visual feedback by applying different colors and styles to locations based on their status. The setDisplayRule method can target multiple locations at once using arrays of IDs, and selected items get enhanced styling. Click events allow users to interact with locations directly on the map.
+
+### Use Cases
+- Cleaning management dashboards
+- Room booking systems
+- Emergency response applications
+- Asset tracking interfaces
+
+### Important Notes
+⚠️ setDisplayRule accepts both single IDs and arrays
+⚠️ Display rules are cumulative - later rules override earlier ones
+⚠️ zoomFrom parameter controls when styling appears
+⚠️ polygonStrokeWidth affects visual hierarchy
 
