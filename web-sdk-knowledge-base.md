@@ -612,3 +612,125 @@ This pattern creates interactive draggable markers that automatically detect the
 ⚠️ Provide visual feedback for successful assignments
 ⚠️ Consider floor-aware location searches
 
+
+---
+
+## Distance Matrix vs Directions API Usage Patterns
+
+### Context
+Understanding when to use Distance Matrix vs Directions API optimizes performance and provides appropriate data
+
+### Industry
+corporate
+
+### Problem
+Choosing the right API for distance calculations vs detailed navigation
+
+### Solution
+```javascript
+// Distance Matrix vs Directions API comparison
+const directionsService = new mapsindoors.services.DirectionsService();
+
+// Use Distance Matrix for bulk distance calculations
+async function calculateDistanceMatrix(origin, destinations) {
+    try {
+        const matrix = await mapsindoors.services.DistanceMatrixService.getDistanceMatrix({
+            graphId: 'AUSTINOFFICE_Graph',
+            origins: [`${origin.lat},${origin.lng},${origin.floor}`],
+            destinations: destinations.map(dest => 
+                `${dest.lat},${dest.lng},${dest.floor}`
+            )
+        });
+        
+        // Process results - matrix gives distance and duration for each destination
+        const results = destinations.map((dest, index) => ({
+            destination: dest,
+            distance: matrix.rows[0].elements[index].distance.value, // meters
+            duration: matrix.rows[0].elements[index].duration.value, // seconds
+            distanceText: matrix.rows[0].elements[index].distance.text
+        }));
+        
+        // Sort by distance to find nearest
+        results.sort((a, b) => a.distance - b.distance);
+        return results;
+        
+    } catch (error) {
+        console.error('Distance Matrix error:', error);
+        return [];
+    }
+}
+
+// Use Directions API for actual navigation with turn-by-turn
+async function getDetailedRoute(origin, destination) {
+    try {
+        const route = await directionsService.getRoute({
+            origin: {
+                lat: origin.lat,
+                lng: origin.lng,
+                floor: origin.floor
+            },
+            destination: {
+                lat: destination.lat,
+                lng: destination.lng,
+                floor: destination.floor
+            }
+        });
+        
+        if (route && route.legs) {
+            // Route provides detailed turn-by-turn instructions
+            const totalDistance = route.legs.reduce((sum, leg) => sum + leg.distance.value, 0);
+            const totalDuration = route.legs.reduce((sum, leg) => sum + leg.duration.value, 0);
+            
+            return {
+                route: route,
+                totalDistance: totalDistance,
+                totalDuration: totalDuration,
+                steps: route.legs.flatMap(leg => leg.steps || [])
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Directions error:', error);
+        return null;
+    }
+}
+
+// Example: Find nearest meeting rooms, then get route to closest
+async function findNearestAndNavigate(userLocation, meetingRooms) {
+    // Step 1: Use Distance Matrix to find nearest rooms
+    const nearestRooms = await calculateDistanceMatrix(userLocation, meetingRooms);
+    
+    if (nearestRooms.length > 0) {
+        console.log(`Nearest room: ${nearestRooms[0].destination.name} (${nearestRooms[0].distanceText})`);
+        
+        // Step 2: Use Directions API for actual navigation
+        const route = await getDetailedRoute(userLocation, nearestRooms[0].destination);
+        
+        if (route) {
+            console.log(`Route has ${route.steps.length} steps`);
+            return { nearestRooms, route };
+        }
+    }
+    
+    return { nearestRooms, route: null };
+}
+```
+
+### Explanation
+Distance Matrix is ideal for bulk distance calculations and finding nearest locations, while Directions API provides detailed turn-by-turn navigation. Distance Matrix is more efficient for comparing multiple destinations, but Directions gives you the actual route geometry and step-by-step instructions needed for navigation.
+
+### Use Cases
+- Finding nearest amenities
+- Route planning optimization
+- Location comparison tools
+- Navigation applications
+- Proximity-based recommendations
+
+### Important Notes
+⚠️ Distance Matrix requires graphId parameter
+⚠️ Use Distance Matrix for bulk comparisons, Directions for navigation
+⚠️ Distance Matrix returns straight distances, Directions considers actual walkable paths
+⚠️ Format coordinates as 'lat,lng,floor' strings for Distance Matrix
+⚠️ Directions API provides route geometry and turn instructions
+
