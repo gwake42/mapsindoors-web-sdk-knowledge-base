@@ -2443,3 +2443,442 @@ This system provides a comprehensive room booking interface with color-coded ava
 ⚠️ Room features should be customizable per room type
 ⚠️ Time slot generation should align with business hours
 
+
+---
+
+## Temporal Heatmap Visualization with Time Controls
+
+### Context
+Creating temporal heatmap visualization for foot traffic, utilization patterns, or density analysis with time-based filtering and customizable color schemes
+
+### Industry
+retail
+
+### Problem
+Visualizing temporal density patterns, foot traffic flow, space utilization, or activity hotspots with time-based analysis
+
+### Solution
+```javascript
+// Heatmap data visualization with temporal filtering
+class MapsIndoorsHeatmap {
+    constructor(mapboxInstance, mapsIndoorsInstance) {
+        this.mapbox = mapboxInstance;
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.heatmapData = [];
+        this.currentHour = 12;
+        this.colorPalettes = {
+            default: [
+                'rgba(0, 0, 255, 0)',
+                'royalblue',
+                'cyan', 
+                'lime',
+                'yellow',
+                'red'
+            ],
+            thermal: [
+                'rgba(255, 255, 0, 0)',
+                'yellow',
+                'orange',
+                'red',
+                'purple',
+                'darkblue'
+            ],
+            density: [
+                'rgba(255, 255, 255, 0)',
+                'lightgreen',
+                'green',
+                'darkgreen',
+                'brown',
+                'black'
+            ]
+        };
+        
+        this.initializeHeatmapLayer();
+    }
+
+    initializeHeatmapLayer() {
+        // Wait for map to load before adding heatmap
+        this.mapbox.on('load', () => {
+            // Add empty GeoJSON source for heatmap data
+            this.mapbox.addSource('heatmap-source', {
+                type: 'geojson',
+                data: {
+                    type: "FeatureCollection",
+                    features: []
+                }
+            });
+
+            // Add heatmap layer
+            this.mapbox.addLayer({
+                id: 'heatmap-layer',
+                type: 'heatmap',
+                source: 'heatmap-source',
+                paint: {
+                    'heatmap-weight': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'intensity'],
+                        0, 0,
+                        5, 0.5,
+                        10, 1
+                    ],
+                    'heatmap-intensity': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        0, 1,
+                        9, 3,
+                        16, 5,
+                        22, 10
+                    ],
+                    'heatmap-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['heatmap-density'],
+                        0, this.colorPalettes.default[0],
+                        0.1, this.colorPalettes.default[1],
+                        0.3, this.colorPalettes.default[2],
+                        0.5, this.colorPalettes.default[3],
+                        0.7, this.colorPalettes.default[4],
+                        1, this.colorPalettes.default[5]
+                    ],
+                    'heatmap-radius': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        0, 2,
+                        9, 10,
+                        16, 20,
+                        22, 30
+                    ],
+                    'heatmap-opacity': 0.8
+                }
+            });
+        });
+    }
+
+    generateSampleHeatmapData() {
+        console.log("Generating heatmap data...");
+        const buildingGeometry = this.mapsIndoors.getBuilding()?.geometry;
+        
+        if (!buildingGeometry) {
+            console.error("Building geometry not available");
+            return;
+        }
+
+        this.heatmapData = [];
+        const today = new Date();
+
+        // Generate data for business hours (8 AM to 6 PM)
+        for (let hour = 8; hour <= 18; hour++) {
+            // Create 3-5 hotspots per hour
+            const hotspotCount = Math.floor(Math.random() * 3) + 3;
+            const hotspots = this.generateHotspots(buildingGeometry, hotspotCount);
+            
+            // Generate 200-500 data points per hour clustered around hotspots
+            const pointsThisHour = Math.floor(Math.random() * 300) + 200;
+            
+            for (let i = 0; i < pointsThisHour; i++) {
+                let point;
+                
+                if (Math.random() < 0.8) {
+                    // 80% chance to be near a hotspot
+                    const hotspot = hotspots[Math.floor(Math.random() * hotspots.length)];
+                    point = this.generatePointNearHotspot(hotspot, 20); // 20m radius
+                } else {
+                    // 20% chance to be random
+                    point = this.getRandomPointInBuilding(buildingGeometry);
+                }
+
+                if (point && this.isPointInBuilding(point, buildingGeometry)) {
+                    const intensity = Math.floor(Math.random() * 10) + 1;
+                    
+                    this.heatmapData.push({
+                        type: "Feature",
+                        properties: {
+                            intensity: intensity,
+                            date: new Date(today.getFullYear(), today.getMonth(), today.getDate(), hour, 0, 0).toISOString(),
+                            hour: hour,
+                            unit_count: intensity
+                        },
+                        geometry: {
+                            type: "Point",
+                            coordinates: point
+                        }
+                    });
+                }
+            }
+            
+            console.log(`Generated data for hour ${hour}`);
+        }
+
+        console.log(`Total heatmap points generated: ${this.heatmapData.length}`);
+        this.updateHeatmap();
+    }
+
+    generateHotspots(buildingGeometry, count) {
+        const hotspots = [];
+        for (let i = 0; i < count; i++) {
+            const hotspot = this.getRandomPointInBuilding(buildingGeometry);
+            if (hotspot) {
+                hotspots.push(hotspot);
+            }
+        }
+        return hotspots;
+    }
+
+    generatePointNearHotspot(center, maxDistanceMeters) {
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * maxDistanceMeters;
+        
+        // Convert meters to approximate degrees
+        const metersToDegreesLat = 1 / 111000;
+        const metersToDegreesLng = 1 / (111000 * Math.cos(center[1] * Math.PI / 180));
+        
+        const deltaLat = distance * Math.sin(angle) * metersToDegreesLat;
+        const deltaLng = distance * Math.cos(angle) * metersToDegreesLng;
+        
+        return [center[0] + deltaLng, center[1] + deltaLat];
+    }
+
+    getRandomPointInBuilding(buildingGeometry) {
+        const bounds = buildingGeometry.bbox;
+        let attempts = 0;
+        const maxAttempts = 100;
+        
+        while (attempts < maxAttempts) {
+            const lng = Math.random() * (bounds[2] - bounds[0]) + bounds[0];
+            const lat = Math.random() * (bounds[3] - bounds[1]) + bounds[1];
+            const point = [lng, lat];
+            
+            if (this.isPointInBuilding(point, buildingGeometry)) {
+                return point;
+            }
+            attempts++;
+        }
+        
+        // Fallback to center of bounding box
+        return [(bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2];
+    }
+
+    isPointInBuilding(point, buildingGeometry) {
+        // Simple point-in-polygon check for building bounds
+        if (!buildingGeometry.coordinates || !buildingGeometry.coordinates[0]) {
+            return true; // Fallback: allow all points if no geometry
+        }
+        
+        const polygon = buildingGeometry.coordinates[0];
+        let inside = false;
+        
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i][0], yi = polygon[i][1];
+            const xj = polygon[j][0], yj = polygon[j][1];
+            
+            if (((yi > point[1]) !== (yj > point[1])) &&
+                (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi)) {
+                inside = !inside;
+            }
+        }
+        
+        return inside;
+    }
+
+    updateHeatmap(hour = this.currentHour, palette = 'default') {
+        // Filter data for selected hour
+        const filteredData = this.heatmapData.filter(feature => 
+            feature.properties.hour === hour
+        );
+
+        const geojsonData = {
+            type: "FeatureCollection",
+            features: filteredData
+        };
+
+        // Update data source
+        if (this.mapbox.getSource('heatmap-source')) {
+            this.mapbox.getSource('heatmap-source').setData(geojsonData);
+        }
+
+        // Update color palette if heatmap layer exists
+        if (this.mapbox.getLayer('heatmap-layer')) {
+            this.mapbox.setPaintProperty('heatmap-layer', 'heatmap-color', [
+                'interpolate',
+                ['linear'],
+                ['heatmap-density'],
+                0, this.colorPalettes[palette][0],
+                0.1, this.colorPalettes[palette][1],
+                0.3, this.colorPalettes[palette][2],
+                0.5, this.colorPalettes[palette][3],
+                0.7, this.colorPalettes[palette][4],
+                1, this.colorPalettes[palette][5]
+            ]);
+        }
+
+        console.log(`Updated heatmap for hour ${hour} with ${filteredData.length} points`);
+    }
+
+    setTimeSlider(hour) {
+        this.currentHour = hour;
+        this.updateHeatmap(hour);
+        
+        // Update time display
+        const timeDisplay = document.getElementById('time-display');
+        if (timeDisplay) {
+            timeDisplay.textContent = `${hour.toString().padStart(2, '0')}:00`;
+        }
+    }
+
+    setColorPalette(paletteKey) {
+        if (this.colorPalettes[paletteKey]) {
+            this.updateHeatmap(this.currentHour, paletteKey);
+        }
+    }
+
+    toggleHeatmapVisibility() {
+        const layer = this.mapbox.getLayer('heatmap-layer');
+        if (layer) {
+            const visibility = this.mapbox.getLayoutProperty('heatmap-layer', 'visibility');
+            this.mapbox.setLayoutProperty('heatmap-layer', 'visibility', 
+                visibility === 'visible' ? 'none' : 'visible');
+        }
+    }
+
+    loadCustomHeatmapData(geojsonData) {
+        // Validate and process custom data
+        if (!geojsonData || !geojsonData.features) {
+            console.error('Invalid GeoJSON data provided');
+            return;
+        }
+
+        // Ensure all features have required properties
+        this.heatmapData = geojsonData.features.map(feature => {
+            if (!feature.properties) {
+                feature.properties = {};
+            }
+            
+            // Set default intensity if not provided
+            if (!feature.properties.intensity) {
+                feature.properties.intensity = 1;
+            }
+            
+            // Set default hour if not provided
+            if (!feature.properties.hour) {
+                feature.properties.hour = new Date().getHours();
+            }
+            
+            return feature;
+        });
+
+        console.log(`Loaded ${this.heatmapData.length} custom heatmap points`);
+        this.updateHeatmap();
+    }
+
+    exportHeatmapData() {
+        return {
+            type: "FeatureCollection",
+            features: this.heatmapData
+        };
+    }
+}
+
+// UI Component for Heatmap Controls
+function createHeatmapControls(heatmapInstance) {
+    const controlsContainer = document.createElement('div');
+    controlsContainer.style.cssText = `
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        z-index: 1000;
+        min-width: 300px;
+    `;
+
+    controlsContainer.innerHTML = `
+        <h3 style="margin-bottom: 15px;">Heatmap Controls</h3>
+        
+        <button id="generate-data" style="width: 100%; padding: 10px; margin-bottom: 15px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Generate Sample Data
+        </button>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px;">Time: <span id="time-display">12:00</span></label>
+            <input type="range" id="time-slider" min="8" max="18" value="12" 
+                   style="width: 100%;" oninput="updateTimeDisplay(this.value)">
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 5px;">Color Palette:</label>
+            <select id="color-palette" style="width: 100%; padding: 5px;">
+                <option value="default">Default</option>
+                <option value="thermal">Thermal</option>
+                <option value="density">Density</option>
+            </select>
+        </div>
+        
+        <button id="toggle-heatmap" style="width: 100%; padding: 8px; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">
+            Toggle Heatmap
+        </button>
+    `;
+
+    // Add event listeners
+    const generateBtn = controlsContainer.querySelector('#generate-data');
+    generateBtn.addEventListener('click', () => {
+        heatmapInstance.generateSampleHeatmapData();
+    });
+
+    const timeSlider = controlsContainer.querySelector('#time-slider');
+    timeSlider.addEventListener('input', (e) => {
+        heatmapInstance.setTimeSlider(parseInt(e.target.value));
+    });
+
+    const colorPalette = controlsContainer.querySelector('#color-palette');
+    colorPalette.addEventListener('change', (e) => {
+        heatmapInstance.setColorPalette(e.target.value);
+    });
+
+    const toggleBtn = controlsContainer.querySelector('#toggle-heatmap');
+    toggleBtn.addEventListener('click', () => {
+        heatmapInstance.toggleHeatmapVisibility();
+    });
+
+    return controlsContainer;
+}
+
+// Global function for time display update
+window.updateTimeDisplay = function(hour) {
+    document.getElementById('time-display').textContent = `${hour.padStart(2, '0')}:00`;
+};
+
+// Usage
+let heatmapInstance;
+
+mapsIndoorsInstance.addListener('ready', () => {
+    heatmapInstance = new MapsIndoorsHeatmap(mapboxInstance, mapsIndoorsInstance);
+    
+    // Add controls to page
+    const controls = createHeatmapControls(heatmapInstance);
+    document.body.appendChild(controls);
+    
+    console.log('Heatmap system initialized');
+});
+```
+
+### Explanation
+This system creates heatmap visualizations using Mapbox's native heatmap layer with temporal filtering capabilities. Users can view density patterns across different time periods, switch between color palettes, and load custom data. The system generates realistic sample data with hotspots and clustering, and provides interactive controls for time navigation and visual customization.
+
+### Use Cases
+- Retail foot traffic analysis
+- Office space utilization studies
+- Event crowd density monitoring
+- Hospital patient flow analysis
+- Restaurant seating pattern tracking
+
+### Important Notes
+⚠️ Heatmap layer must be added after map 'load' event
+⚠️ Point coordinates must be in [lng, lat] format for GeoJSON
+⚠️ Building geometry is required for realistic point generation
+⚠️ Heatmap intensity values should be normalized for best visual results
+
