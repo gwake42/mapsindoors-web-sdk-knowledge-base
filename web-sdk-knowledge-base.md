@@ -1021,3 +1021,105 @@ The MapsIndoors Integration API allows you to programmatically create, update, a
 ⚠️ Use correct parentId (floor ID) for location hierarchy
 ⚠️ Handle API rate limits and failures gracefully
 
+
+---
+
+## Hide Polygons and Extrusions for Location Types Using Display Rules
+
+### Context
+Developer needed to clean up MapsIndoors map display by hiding unwanted visual elements (polygons, strokes, and 3D extrusions) for specific location types while maintaining functionality. This is a common requirement when customizing indoor maps for cleaner interfaces.
+
+### Industry
+corporate
+
+### Problem
+Need to hide polygon fill, stroke, and 3D extrusions for specific location types (like Neighborhoods) to create cleaner map interfaces without visual clutter
+
+### Solution
+```javascript
+// Hide Neighborhood Polygons and Extrusions - MapsIndoors Display Rules
+// This pattern can be applied to any location type that needs visual elements hidden
+
+// Initialize MapsIndoors with MapboxV3View
+const mapViewOptions = {
+    accessToken: 'your-mapbox-token',
+    element: document.getElementById('map'),
+    center: { lat: 40.75391251837155, lng: -73.97496487462143 },
+    zoom: 15,
+    maxZoom: 22,
+};
+
+const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+    mapView: mapViewInstance,
+});
+
+// Critical: Wait for MapsIndoors to be ready before applying display rules
+mapsIndoorsInstance.addListener('ready', async () => {
+    console.log('MapsIndoors is ready');
+    
+    // Additional wait time ensures all map elements are fully loaded
+    setTimeout(async () => {
+        try {
+            // Fetch locations by type - replace 'Neighborhood' with any location type
+            const neighborhoods = await mapsindoors.services.LocationsService.getLocations({
+                types: ['Neighborhood'], // Can be any type: 'Building', 'Room', etc.
+                take: 1000 // Adjust based on expected number of locations
+            });
+            
+            console.log(`Found ${neighborhoods.length} neighborhoods`);
+            
+            if (neighborhoods.length > 0) {
+                // Extract location IDs for bulk display rule application
+                const neighborhoodIds = neighborhoods.map(neighborhood => neighborhood.id);
+                
+                // Comprehensive display rule to hide all visual polygon/extrusion elements
+                mapsIndoorsInstance.setDisplayRule(neighborhoodIds, {
+                    visible: true, // Keep location data accessible for search/routing
+                    polygonVisible: false, // Primary setting to hide polygons
+                    polygonFillOpacity: 0, // Backup: disable polygon fill
+                    polygonStrokeOpacity: 0, // Backup: disable polygon stroke
+                    polygonStrokeWidth: 0, // Backup: set stroke width to 0
+                    extrusionVisible: false, // Primary setting to hide 3D extrusions
+                    extrusionOpacity: 0, // Backup: set extrusion opacity to 0
+                    extrusionHeight: 0, // Backup: set extrusion height to 0
+                    iconVisible: true, // Keep icons visible if needed
+                    labelVisible: true, // Keep labels visible if needed
+                    zoomFrom: 1, // Apply at all zoom levels
+                    zoomTo: 25
+                });
+                
+                console.log(`Applied display rules to ${neighborhoodIds.length} neighborhoods - visual elements hidden`);
+            } else {
+                console.log('No neighborhoods found in this solution');
+            }
+        } catch (error) {
+            console.error('Error applying neighborhood display rules:', error);
+        }
+    }, 2000); // 2-second delay after ready event - adjust if needed
+});
+
+// Error handling
+mapsIndoorsInstance.addListener('error', (error) => {
+    console.error('MapsIndoors error:', error);
+});
+```
+
+### Explanation
+This code demonstrates the proper way to hide visual elements for specific location types using MapsIndoors display rules. The key steps are: 1) Wait for MapsIndoors ready event, 2) Add additional timeout for full loading, 3) Fetch locations by type, 4) Apply comprehensive display rules that disable polygons and extrusions while keeping location data accessible. Multiple properties are set as both primary controls and backups to ensure complete visual hiding.
+
+### Use Cases
+- Creating clean map interfaces by hiding neighborhood boundaries
+- Customizing indoor maps for specific use cases (retail, corporate, healthcare)
+- Removing visual clutter while maintaining location functionality
+- Selective hiding of location types based on business requirements
+- Preparing maps for branded or white-label applications
+
+### Important Notes
+⚠️ Must wait for MapsIndoors ready event before applying display rules
+⚠️ Additional setTimeout (2+ seconds) often needed for complex solutions to fully load
+⚠️ Use MapboxV3View instead of deprecated MapboxView for SDK 4.41.1+
+⚠️ Set both primary (polygonVisible: false) and backup properties (opacity: 0) for reliable hiding
+⚠️ Keep visible: true to maintain location data for search and routing functionality
+⚠️ Test with different location types as some may require different property combinations
+
