@@ -94,11 +94,11 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Additional setTimeout may be needed for complex solutions
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Keep visible: true to maintain location data accessibility
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Additional setTimeout may be needed for complex solutions
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Keep visible: true to maintain location data accessibility
 
 
 ---
@@ -224,17 +224,17 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 };
 
                 const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-                debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapboxV3View created', 'success');
+                debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapboxV3View created', 'success');
 
                 debugLog('Creating MapsIndoors instance...', 'info');
                 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
                     mapView: mapView
                 });
-                debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapsIndoors instance created', 'success');
+                debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors instance created', 'success');
 
                 // Add ready listener
                 mapsIndoorsInstance.addListener('ready', () => {
-                    debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapsIndoors is READY!', 'success');
+                    debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors is READY!', 'success');
                     
                     // Add floor selector
                     const floorSelectorElement = document.createElement('div');
@@ -246,7 +246,7 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                         onRemove: function() {}
                     });
                     
-                    debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Floor selector added', 'success');
+                    debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Floor selector added', 'success');
                     debugLog('Mall demo ready!', 'success');
                 });
 
@@ -270,14 +270,14 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
                 return false;
             }
-            debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ Mapbox GL JS loaded', 'success');
+            debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Mapbox GL JS loaded', 'success');
 
             debugLog('Checking for MapsIndoors SDK...', 'info');
             if (typeof mapsindoors === 'undefined') {
                 debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
                 return false;
             }
-            debugLog('ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ MapsIndoors SDK loaded', 'success');
+            debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors SDK loaded', 'success');
 
             return true;
         }
@@ -319,10 +319,10 @@ This is a basic MapsIndoors mall demo with debugging capabilities to help troubl
 - Debugging script loading problems
 
 ### Important Notes
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ The MapboxV3View must be used instead of the older MapboxView
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Debug console helps identify exactly where initialization fails
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ The MapboxV3View must be used instead of the older MapboxView
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Debug console helps identify exactly where initialization fails
 
 
 ---
@@ -388,10 +388,10 @@ This establishes the correct initialization pattern for MapsIndoors with Mapbox.
 - SDK integration
 
 ### Important Notes
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Must use MapboxV3View not MapboxView
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Load Mapbox scripts before MapsIndoors
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Wait for 'ready' event before using features
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Floor selector requires proper control setup
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Must use MapboxV3View not MapboxView
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Load Mapbox scripts before MapsIndoors
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Wait for 'ready' event before using features
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor selector requires proper control setup
 
 
 ---
@@ -493,10 +493,10 @@ This pattern enables dynamic visual feedback by applying different colors and st
 - Asset tracking interfaces
 
 ### Important Notes
-Ã¢ÂÂ Ã¯Â¸Â setDisplayRule accepts both single IDs and arrays
-Ã¢ÂÂ Ã¯Â¸Â Display rules are cumulative - later rules override earlier ones
-Ã¢ÂÂ Ã¯Â¸Â zoomFrom parameter controls when styling appears
-Ã¢ÂÂ Ã¯Â¸Â polygonStrokeWidth affects visual hierarchy
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ setDisplayRule accepts both single IDs and arrays
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Display rules are cumulative - later rules override earlier ones
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ zoomFrom parameter controls when styling appears
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ polygonStrokeWidth affects visual hierarchy
 
 
 ---
@@ -625,10 +625,10 @@ This creates a time-controlled heatmap overlay using Mapbox's native heatmap lay
 - Space utilization studies
 
 ### Important Notes
-â ï¸ Heatmap layer must be added after map loads
-â ï¸ GeoJSON features need 'intensity' property for heatmap-weight
-â ï¸ Radius scales with zoom level for proper visualization
-â ï¸ Filter data by time before updating source
+Ã¢ÂÂ Ã¯Â¸Â Heatmap layer must be added after map loads
+Ã¢ÂÂ Ã¯Â¸Â GeoJSON features need 'intensity' property for heatmap-weight
+Ã¢ÂÂ Ã¯Â¸Â Radius scales with zoom level for proper visualization
+Ã¢ÂÂ Ã¯Â¸Â Filter data by time before updating source
 
 
 ---
@@ -750,8 +750,211 @@ This implements multi-stop route optimization using MapsIndoors Directions API. 
 - Guided facility tours
 
 ### Important Notes
-⚠️ optimize: true reorders waypoints automatically
-⚠️ Use anchor coordinates for precise positioning
-⚠️ nextLeg/previousLeg controls require valid route
-⚠️ Floor changes must be handled manually during navigation
+â ï¸ optimize: true reorders waypoints automatically
+â ï¸ Use anchor coordinates for precise positioning
+â ï¸ nextLeg/previousLeg controls require valid route
+â ï¸ Floor changes must be handled manually during navigation
+
+
+---
+
+## Real-Time Asset Tracking with Animated Movement Patterns
+
+### Context
+Real-time tracking system for moveable assets like equipment, vehicles, or personnel within a facility
+
+### Industry
+healthcare
+
+### Problem
+Need to track and visualize real-time movement of assets, equipment, or personnel within indoor spaces
+
+### Solution
+```javascript
+// Real-time asset tracking with animated movement
+class AssetTracker {
+    constructor(mapboxInstance, mapsIndoorsInstance) {
+        this.mapbox = mapboxInstance;
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.assets = new Map();
+        this.movementRadius = 20; // meters
+    }
+
+    createAsset(id, initialPosition, floor) {
+        const marker = new mapboxgl.Marker({
+            color: '#FF0000',
+            draggable: false
+        })
+        .setLngLat([initialPosition.lng, initialPosition.lat])
+        .addTo(this.mapbox);
+
+        // Add click popup with asset info
+        const popup = new mapboxgl.Popup({
+            closeButton: true,
+            closeOnClick: false
+        });
+
+        marker.getElement().addEventListener('click', async () => {
+            const asset = this.assets.get(id);
+            const nearestLocation = await this.getNearestLocation(asset.position, asset.floor);
+            const timeSince = this.formatTimeSince(asset.lastUpdate);
+
+            popup.setLngLat([asset.position.lng, asset.position.lat])
+                .setHTML(`
+                    <div style="padding: 10px;">
+                        <strong>Asset #${asset.assetId}</strong><br>
+                        Last moved: ${timeSince}<br>
+                        Floor: ${asset.floor}<br>
+                        ${nearestLocation ? `Near: ${nearestLocation.properties.name}` : ''}
+                    </div>
+                `)
+                .addTo(this.mapbox);
+        });
+
+        const asset = {
+            id,
+            marker,
+            popup,
+            position: initialPosition,
+            floor,
+            assetId: this.generateAssetId(),
+            lastUpdate: Date.now(),
+            targetPoint: this.getRandomTargetPoint(),
+            movementPath: [initialPosition]
+        };
+
+        this.assets.set(id, asset);
+        this.startMovement(id);
+        return asset;
+    }
+
+    startMovement(assetId) {
+        const asset = this.assets.get(assetId);
+        if (!asset) return;
+
+        const moveAsset = () => {
+            if (!this.assets.has(assetId)) return;
+
+            const newPosition = this.calculateNextPosition(asset);
+            asset.position = newPosition;
+            asset.lastUpdate = Date.now();
+            asset.movementPath.push(newPosition);
+
+            // Update marker position
+            asset.marker.setLngLat([newPosition.lng, newPosition.lat]);
+
+            // Update popup if open
+            if (asset.popup.isOpen()) {
+                asset.popup.setLngLat([newPosition.lng, newPosition.lat]);
+            }
+
+            // Generate new target if reached
+            if (this.distanceTo(newPosition, asset.targetPoint) < 0.0001) {
+                asset.targetPoint = this.getRandomTargetPoint();
+            }
+
+            // Schedule next movement
+            const delay = Math.random() * 5000 + 2000; // 2-7 seconds
+            setTimeout(moveAsset, delay);
+        };
+
+        moveAsset();
+    }
+
+    calculateNextPosition(asset) {
+        const FEET_TO_DEGREES = 0.0000003048;
+        const maxDistance = this.movementRadius * FEET_TO_DEGREES;
+        
+        const dx = asset.targetPoint.lng - asset.position.lng;
+        const dy = asset.targetPoint.lat - asset.position.lat;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance <= maxDistance) {
+            return asset.targetPoint;
+        }
+
+        const ratio = maxDistance / distance;
+        return {
+            lng: asset.position.lng + dx * ratio,
+            lat: asset.position.lat + dy * ratio
+        };
+    }
+
+    async getNearestLocation(coordinates, floor) {
+        try {
+            const locations = await mapsindoors.services.LocationsService.getLocations({
+                near: { lat: coordinates.lat, lng: coordinates.lng },
+                radius: 1,
+                take: 1,
+                floor: floor
+            });
+            return locations[0] || null;
+        } catch (error) {
+            console.error("Error getting nearest location:", error);
+            return null;
+        }
+    }
+
+    // Floor-aware visibility management
+    updateAssetVisibility(currentFloor) {
+        this.assets.forEach(asset => {
+            const isVisible = asset.floor === currentFloor;
+            asset.marker.getElement().style.display = isVisible ? 'block' : 'none';
+        });
+    }
+
+    generateAssetId() {
+        return Math.floor(Math.random() * 900 + 100).toString();
+    }
+
+    getRandomTargetPoint() {
+        // Implementation depends on building geometry
+        return {
+            lng: -97.7422623 + (Math.random() - 0.5) * 0.001,
+            lat: 30.3603212 + (Math.random() - 0.5) * 0.001
+        };
+    }
+
+    formatTimeSince(timestamp) {
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return `${seconds}s ago`;
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        return `${Math.floor(seconds / 3600)}h ago`;
+    }
+
+    distanceTo(pos1, pos2) {
+        const dx = pos1.lng - pos2.lng;
+        const dy = pos1.lat - pos2.lat;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+}
+
+// Usage
+const tracker = new AssetTracker(mapboxInstance, mapsIndoorsInstance);
+
+// Create assets on different floors
+tracker.createAsset('asset1', { lat: 30.3603212, lng: -97.7422623 }, 0);
+tracker.createAsset('asset2', { lat: 30.3604212, lng: -97.7423623 }, 1);
+
+// Handle floor changes
+mapsIndoorsInstance.addListener('floor_changed', () => {
+    const currentFloor = mapsIndoorsInstance.getFloor();
+    tracker.updateAssetVisibility(currentFloor);
+});
+```
+
+### Explanation
+This creates a comprehensive asset tracking system with realistic movement patterns. Assets move toward random targets with natural delays, show popups with contextual information including nearest locations, and maintain movement history. Floor-aware visibility ensures only relevant assets are shown based on the current floor view.
+
+### Use Cases
+- Medical equipment tracking
+- Fleet vehicle monitoring
+- Personnel location services
+- Asset management systems
+
+### Important Notes
+⚠️ Mapbox markers need manual visibility management for floors
+⚠️ Movement calculations should respect building boundaries
+⚠️ Popup updates require manual repositioning
+⚠️ Asset cleanup needed when removing from tracking
 
