@@ -94,11 +94,11 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
-ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Additional setTimeout may be needed for complex solutions
-ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
-ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
-ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Keep visible: true to maintain location data accessibility
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Must wait for MapsIndoors ready event before applying display rules
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Additional setTimeout may be needed for complex solutions
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Use MapboxV3View instead of deprecated MapboxView
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Set multiple opacity and visibility properties to ensure complete hiding
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Keep visible: true to maintain location data accessibility
 
 
 ---
@@ -224,17 +224,17 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 };
 
                 const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-                debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapboxV3View created', 'success');
+                debugLog('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapboxV3View created', 'success');
 
                 debugLog('Creating MapsIndoors instance...', 'info');
                 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
                     mapView: mapView
                 });
-                debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors instance created', 'success');
+                debugLog('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors instance created', 'success');
 
                 // Add ready listener
                 mapsIndoorsInstance.addListener('ready', () => {
-                    debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors is READY!', 'success');
+                    debugLog('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors is READY!', 'success');
                     
                     // Add floor selector
                     const floorSelectorElement = document.createElement('div');
@@ -246,7 +246,7 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                         onRemove: function() {}
                     });
                     
-                    debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Floor selector added', 'success');
+                    debugLog('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Floor selector added', 'success');
                     debugLog('Mall demo ready!', 'success');
                 });
 
@@ -270,14 +270,14 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
                 return false;
             }
-            debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Mapbox GL JS loaded', 'success');
+            debugLog('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Mapbox GL JS loaded', 'success');
 
             debugLog('Checking for MapsIndoors SDK...', 'info');
             if (typeof mapsindoors === 'undefined') {
                 debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
                 return false;
             }
-            debugLog('ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors SDK loaded', 'success');
+            debugLog('ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ MapsIndoors SDK loaded', 'success');
 
             return true;
         }
@@ -319,10 +319,10 @@ This is a basic MapsIndoors mall demo with debugging capabilities to help troubl
 - Debugging script loading problems
 
 ### Important Notes
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ The MapboxV3View must be used instead of the older MapboxView
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
-ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Debug console helps identify exactly where initialization fails
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ The MapboxV3View must be used instead of the older MapboxView
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ A timeout is needed to ensure scripts are fully loaded before initialization
+ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ Debug console helps identify exactly where initialization fails
 
 
 ---
@@ -388,10 +388,10 @@ This establishes the correct initialization pattern for MapsIndoors with Mapbox.
 - SDK integration
 
 ### Important Notes
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Must use MapboxV3View not MapboxView
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Load Mapbox scripts before MapsIndoors
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Wait for 'ready' event before using features
-ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Floor selector requires proper control setup
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Must use MapboxV3View not MapboxView
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Load Mapbox scripts before MapsIndoors
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Wait for 'ready' event before using features
+ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ ÃÂÃÂÃÂÃÂ¯ÃÂÃÂÃÂÃÂ¸ÃÂÃÂÃÂÃÂ Floor selector requires proper control setup
 
 
 ---
@@ -493,10 +493,10 @@ This pattern enables dynamic visual feedback by applying different colors and st
 - Asset tracking interfaces
 
 ### Important Notes
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ setDisplayRule accepts both single IDs and arrays
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Display rules are cumulative - later rules override earlier ones
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ zoomFrom parameter controls when styling appears
-ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ polygonStrokeWidth affects visual hierarchy
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ setDisplayRule accepts both single IDs and arrays
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ Display rules are cumulative - later rules override earlier ones
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ zoomFrom parameter controls when styling appears
+ÃÂÃÂ¢ÃÂÃÂÃÂÃÂ ÃÂÃÂ¯ÃÂÃÂ¸ÃÂÃÂ polygonStrokeWidth affects visual hierarchy
 
 
 ---
@@ -625,10 +625,10 @@ This creates a time-controlled heatmap overlay using Mapbox's native heatmap lay
 - Space utilization studies
 
 ### Important Notes
-Ã¢ÂÂ Ã¯Â¸Â Heatmap layer must be added after map loads
-Ã¢ÂÂ Ã¯Â¸Â GeoJSON features need 'intensity' property for heatmap-weight
-Ã¢ÂÂ Ã¯Â¸Â Radius scales with zoom level for proper visualization
-Ã¢ÂÂ Ã¯Â¸Â Filter data by time before updating source
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Heatmap layer must be added after map loads
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ GeoJSON features need 'intensity' property for heatmap-weight
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Radius scales with zoom level for proper visualization
+ÃÂ¢ÃÂÃÂ ÃÂ¯ÃÂ¸ÃÂ Filter data by time before updating source
 
 
 ---
@@ -750,10 +750,10 @@ This implements multi-stop route optimization using MapsIndoors Directions API. 
 - Guided facility tours
 
 ### Important Notes
-â ï¸ optimize: true reorders waypoints automatically
-â ï¸ Use anchor coordinates for precise positioning
-â ï¸ nextLeg/previousLeg controls require valid route
-â ï¸ Floor changes must be handled manually during navigation
+Ã¢ÂÂ Ã¯Â¸Â optimize: true reorders waypoints automatically
+Ã¢ÂÂ Ã¯Â¸Â Use anchor coordinates for precise positioning
+Ã¢ÂÂ Ã¯Â¸Â nextLeg/previousLeg controls require valid route
+Ã¢ÂÂ Ã¯Â¸Â Floor changes must be handled manually during navigation
 
 
 ---
@@ -953,8 +953,225 @@ This creates a comprehensive asset tracking system with realistic movement patte
 - Asset management systems
 
 ### Important Notes
-⚠️ Mapbox markers need manual visibility management for floors
-⚠️ Movement calculations should respect building boundaries
-⚠️ Popup updates require manual repositioning
-⚠️ Asset cleanup needed when removing from tracking
+â ï¸ Mapbox markers need manual visibility management for floors
+â ï¸ Movement calculations should respect building boundaries
+â ï¸ Popup updates require manual repositioning
+â ï¸ Asset cleanup needed when removing from tracking
+
+
+---
+
+## Custom Floor Selector with Enhanced Styling and Control
+
+### Context
+Applications requiring enhanced floor navigation with custom styling or positioning different from the default MapsIndoors floor selector
+
+### Industry
+corporate
+
+### Problem
+Need customized floor navigation that matches application design or provides enhanced functionality beyond the default floor selector
+
+### Solution
+```javascript
+// Custom floor selector with enhanced styling and control
+class CustomFloorSelector {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.element = this.createSelectorElement();
+        this.floors = {};
+        this.isVisible = false;
+    }
+
+    createSelectorElement() {
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: absolute;
+            right: 20px;
+            top: 160px;
+            background: rgba(30, 30, 30, 0.9);
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+        `;
+        return container;
+    }
+
+    show() {
+        this.element.style.display = 'flex';
+        this.isVisible = true;
+        this.updateFloorButtons();
+    }
+
+    hide() {
+        this.element.style.display = 'none';
+        this.isVisible = false;
+    }
+
+    updateFloorButtons() {
+        this.element.innerHTML = '';
+        const currentFloor = this.mapsIndoors.getFloor();
+
+        if (Object.keys(this.floors).length === 0) {
+            const noFloorsMessage = document.createElement('div');
+            noFloorsMessage.textContent = 'No floors available';
+            noFloorsMessage.style.cssText = `
+                color: #DDD;
+                font-family: 'Arial', sans-serif;
+                font-size: 14px;
+                padding: 10px;
+            `;
+            this.element.appendChild(noFloorsMessage);
+            return;
+        }
+
+        // Sort floors in descending order (highest first)
+        const sortedFloors = Object.entries(this.floors)
+            .sort(([a], [b]) => Number(b) - Number(a));
+
+        sortedFloors.forEach(([floorIndex, floorName]) => {
+            const button = document.createElement('button');
+            button.textContent = floorName;
+            button.style.cssText = `
+                margin: 5px 0;
+                padding: 10px 20px;
+                border: none;
+                background-color: ${floorIndex == currentFloor ? 'rgba(200, 160, 40, 0.8)' : 'rgba(60, 60, 60, 0.6)'};
+                color: ${floorIndex == currentFloor ? '#FFF' : '#CCC'};
+                cursor: pointer;
+                font-family: 'Arial', sans-serif;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+                outline: none;
+                min-width: 80px;
+            `;
+            
+            // Hover effects
+            button.onmouseover = () => {
+                if (floorIndex != currentFloor) {
+                    button.style.backgroundColor = 'rgba(80, 80, 80, 0.8)';
+                    button.style.color = '#FFF';
+                }
+            };
+            
+            button.onmouseout = () => {
+                if (floorIndex != currentFloor) {
+                    button.style.backgroundColor = 'rgba(60, 60, 60, 0.6)';
+                    button.style.color = '#CCC';
+                }
+            };
+            
+            button.onclick = () => this.changeFloor(floorIndex);
+            this.element.appendChild(button);
+        });
+    }
+
+    changeFloor(floorIndex) {
+        this.mapsIndoors.setFloor(parseInt(floorIndex));
+        this.updateFloorButtons();
+    }
+
+    updateFloors(floors) {
+        if (floors) {
+            this.floors = Object.entries(floors).reduce((acc, [index, floorInfo]) => {
+                acc[index] = floorInfo.name || `Floor ${index}`;
+                return acc;
+            }, {});
+        } else {
+            this.floors = {};
+        }
+        
+        if (this.isVisible) {
+            this.updateFloorButtons();
+        }
+    }
+
+    updateWithCurrentBuilding() {
+        const currentBuilding = this.mapsIndoors.getBuilding();
+        if (currentBuilding && currentBuilding.floors) {
+            this.updateFloors(currentBuilding.floors);
+            this.show();
+        } else {
+            this.hide();
+        }
+    }
+}
+
+// Integration with MapsIndoors
+const customFloorSelector = new CustomFloorSelector(mapsIndoorsInstance);
+document.body.appendChild(customFloorSelector.element);
+
+// Set up event listeners
+mapsIndoorsInstance.addListener('ready', () => {
+    customFloorSelector.updateWithCurrentBuilding();
+});
+
+mapsIndoorsInstance.addListener('floor_changed', () => {
+    customFloorSelector.updateFloorButtons();
+});
+
+mapsIndoorsInstance.addListener('building_changed', () => {
+    customFloorSelector.updateWithCurrentBuilding();
+});
+
+// Alternative: Styling the native floor selector
+function styleNativeFloorSelector() {
+    const style = document.createElement('style');
+    style.textContent = `
+        .mi-floorSelector {
+            left: 20px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            background-color: white !important;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+        }
+
+        .mi-floorSelector .mi-floor-selector-button {
+            width: 40px !important;
+            height: 40px !important;
+            border: none !important;
+            background: white !important;
+            border-bottom: 1px solid #e0e0e0 !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .mi-floorSelector .mi-floor-selector-button:hover {
+            background-color: #f5f5f5 !important;
+        }
+
+        .mi-floorSelector .mi-floor-selector-button.active {
+            background-color: #1976d2 !important;
+            color: white !important;
+        }
+    `;
+    document.head.appendChild(style);
+}
+```
+
+### Explanation
+This provides both a fully custom floor selector and methods to style the native one. The custom version offers complete control over appearance and behavior, including advanced styling, hover effects, and positioning. It automatically updates when buildings change and manages floor availability. The alternative approach shows how to style the native selector with CSS.
+
+### Use Cases
+- Branded application interfaces
+- Accessibility-enhanced navigation
+- Mobile-optimized floor selection
+- Integration with custom UI frameworks
+
+### Important Notes
+⚠️ Building changes require floor data refresh
+⚠️ Floor index comparison needs type conversion
+⚠️ CSS styling of native selector requires !important
+⚠️ Custom selector needs manual DOM insertion
 
