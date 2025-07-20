@@ -94,11 +94,11 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-â ï¸ Must wait for MapsIndoors ready event before applying display rules
-â ï¸ Additional setTimeout may be needed for complex solutions
-â ï¸ Use MapboxV3View instead of deprecated MapboxView
-â ï¸ Set multiple opacity and visibility properties to ensure complete hiding
-â ï¸ Keep visible: true to maintain location data accessibility
+Ã¢ÂÂ Ã¯Â¸Â Must wait for MapsIndoors ready event before applying display rules
+Ã¢ÂÂ Ã¯Â¸Â Additional setTimeout may be needed for complex solutions
+Ã¢ÂÂ Ã¯Â¸Â Use MapboxV3View instead of deprecated MapboxView
+Ã¢ÂÂ Ã¯Â¸Â Set multiple opacity and visibility properties to ensure complete hiding
+Ã¢ÂÂ Ã¯Â¸Â Keep visible: true to maintain location data accessibility
 
 
 ---
@@ -224,17 +224,17 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 };
 
                 const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
-                debugLog('✓ MapboxV3View created', 'success');
+                debugLog('â MapboxV3View created', 'success');
 
                 debugLog('Creating MapsIndoors instance...', 'info');
                 const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
                     mapView: mapView
                 });
-                debugLog('✓ MapsIndoors instance created', 'success');
+                debugLog('â MapsIndoors instance created', 'success');
 
                 // Add ready listener
                 mapsIndoorsInstance.addListener('ready', () => {
-                    debugLog('✓ MapsIndoors is READY!', 'success');
+                    debugLog('â MapsIndoors is READY!', 'success');
                     
                     // Add floor selector
                     const floorSelectorElement = document.createElement('div');
@@ -246,7 +246,7 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                         onRemove: function() {}
                     });
                     
-                    debugLog('✓ Floor selector added', 'success');
+                    debugLog('â Floor selector added', 'success');
                     debugLog('Mall demo ready!', 'success');
                 });
 
@@ -270,14 +270,14 @@ Getting a blank screen when trying to load a basic MapsIndoors mall demo due to 
                 debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
                 return false;
             }
-            debugLog('✓ Mapbox GL JS loaded', 'success');
+            debugLog('â Mapbox GL JS loaded', 'success');
 
             debugLog('Checking for MapsIndoors SDK...', 'info');
             if (typeof mapsindoors === 'undefined') {
                 debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
                 return false;
             }
-            debugLog('✓ MapsIndoors SDK loaded', 'success');
+            debugLog('â MapsIndoors SDK loaded', 'success');
 
             return true;
         }
@@ -319,8 +319,77 @@ This is a basic MapsIndoors mall demo with debugging capabilities to help troubl
 - Debugging script loading problems
 
 ### Important Notes
-⚠️ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
-⚠️ The MapboxV3View must be used instead of the older MapboxView
-⚠️ A timeout is needed to ensure scripts are fully loaded before initialization
-⚠️ Debug console helps identify exactly where initialization fails
+â ï¸ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+â ï¸ The MapboxV3View must be used instead of the older MapboxView
+â ï¸ A timeout is needed to ensure scripts are fully loaded before initialization
+â ï¸ Debug console helps identify exactly where initialization fails
+
+
+---
+
+## MapsIndoors SDK Initialization with MapboxV3View
+
+### Context
+Essential foundation pattern needed for all MapsIndoors + Mapbox applications
+
+### Industry
+universal
+
+### Problem
+Need to properly initialize MapsIndoors with Mapbox integration using the correct view class and script loading order
+
+### Solution
+```javascript
+<!-- Always load Mapbox first -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+
+<!-- Then load MapsIndoors -->
+<script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=YOUR_API_KEY"></script>
+
+<script>
+// Use MapboxV3View (NOT MapboxView)
+const mapViewOptions = {
+    accessToken: 'your-mapbox-token',
+    element: document.getElementById('map'),
+    center: { lat: 30.3603212, lng: -97.7422623 },
+    zoom: 20,
+    maxZoom: 22,
+};
+
+const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+    mapView: mapViewInstance,
+});
+const mapboxInstance = mapViewInstance.getMap();
+
+// Add floor selector
+const floorSelectorElement = document.createElement('div');
+new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+mapboxInstance.addControl({ 
+    onAdd: function () { return floorSelectorElement },
+    onRemove: function () { }
+});
+
+// Wait for ready before using features
+mapsIndoorsInstance.addListener('ready', () => {
+    console.log('MapsIndoors is ready');
+    // Initialize your application logic here
+});
+</script>
+```
+
+### Explanation
+This establishes the correct initialization pattern for MapsIndoors with Mapbox. Key points: load Mapbox scripts first, use MapboxV3View (not MapboxView), wait for the 'ready' event before using MapsIndoors features, and properly add the floor selector control.
+
+### Use Cases
+- Web application setup
+- Map initialization
+- SDK integration
+
+### Important Notes
+⚠️ Must use MapboxV3View not MapboxView
+⚠️ Load Mapbox scripts before MapsIndoors
+⚠️ Wait for 'ready' event before using features
+⚠️ Floor selector requires proper control setup
 
