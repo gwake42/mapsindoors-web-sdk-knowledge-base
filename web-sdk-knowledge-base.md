@@ -4521,3 +4521,187 @@ This implementation demonstrates MapsIndoors SDK usage patterns.
 
 
 
+
+---
+
+## AI-Powered Airport Navigation Assistant with MapsIndoors & Gemini Integration
+
+### Context
+Advanced conversational airport navigation system combining real-time location services with AI-powered natural language processing
+
+### Industry
+transportation
+
+### Problem
+Airport passengers need intuitive, conversational assistance to find amenities, calculate travel times, and navigate complex terminal layouts efficiently
+
+### Solution
+```javascript
+// Key Implementation Patterns from AirportLLM
+
+// 1. AI-Enhanced Query Processing with Venue Context
+async function parseInstructionsFromGemini(query) {
+  const prompt = `
+    You are an AI assistant in San Francisco International Airport.
+    Available location types: ${venueContext.types.join(", ")}
+    Common categories: ${venueContext.categories.join(", ")}
+    
+    User query: "${query}"
+    
+    Determine query type: location_search, travel_time, distance, or directions
+    Extract search parameters and format response as JSON
+  `;
+  
+  const response = await fetch(GEMINI_API_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.2, maxOutputTokens: 1024 }
+    })
+  });
+  
+  return JSON.parse(response.candidates[0].content.parts[0].text);
+}
+
+// 2. Intelligent Proximity Search with Distance Matrix
+async function searchLocations(query, options = {}) {
+  const baseParams = {
+    venue: "76949746a5873f0090fd8d8e839d8726",
+    take: options.take || 100,
+    near: { lat: USER_POSITION.lat, lng: USER_POSITION.lng },
+    radius: options.radius || 500,
+    floor: options.floor || USER_POSITION.floor
+  };
+  
+  // Smart search strategy: type-first, then text search
+  let locations = await mapsindoors.services.LocationsService.getLocations({
+    ...baseParams,
+    types: [query]
+  });
+  
+  if (!locations?.length) {
+    locations = await mapsindoors.services.LocationsService.getLocations({
+      ...baseParams,
+      q: query
+    });
+  }
+  
+  // Enhanced with distance matrix calculations
+  const origins = [`${USER_POSITION.lat},${USER_POSITION.lng},${USER_POSITION.floor}`];
+  const destinations = locations.map(loc => {
+    const coords = loc.properties.anchor.coordinates;
+    return `${coords[1]},${coords[0]},${loc.properties.floor}`;
+  });
+  
+  const matrix = await mapsindoors.services.DistanceMatrixService.getDistanceMatrix({
+    graphId: "airport_graph",
+    origins,
+    destinations,
+    travelMode: "walking"
+  });
+  
+  return locations.map((location, index) => ({
+    ...location,
+    distance: matrix.rows[0].elements[index].distance?.value,
+    duration: matrix.rows[0].elements[index].duration?.value
+  })).sort((a, b) => (a.distance || Infinity) - (b.distance || Infinity));
+}
+
+// 3. Contextual Route Display with AI-Generated Instructions
+async function showRouteToLocation(location) {
+  const route = await miDirectionsService.getRoute({
+    origin: {
+      lat: USER_POSITION.lat,
+      lng: USER_POSITION.lng,
+      floor: USER_POSITION.floor
+    },
+    destination: {
+      lat: location.properties.anchor.coordinates[1],
+      lng: location.properties.anchor.coordinates[0],
+      floor: location.properties.floor
+    },
+    graphId: "airport_graph",
+    travelMode: "walking"
+  });
+  
+  miDirectionsRenderer.setRoute(route);
+  
+  // AI-enhanced route communication
+  addAIMessage(`
+    Route to ${location.properties.name}: ${formatDistance(route.distance.value)}
+    Estimated time: ${formatDuration(route.duration.value)}
+    ${formatRouteInstructions(route)}
+  `);
+}
+
+// 4. Dynamic Venue Context Loading for AI Prompts
+async function fetchVenueContext() {
+  const sampleLocations = await mapsindoors.services.LocationsService.getLocations({
+    venue: "76949746a5873f0090fd8d8e839d8726",
+    take: 200,
+    near: { lat: USER_POSITION.lat, lng: USER_POSITION.lng }
+  });
+  
+  const types = new Set();
+  const categories = new Set();
+  
+  sampleLocations.forEach(location => {
+    if (location.properties.type) types.add(location.properties.type);
+    if (location.properties.categories) {
+      Object.keys(location.properties.categories).forEach(cat => categories.add(cat));
+    }
+  });
+  
+  venueContext = {
+    types: Array.from(types),
+    categories: Array.from(categories)
+  };
+}
+
+// 5. Multi-Modal Response Generation
+async function processUserMessage(message) {
+  const instructions = await parseInstructionsFromGemini(message);
+  const locations = await searchLocations(instructions.searchQuery);
+  
+  if (instructions.queryType === "travel_time") {
+    const target = locations[0];
+    const time = formatDuration(target.duration);
+    
+    addAIMessage(`
+      It will take approximately **${time}** to reach ${target.properties.name}.
+      <div class="location-card" onclick="showRoute(${target.id})">
+        ${target.properties.name} • ${formatDistance(target.distance)}
+      </div>
+    `);
+    
+    addResultMarker(target, 0);
+  } else {
+    // Display multiple options with interactive cards
+    locations.slice(0, 5).forEach((loc, i) => {
+      addResultMarker(loc, i);
+      addLocationCard(loc, i);
+    });
+  }
+}
+```
+
+### Explanation
+This implementation showcases advanced integration between MapsIndoors spatial services and AI language models, creating a conversational navigation experience. The system uses Gemini AI to parse natural language queries and extract intent (finding locations vs. calculating travel time), then applies intelligent search strategies with proximity-based filtering. The Distance Matrix API provides accurate walking times and distances, while the AI generates contextual responses. Key innovations include dynamic venue context loading for better AI prompts, multi-modal response generation with interactive UI elements, and seamless integration between map visualization and conversational interface. The system handles complex queries like 'How long to the nearest coffee shop?' by combining location search, distance calculation, and route visualization in a single conversational flow.
+
+### Use Cases
+- Airport passenger assistance systems
+- Transit hub navigation with AI agents
+- Large venue wayfinding with natural language
+- Accessibility-focused navigation systems
+- Multi-language airport assistance platforms
+- Emergency evacuation guidance systems
+
+### Important Notes
+⚠️ Graph ID must match venue routing configuration (airport_graph)
+⚠️ Distance Matrix requires careful coordinate formatting (lat,lng,floor)
+⚠️ AI prompts need venue-specific context for accurate query parsing
+⚠️ Floor synchronization between user position and search results critical
+⚠️ Environment variable injection required for production deployment
+⚠️ Proximity search radius affects performance vs accuracy tradeoff
+
