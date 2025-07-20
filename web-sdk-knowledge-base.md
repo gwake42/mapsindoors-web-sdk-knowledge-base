@@ -4504,26 +4504,6 @@ This tool provides a simple HTML interface to test the MapsIndoors VenuesService
 
 ---
 
-## Test Entry - Debug Check
-
-
-
-### Problem
-Testing API connectivity and response
-
-### Solution
-```javascript
-console.log("API test from comprehensive guide");
-```
-
-### Explanation
-This implementation demonstrates MapsIndoors SDK usage patterns.
-
-
-
-
----
-
 ## AI-Powered Airport Navigation Assistant with MapsIndoors & Gemini Integration
 
 ### Context
@@ -4705,32 +4685,4 @@ This implementation showcases advanced integration between MapsIndoors spatial s
 ⚠️ Environment variable injection required for production deployment
 ⚠️ Proximity search radius affects performance vs accuracy tradeoff
 
-
----
-
-## Guide Test Entry
-
-### Context
-Testing the comprehensive guide workflow
-
-### Industry
-testing
-
-### Problem
-Verify the guide works end-to-end
-
-### Solution
-```javascript
-console.log('This is a test entry to verify the guide works correctly');
-```
-
-### Explanation
-Simple test to validate the comprehensive guide process works as documented
-
-### Use Cases
-- Testing workflows
-- Validating documentation
-
-### Important Notes
-⚠️ This is just a test entry
 
