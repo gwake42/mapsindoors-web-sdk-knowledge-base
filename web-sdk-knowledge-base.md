@@ -1597,3 +1597,416 @@ This solution creates a comprehensive emergency response system that visually re
 ⚠️ Color choices should be accessibility-friendly
 ⚠️ Emergency banner requires proper CSS z-index to appear above map
 
+
+---
+
+## Moving Asset Tracker with Path Visualization
+
+### Context
+Creating a real-time asset tracking system with moving markers that show path history and location awareness within MapsIndoors buildings
+
+### Industry
+transportation
+
+### Problem
+Real-time tracking of moving assets (people, equipment, vehicles) within buildings with path visualization and location awareness
+
+### Solution
+```javascript
+// Asset tracking with moving markers and path visualization
+class MovingAssetTracker {
+    constructor(mapsIndoorsInstance, mapboxInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.mapbox = mapboxInstance;
+        this.assets = new Map();
+        this.selectedAssetId = null;
+        this.buildingGeometry = null;
+        
+        this.initializePathVisualization();
+    }
+
+    initializePathVisualization() {
+        // Add path source and layer for selected asset
+        this.mapbox.addSource('asset-path', {
+            type: 'geojson',
+            data: {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                    type: 'LineString',
+                    coordinates: []
+                }
+            }
+        });
+
+        this.mapbox.addLayer({
+            id: 'asset-path-layer',
+            type: 'line',
+            source: 'asset-path',
+            layout: {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            paint: {
+                'line-color': '#4CAF50',
+                'line-width': 3,
+                'line-opacity': 0.8
+            }
+        });
+    }
+
+    createAsset(floor, assetType = 'device') {
+        const assetId = this.generateAssetId();
+        const initialPosition = this.getRandomPointInBuilding();
+        
+        if (!initialPosition) {
+            console.error('Cannot create asset: Building geometry not available');
+            return null;
+        }
+
+        // Create Mapbox marker
+        const marker = new mapboxgl.Marker({
+            color: this.getAssetColor(assetType)
+        })
+        .setLngLat(initialPosition)
+        .addTo(this.mapbox);
+
+        // Create asset object
+        const asset = {
+            id: assetId,
+            type: assetType,
+            floor: floor,
+            marker: marker,
+            position: initialPosition,
+            targetPosition: this.getNewTargetPosition(),
+            positions: [initialPosition], // Track movement history
+            lastUpdate: Date.now(),
+            isMoving: true
+        };
+
+        // Add click handler
+        marker.getElement().addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.selectAsset(assetId);
+        });
+
+        this.assets.set(assetId, asset);
+        this.startAssetMovement(assetId);
+        
+        return assetId;
+    }
+
+    selectAsset(assetId) {
+        // If clicking the same asset, deselect it
+        if (this.selectedAssetId === assetId) {
+            this.selectedAssetId = null;
+            this.clearPathVisualization();
+            return;
+        }
+
+        this.selectedAssetId = assetId;
+        const asset = this.assets.get(assetId);
+        
+        if (asset) {
+            // Show asset path
+            this.updatePathVisualization(asset.positions);
+            
+            // Center map on asset
+            this.mapbox.flyTo({
+                center: asset.position,
+                zoom: 20,
+                duration: 1000
+            });
+
+            // Set to asset's floor
+            this.mapsIndoors.setFloor(asset.floor);
+            
+            // Show asset info popup
+            this.showAssetInfo(asset);
+        }
+    }
+
+    updatePathVisualization(positions) {
+        this.mapbox.getSource('asset-path').setData({
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: positions
+            }
+        });
+    }
+
+    clearPathVisualization() {
+        this.mapbox.getSource('asset-path').setData({
+            type: 'Feature',
+            properties: {},
+            geometry: {
+                type: 'LineString',
+                coordinates: []
+            }
+        });
+    }
+
+    startAssetMovement(assetId) {
+        const moveAsset = async () => {
+            const asset = this.assets.get(assetId);
+            if (!asset || !asset.isMoving) return;
+
+            // Calculate new position towards target
+            const newPosition = this.getPointWithinRadius(
+                asset.position, 
+                asset.targetPosition, 
+                20 // 20 feet movement radius
+            );
+
+            // Check if reached target
+            const dx = asset.targetPosition[0] - newPosition[0];
+            const dy = asset.targetPosition[1] - newPosition[1];
+            const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+
+            if (distanceToTarget < 0.0000001) {
+                asset.targetPosition = this.getNewTargetPosition();
+            }
+
+            // Update asset position
+            asset.marker.setLngLat(newPosition);
+            asset.position = newPosition;
+            asset.positions.push([...newPosition]);
+            asset.lastUpdate = Date.now();
+
+            // Update path visualization if this asset is selected
+            if (this.selectedAssetId === assetId) {
+                this.updatePathVisualization(asset.positions);
+            }
+
+            // Find nearest MapsIndoors location
+            try {
+                const nearestLocations = await mapsindoors.services.LocationsService.getLocations({
+                    near: { lat: newPosition[1], lng: newPosition[0] },
+                    radius: 1,
+                    floor: asset.floor,
+                    take: 1
+                });
+
+                if (nearestLocations.length > 0) {
+                    asset.nearestLocation = nearestLocations[0].properties.name;
+                }
+            } catch (error) {
+                console.error('Error finding nearest location:', error);
+            }
+
+            // Schedule next movement
+            const delay = Math.random() * 5000 + 2000; // 2-7 seconds
+            setTimeout(moveAsset, delay);
+        };
+
+        // Start with initial delay
+        const initialDelay = Math.random() * 5000 + 2000;
+        setTimeout(moveAsset, initialDelay);
+    }
+
+    showAssetInfo(asset) {
+        const popup = new mapboxgl.Popup({
+            closeButton: true,
+            closeOnClick: false
+        });
+
+        const timeSinceUpdate = this.formatTimeSince(asset.lastUpdate);
+        
+        const popupContent = `
+            <div style="padding: 10px; max-width: 200px;">
+                <div style="font-weight: bold; margin-bottom: 8px;">Asset #${asset.id}</div>
+                <div style="margin-bottom: 5px;">Type: ${asset.type}</div>
+                <div style="margin-bottom: 5px;">Floor: ${asset.floor}</div>
+                <div style="margin-bottom: 5px;">Last Update: ${timeSinceUpdate}</div>
+                ${asset.nearestLocation ? `<div style="margin-bottom: 5px;">Near: ${asset.nearestLocation}</div>` : ''}
+                <div style="margin-bottom: 5px;">Positions Tracked: ${asset.positions.length}</div>
+                <button onclick="window.assetTracker.stopAssetMovement('${asset.id}')" 
+                        style="padding: 5px 10px; margin-right: 5px; background: #f44336; color: white; border: none; border-radius: 3px;">
+                    Stop
+                </button>
+                <button onclick="window.assetTracker.deleteAsset('${asset.id}')" 
+                        style="padding: 5px 10px; background: #666; color: white; border: none; border-radius: 3px;">
+                    Delete
+                </button>
+            </div>
+        `;
+
+        popup.setLngLat(asset.position)
+            .setHTML(popupContent)
+            .addTo(this.mapbox);
+
+        asset.popup = popup;
+    }
+
+    stopAssetMovement(assetId) {
+        const asset = this.assets.get(assetId);
+        if (asset) {
+            asset.isMoving = false;
+            if (asset.popup) {
+                asset.popup.remove();
+            }
+        }
+    }
+
+    deleteAsset(assetId) {
+        const asset = this.assets.get(assetId);
+        if (asset) {
+            asset.marker.remove();
+            if (asset.popup) {
+                asset.popup.remove();
+            }
+            this.assets.delete(assetId);
+            
+            if (this.selectedAssetId === assetId) {
+                this.selectedAssetId = null;
+                this.clearPathVisualization();
+            }
+        }
+    }
+
+    updateAssetVisibility(currentFloor) {
+        this.assets.forEach(asset => {
+            const display = asset.floor === currentFloor ? 'block' : 'none';
+            asset.marker.getElement().style.display = display;
+        });
+    }
+
+    // Helper methods
+    generateAssetId() {
+        return Math.floor(Math.random() * 900 + 100).toString();
+    }
+
+    getAssetColor(type) {
+        const colors = {
+            'device': '#FF0000',
+            'person': '#2196F3', 
+            'equipment': '#FF9800',
+            'vehicle': '#4CAF50'
+        };
+        return colors[type] || '#666666';
+    }
+
+    getRandomPointInBuilding() {
+        if (!this.buildingGeometry) {
+            const building = this.mapsIndoors.getBuilding();
+            if (building) {
+                this.buildingGeometry = building.geometry;
+            } else {
+                return null;
+            }
+        }
+
+        const bounds = this.buildingGeometry.bbox;
+        let point;
+        let attempts = 0;
+        const maxAttempts = 100;
+
+        do {
+            const lng = Math.random() * (bounds[2] - bounds[0]) + bounds[0];
+            const lat = Math.random() * (bounds[3] - bounds[1]) + bounds[1];
+            point = [lng, lat];
+            attempts++;
+
+            if (attempts > maxAttempts) {
+                return [bounds[0], bounds[1]];
+            }
+        } while (!this.isPointInPolygon(point, this.buildingGeometry.coordinates[0]));
+
+        return point;
+    }
+
+    getNewTargetPosition() {
+        return this.getRandomPointInBuilding();
+    }
+
+    getPointWithinRadius(currentPoint, targetPoint, radiusFeet) {
+        const FEET_TO_DEGREES = 0.0000003048;
+        const maxDistance = radiusFeet * FEET_TO_DEGREES;
+
+        const dx = targetPoint[0] - currentPoint[0];
+        const dy = targetPoint[1] - currentPoint[1];
+        const currentDistance = Math.sqrt(dx * dx + dy * dy);
+
+        if (currentDistance <= maxDistance) {
+            return targetPoint;
+        }
+
+        const ratio = maxDistance / currentDistance;
+        return [
+            currentPoint[0] + dx * ratio,
+            currentPoint[1] + dy * ratio
+        ];
+    }
+
+    isPointInPolygon(point, polygon) {
+        let inside = false;
+        for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            const xi = polygon[i][0], yi = polygon[i][1];
+            const xj = polygon[j][0], yj = polygon[j][1];
+            
+            const intersect = ((yi > point[1]) !== (yj > point[1])) &&
+                (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
+            if (intersect) inside = !inside;
+        }
+        return inside;
+    }
+
+    formatTimeSince(timestamp) {
+        const seconds = Math.floor((Date.now() - timestamp) / 1000);
+        if (seconds < 60) return `${seconds}s ago`;
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+        return `${Math.floor(seconds / 86400)}d ago`;
+    }
+}
+
+// Usage
+let assetTracker;
+
+mapsIndoorsInstance.addListener('ready', () => {
+    assetTracker = new MovingAssetTracker(mapsIndoorsInstance, mapboxInstance);
+    
+    // Make accessible globally for popup buttons
+    window.assetTracker = assetTracker;
+});
+
+// Floor change listener
+mapsIndoorsInstance.addListener('floor_changed', () => {
+    const currentFloor = mapsIndoorsInstance.getFloor();
+    if (assetTracker) {
+        assetTracker.updateAssetVisibility(currentFloor);
+    }
+});
+
+// Add asset button
+document.getElementById('add-asset').addEventListener('click', () => {
+    const currentFloor = mapsIndoorsInstance.getFloor();
+    assetTracker.createAsset(currentFloor, 'device');
+});
+
+// Map click to deselect asset
+mapboxInstance.on('click', () => {
+    if (assetTracker?.selectedAssetId) {
+        assetTracker.selectAsset(assetTracker.selectedAssetId);
+    }
+});
+```
+
+### Explanation
+This creates a comprehensive asset tracking system where markers move autonomously around the building, maintaining path history, and providing location-aware information. Assets can be selected to view their movement paths, and the system integrates with MapsIndoors floor management. Each asset tracks its position history and can identify its nearest MapsIndoors location.
+
+### Use Cases
+- Equipment tracking in hospitals
+- Vehicle tracking in parking garages
+- Personnel tracking during emergencies
+- Valuable asset monitoring
+- Delivery tracking within facilities
+
+### Important Notes
+⚠️ Building geometry must be available before creating assets
+⚠️ Path visualization requires adding Mapbox sources/layers after map load
+⚠️ Asset movement should be throttled to avoid performance issues
+⚠️ Selected asset state needs to be cleared when asset is deleted
+
