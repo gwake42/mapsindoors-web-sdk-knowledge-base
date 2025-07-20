@@ -4686,3 +4686,193 @@ This implementation showcases advanced integration between MapsIndoors spatial s
 ⚠️ Proximity search radius affects performance vs accuracy tradeoff
 
 
+
+---
+
+## Booking Integration with External Systems
+
+### Context
+Facilities requiring appointment scheduling and resource booking connected to external databases
+
+### Industry
+healthcare
+
+### Problem
+Users need to book rooms, equipment, or appointments through MapsIndoors while maintaining synchronization with external booking systems
+
+### Solution
+```javascript
+// Initialize MapsIndoors with booking integration
+const mapsIndoors = new MapsIndoors.MapsIndoors({
+  apiKey: "your-api-key"
+});
+
+// Setup location selection for booking
+const map = new MapsIndoors.Map({
+  elementId: "map",
+  mapsIndoors: mapsIndoors
+});
+
+// Configure booking service with external system
+class BookingService {
+  constructor(externalApiEndpoint, authToken) {
+    this.apiEndpoint = externalApiEndpoint;
+    this.authToken = authToken;
+  }
+
+  async checkAvailability(locationId, externalId, timeSlot) {
+    try {
+      const response = await fetch(`${this.apiEndpoint}/availability`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${this.authToken}`
+        },
+        body: JSON.stringify({
+          external_id: externalId, // Critical: maps to external system
+          time_slot: timeSlot,
+          location_id: locationId
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Availability check failed:", error);
+      return { available: false, error: true };
+    }
+  }
+
+  async createBooking(locationId, externalId, bookingData) {
+    try {
+      const response = await fetch(`${this.apiEndpoint}/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${this.authToken}`
+        },
+        body: JSON.stringify({
+          external_id: externalId, // Key field for system integration
+          location_id: locationId,
+          user_id: bookingData.userId,
+          start_time: bookingData.startTime,
+          end_time: bookingData.endTime,
+          booking_type: bookingData.type
+        })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error("Booking creation failed:", error);
+      return { success: false, error: true };
+    }
+  }
+}
+
+// Initialize booking service
+const bookingService = new BookingService(
+  "https://your-external-system.com/api",
+  "your-auth-token"
+);
+
+// Handle location selection and booking flow
+map.on("location_selected", async (location) => {
+  const externalId = location.properties.externalId; // Must be set in MapsIndoors
+  
+  if (!externalId) {
+    console.warn("Location missing external ID - booking not available");
+    return;
+  }
+
+  // Show booking interface
+  const bookingUI = document.getElementById("booking-interface");
+  bookingUI.style.display = "block";
+  
+  // Populate with location details
+  document.getElementById("location-name").textContent = location.properties.name;
+  
+  // Check current availability
+  const availability = await bookingService.checkAvailability(
+    location.id,
+    externalId,
+    new Date().toISOString()
+  );
+  
+  updateAvailabilityDisplay(availability);
+});
+
+// Handle booking submission
+document.getElementById("submit-booking").addEventListener("click", async () => {
+  const selectedLocation = map.getSelectedLocation();
+  const externalId = selectedLocation.properties.externalId;
+  
+  const bookingData = {
+    userId: getCurrentUser().id,
+    startTime: document.getElementById("start-time").value,
+    endTime: document.getElementById("end-time").value,
+    type: document.getElementById("booking-type").value
+  };
+  
+  const result = await bookingService.createBooking(
+    selectedLocation.id,
+    externalId,
+    bookingData
+  );
+  
+  if (result.success) {
+    showBookingConfirmation(result.booking_id);
+    // Update location display with booking status
+    updateLocationBookingStatus(selectedLocation.id, "booked");
+  } else {
+    showBookingError(result.error);
+  }
+});
+
+// Update location styling based on booking status
+function updateLocationBookingStatus(locationId, status) {
+  const displayRule = {
+    id: `booking-status-${status}`,
+    types: ["ROOM"],
+    filter: {
+      propertyName: "id",
+      propertyValue: locationId
+    },
+    style: {
+      fillColor: status === "booked" ? "#ff6b6b" : "#51cf66",
+      strokeColor: "#333",
+      strokeWidth: 2
+    }
+  };
+  
+  map.addDisplayRule(displayRule);
+}
+
+function updateAvailabilityDisplay(availability) {
+  const statusElement = document.getElementById("availability-status");
+  if (availability.available) {
+    statusElement.textContent = "Available";
+    statusElement.className = "status-available";
+  } else {
+    statusElement.textContent = "Unavailable";
+    statusElement.className = "status-unavailable";
+  }
+}
+```
+
+### Explanation
+This implementation integrates MapsIndoors with external booking systems using the external ID as the critical linking field. The external ID stored in location properties must match the identifier used in your external database (e.g., room_id in your booking system). The BookingService class handles API communication with any external system, while the MapsIndoors map provides the visual interface for location selection and booking status display.
+
+### Use Cases
+- Hospital room and equipment booking with EMR integration
+- Conference room scheduling in corporate offices
+- Classroom and lab booking in educational institutions
+- Meeting space reservation in coworking facilities
+- Equipment checkout in manufacturing facilities
+- Service appointment scheduling in retail locations
+
+### Important Notes
+⚠️ External ID is mandatory: Every bookable location must have the externalId property set to match your external system identifier
+⚠️ API authentication: Implement proper token management and refresh logic for external system access
+⚠️ Real-time sync: Consider implementing webhooks or polling to keep booking status updated
+⚠️ Error handling: Always provide fallback UI when external booking system is unavailable
+⚠️ Timezone handling: Ensure consistent timezone handling between MapsIndoors and external system
+⚠️ Permission validation: Verify user permissions both in MapsIndoors and external system before allowing bookings
+⚠️ Display rule conflicts: Booking status styling may conflict with other display rules - use specific filters
+
