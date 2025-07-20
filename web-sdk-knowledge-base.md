@@ -3241,3 +3241,442 @@ This code creates a comprehensive export system for MapsIndoors maps. Key featur
 ⚠️ PDF export requires jsPDF library to be loaded
 ⚠️ Export quality directly impacts file size - balance quality vs file size needs
 
+
+---
+
+## Category-Based Location Filtering with Dynamic UI
+
+### Context
+Users need to filter MapsIndoors locations by categories dynamically, with a UI that shows category counts and allows multiple category selection. This is essential for large venues with many different types of locations.
+
+### Industry
+retail
+
+### Problem
+Users need to filter large numbers of locations by category type with an intuitive UI showing counts and multiple selection capability
+
+### Solution
+```javascript
+// MapsIndoors Category-Based Location Filtering with Dynamic UI
+class CategoryLocationFilter {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.categories = new Map();
+        this.locations = new Map();
+        this.activeFilters = new Set();
+        this.filterContainer = null;
+        
+        this.initializeFilterUI();
+    }
+
+    async initialize() {
+        await this.loadCategories();
+        await this.loadLocations();
+        this.renderFilterButtons();
+        this.setupEventListeners();
+    }
+
+    async loadCategories() {
+        try {
+            // Use Integration API to fetch categories
+            const response = await fetch(`https://integration.mapsindoors.com/${this.getSolutionId()}/api/categories`, {
+                headers: { 'accept': 'application/json' }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch categories');
+            
+            const rawCategories = await response.json();
+            const categoriesArray = Object.values(rawCategories);
+            
+            // Sort categories alphabetically
+            categoriesArray.sort((a, b) => {
+                const nameA = a.name?.['en'] || a.name || a.key;
+                const nameB = b.name?.['en'] || b.name || b.key;
+                return nameA.localeCompare(nameB);
+            });
+            
+            categoriesArray.forEach(category => {
+                this.categories.set(category.key, {
+                    key: category.key,
+                    name: category.name?.['en'] || category.name || category.key,
+                    iconUrl: category.iconUrl,
+                    count: 0
+                });
+            });
+            
+            console.log(`Loaded ${this.categories.size} categories`);
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    }
+
+    async loadLocations() {
+        try {
+            const locations = await mapsindoors.services.LocationsService.getLocations({
+                take: 1000 // Adjust based on solution size
+            });
+            
+            // Group locations by category
+            locations.forEach(location => {
+                if (location.categories && location.categories.length > 0) {
+                    location.categories.forEach(categoryKey => {
+                        if (this.categories.has(categoryKey)) {
+                            // Increment category count
+                            const category = this.categories.get(categoryKey);
+                            category.count++;
+                            
+                            // Store location with category reference
+                            if (!this.locations.has(categoryKey)) {
+                                this.locations.set(categoryKey, []);
+                            }
+                            this.locations.get(categoryKey).push(location);
+                        }
+                    });
+                }
+            });
+            
+            console.log(`Processed ${locations.length} locations across categories`);
+        } catch (error) {
+            console.error('Error loading locations:', error);
+        }
+    }
+
+    initializeFilterUI() {
+        // Create filter container
+        this.filterContainer = document.createElement('div');
+        this.filterContainer.className = 'category-filter-container';
+        this.filterContainer.style.cssText = `
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 300px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+        `;
+        
+        // Add title
+        const title = document.createElement('h3');
+        title.textContent = 'Filter by Category';
+        title.style.cssText = 'margin: 0 0 15px 0; font-size: 1.1rem; color: #333;';
+        this.filterContainer.appendChild(title);
+        
+        // Add "Show All" button
+        const showAllBtn = document.createElement('button');
+        showAllBtn.textContent = 'Show All';
+        showAllBtn.className = 'filter-btn show-all active';
+        showAllBtn.style.cssText = this.getButtonStyles(true);
+        showAllBtn.onclick = () => this.showAllLocations();
+        this.filterContainer.appendChild(showAllBtn);
+        
+        // Add clear filters button
+        const clearBtn = document.createElement('button');
+        clearBtn.textContent = 'Clear Filters';
+        clearBtn.className = 'filter-btn clear-filters';
+        clearBtn.style.cssText = this.getButtonStyles(false) + 'margin-top: 10px; background-color: #f44336;';
+        clearBtn.onclick = () => this.clearAllFilters();
+        this.filterContainer.appendChild(clearBtn);
+        
+        document.body.appendChild(this.filterContainer);
+    }
+
+    renderFilterButtons() {
+        // Remove existing category buttons (keep title and control buttons)
+        const existingBtns = this.filterContainer.querySelectorAll('.category-btn');
+        existingBtns.forEach(btn => btn.remove());
+        
+        // Add category filter buttons
+        this.categories.forEach((category, key) => {
+            if (category.count > 0) { // Only show categories with locations
+                const button = document.createElement('button');
+                button.className = 'filter-btn category-btn';
+                button.dataset.category = key;
+                
+                button.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                        <span>${category.name}</span>
+                        <span style="background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 10px; font-size: 0.8em;">
+                            ${category.count}
+                        </span>
+                    </div>
+                `;
+                
+                button.style.cssText = this.getButtonStyles(false);
+                button.onclick = () => this.toggleCategoryFilter(key);
+                
+                this.filterContainer.appendChild(button);
+            }
+        });
+    }
+
+    getButtonStyles(isActive) {
+        return `
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            margin: 5px 0;
+            border: 2px solid ${isActive ? '#1976D2' : '#e0e0e0'};
+            border-radius: 6px;
+            background-color: ${isActive ? '#1976D2' : 'white'};
+            color: ${isActive ? 'white' : '#333'};
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            text-align: left;
+        `;
+    }
+
+    setupEventListeners() {
+        // Add hover effects
+        this.filterContainer.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('filter-btn') && !e.target.classList.contains('active')) {
+                e.target.style.backgroundColor = '#f5f5f5';
+                e.target.style.borderColor = '#ccc';
+            }
+        });
+        
+        this.filterContainer.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('filter-btn') && !e.target.classList.contains('active')) {
+                e.target.style.backgroundColor = 'white';
+                e.target.style.borderColor = '#e0e0e0';
+            }
+        });
+    }
+
+    toggleCategoryFilter(categoryKey) {
+        if (this.activeFilters.has(categoryKey)) {
+            this.activeFilters.delete(categoryKey);
+        } else {
+            this.activeFilters.add(categoryKey);
+        }
+        
+        this.updateFilterUI();
+        this.applyLocationFilters();
+    }
+
+    showAllLocations() {
+        this.activeFilters.clear();
+        this.updateFilterUI();
+        
+        // Reset all location display rules to visible
+        const allLocationIds = Array.from(this.locations.values())
+            .flat()
+            .map(location => location.id);
+        
+        this.mapsIndoors.setDisplayRule(allLocationIds, {
+            visible: true,
+            iconVisible: true,
+            polygonVisible: true
+        });
+        
+        console.log('Showing all locations');
+    }
+
+    clearAllFilters() {
+        this.activeFilters.clear();
+        this.updateFilterUI();
+        this.applyLocationFilters();
+    }
+
+    updateFilterUI() {
+        // Update button states
+        const buttons = this.filterContainer.querySelectorAll('.filter-btn');
+        
+        buttons.forEach(button => {
+            const isShowAll = button.classList.contains('show-all');
+            const isClearBtn = button.classList.contains('clear-filters');
+            const categoryKey = button.dataset.category;
+            
+            if (isShowAll) {
+                const isActive = this.activeFilters.size === 0;
+                button.classList.toggle('active', isActive);
+                button.style.cssText = this.getButtonStyles(isActive);
+            } else if (!isClearBtn && categoryKey) {
+                const isActive = this.activeFilters.has(categoryKey);
+                button.classList.toggle('active', isActive);
+                button.style.cssText = this.getButtonStyles(isActive);
+            }
+        });
+    }
+
+    applyLocationFilters() {
+        if (this.activeFilters.size === 0) {
+            this.showAllLocations();
+            return;
+        }
+        
+        // Get locations for active categories
+        const visibleLocationIds = new Set();
+        const hiddenLocationIds = new Set();
+        
+        this.activeFilters.forEach(categoryKey => {
+            if (this.locations.has(categoryKey)) {
+                this.locations.get(categoryKey).forEach(location => {
+                    visibleLocationIds.add(location.id);
+                });
+            }
+        });
+        
+        // Get all location IDs to determine which to hide
+        this.locations.forEach(categoryLocations => {
+            categoryLocations.forEach(location => {
+                if (!visibleLocationIds.has(location.id)) {
+                    hiddenLocationIds.add(location.id);
+                }
+            });
+        });
+        
+        // Apply display rules
+        if (visibleLocationIds.size > 0) {
+            this.mapsIndoors.setDisplayRule(Array.from(visibleLocationIds), {
+                visible: true,
+                iconVisible: true,
+                polygonVisible: true,
+                iconSize: { width: 32, height: 32 },
+                zoomFrom: 15
+            });
+        }
+        
+        if (hiddenLocationIds.size > 0) {
+            this.mapsIndoors.setDisplayRule(Array.from(hiddenLocationIds), {
+                visible: false,
+                iconVisible: false,
+                polygonVisible: false
+            });
+        }
+        
+        // Fit bounds to visible locations if any are selected
+        if (visibleLocationIds.size > 0) {
+            this.fitBoundsToVisibleLocations(Array.from(visibleLocationIds));
+        }
+        
+        console.log(`Applied filters: ${this.activeFilters.size} categories, ${visibleLocationIds.size} visible locations`);
+    }
+
+    fitBoundsToVisibleLocations(locationIds) {
+        // Get bounds for visible locations
+        const bounds = new mapboxgl.LngLatBounds();
+        let hasValidBounds = false;
+        
+        this.locations.forEach(categoryLocations => {
+            categoryLocations.forEach(location => {
+                if (locationIds.includes(location.id)) {
+                    const coords = location.properties.anchor.coordinates;
+                    bounds.extend([coords[0], coords[1]]);
+                    hasValidBounds = true;
+                }
+            });
+        });
+        
+        if (hasValidBounds) {
+            // Get mapbox instance through MapsIndoors
+            const mapboxInstance = this.mapsIndoors.getMapView().getMap();
+            mapboxInstance.fitBounds(bounds, {
+                padding: 50,
+                duration: 1000
+            });
+        }
+    }
+
+    getActiveCategoryNames() {
+        return Array.from(this.activeFilters).map(key => {
+            const category = this.categories.get(key);
+            return category ? category.name : key;
+        });
+    }
+
+    getSolutionId() {
+        // Extract solution ID from MapsIndoors instance if available
+        // This is a placeholder - you'll need to provide your actual solution ID
+        return 'your-solution-id-here';
+    }
+
+    exportFilterState() {
+        return {
+            activeFilters: Array.from(this.activeFilters),
+            categories: Array.from(this.categories.entries()),
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    importFilterState(filterState) {
+        if (filterState.activeFilters) {
+            this.activeFilters = new Set(filterState.activeFilters);
+            this.updateFilterUI();
+            this.applyLocationFilters();
+        }
+    }
+}
+
+// Usage Example
+let categoryFilter;
+
+mapsIndoorsInstance.addListener('ready', async () => {
+    categoryFilter = new CategoryLocationFilter(mapsIndoorsInstance);
+    await categoryFilter.initialize();
+    
+    console.log('Category filter system initialized');
+    
+    // Optional: Set up keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            categoryFilter.clearAllFilters();
+        } else if (e.key === 'a' && e.ctrlKey) {
+            e.preventDefault();
+            categoryFilter.showAllLocations();
+        }
+    });
+});
+
+// Helper function to create search input for filtering categories
+function addCategorySearch(filterInstance) {
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search categories...';
+    searchInput.style.cssText = `
+        width: 100%;
+        padding: 8px 12px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+    `;
+    
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const categoryButtons = filterInstance.filterContainer.querySelectorAll('.category-btn');
+        
+        categoryButtons.forEach(button => {
+            const categoryName = button.textContent.toLowerCase();
+            const shouldShow = categoryName.includes(searchTerm);
+            button.style.display = shouldShow ? 'block' : 'none';
+        });
+    });
+    
+    // Insert after title
+    const title = filterInstance.filterContainer.querySelector('h3');
+    title.after(searchInput);
+}
+```
+
+### Explanation
+This code creates a complete category-based filtering system for MapsIndoors locations. It fetches categories via the Integration API, counts locations per category, and provides an interactive UI with filter buttons. Key features include: 1) Dynamic category loading with location counts, 2) Multiple category selection with visual feedback, 3) Show all/clear filters functionality, 4) Automatic bounds fitting to visible locations, 5) Export/import filter states for saving user preferences. The system uses display rules to show/hide locations based on selected categories.
+
+### Use Cases
+- Shopping mall store type filtering
+- Hospital department filtering
+- Airport amenity filtering
+- Office space type filtering
+- Educational facility room filtering
+
+### Important Notes
+⚠️ Categories must be properly configured in the MapsIndoors CMS
+⚠️ Locations need to have categories assigned for filtering to work
+⚠️ Large numbers of locations may impact performance
+⚠️ Solution ID must be provided for Integration API access
+⚠️ Display rules are applied in bulk for better performance
+
