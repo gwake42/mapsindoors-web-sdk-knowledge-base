@@ -1369,3 +1369,231 @@ This solution uses the VenuesService.getBuildings() method to retrieve all build
 ⚠️ Building names may be in different properties - use multiple fallbacks
 ⚠️ Floor data comes as object keys that need to be sorted numerically
 
+
+---
+
+## Emergency Response Dashboard with Real-time Status Updates
+
+### Context
+Creating an emergency response dashboard that provides real-time visual feedback for building emergencies with color-coded room status indicators
+
+### Industry
+healthcare
+
+### Problem
+Building emergency response systems need real-time visual status updates for rooms/zones during emergencies with different emergency types (fire, lockdown, medical, weather) and room statuses (safe, unsafe, unresponsive, cleared)
+
+### Solution
+```javascript
+// Emergency response dashboard with status-based room coloring
+const statusColors = {
+    'safe': '#4caf50',
+    'unsafe': '#f44336', 
+    'unresponsive': '#9e9e9e',
+    'cleared': '#2196f3',
+    'lockdown': '#ff9800'
+};
+
+class EmergencyResponseDashboard {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.roomsData = [];
+        this.isEmergencyActive = false;
+        this.emergencyType = null;
+    }
+
+    async loadRoomData() {
+        try {
+            const locations = await mapsindoors.services.LocationsService.getLocations({
+                types: ['MeetingRoom', 'MeetingRoom Small', 'MeetingRoom Medium', 'MeetingRoom Large'],
+                venue: 'AUSTINOFFICE',
+                take: 100
+            });
+            
+            this.roomsData = locations.map(location => ({
+                id: location.id,
+                name: location.properties.name || 'Unnamed Room',
+                floor: location.properties.floor,
+                location: {
+                    lat: location.properties.anchor.coordinates[1],
+                    lng: location.properties.anchor.coordinates[0]
+                },
+                status: 'unresponsive', // Initial status during emergency
+                lastUpdated: null,
+                occupancy: Math.floor(Math.random() * 20)
+            }));
+            
+            this.updateRoomDisplayRules();
+            
+        } catch (error) {
+            console.error('Error loading room data:', error);
+        }
+    }
+
+    activateEmergency(type) {
+        this.isEmergencyActive = true;
+        this.emergencyType = type;
+        
+        // Reset all rooms to unresponsive status
+        this.roomsData.forEach(room => {
+            room.status = 'unresponsive';
+            room.lastUpdated = null;
+        });
+        
+        // Show emergency banner
+        this.showEmergencyBanner(type);
+        
+        // Update room colors to indicate lockdown/emergency state
+        this.updateRoomDisplayRules();
+        
+        // Start simulated status updates (replace with real data source)
+        this.startStatusUpdates();
+    }
+
+    deactivateEmergency() {
+        this.isEmergencyActive = false;
+        
+        // Set all rooms to safe
+        this.roomsData.forEach(room => {
+            room.status = 'safe';
+            room.lastUpdated = new Date();
+        });
+        
+        this.hideEmergencyBanner();
+        this.updateRoomDisplayRules();
+        this.stopStatusUpdates();
+    }
+
+    updateRoomStatus(roomId, newStatus) {
+        const roomIndex = this.roomsData.findIndex(r => r.id === roomId);
+        if (roomIndex !== -1) {
+            this.roomsData[roomIndex].status = newStatus;
+            this.roomsData[roomIndex].lastUpdated = new Date();
+            this.updateRoomDisplayRules();
+            this.updateStatusCounts();
+        }
+    }
+
+    updateRoomDisplayRules() {
+        // Group rooms by status
+        const roomsByStatus = {
+            safe: this.roomsData.filter(room => room.status === 'safe').map(room => room.id),
+            unsafe: this.roomsData.filter(room => room.status === 'unsafe').map(room => room.id),
+            unresponsive: this.roomsData.filter(room => room.status === 'unresponsive').map(room => room.id),
+            cleared: this.roomsData.filter(room => room.status === 'cleared').map(room => room.id)
+        };
+
+        // Apply color-coded display rules for each status group
+        Object.entries(roomsByStatus).forEach(([status, roomIds]) => {
+            if (roomIds.length > 0) {
+                this.mapsIndoors.setDisplayRule(roomIds, {
+                    polygonVisible: true,
+                    polygonFillColor: statusColors[status],
+                    polygonFillOpacity: 0.5,
+                    polygonStrokeColor: statusColors[status],
+                    polygonStrokeOpacity: 0.8,
+                    polygonStrokeWidth: 1,
+                    zoomFrom: 16
+                });
+            }
+        });
+    }
+
+    showEmergencyBanner(type) {
+        const banner = document.getElementById('emergency-banner');
+        const emergencyTexts = {
+            'lockdown': 'Building Lockdown',
+            'fire': 'Fire Emergency', 
+            'medical': 'Medical Emergency',
+            'weather': 'Weather Emergency'
+        };
+        
+        banner.className = `emergency-banner active ${type}`;
+        banner.innerHTML = `
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Active Emergency: ${emergencyTexts[type]}</span>
+            <span style="opacity: 0.8; margin-left: 10px;">${new Date().toLocaleTimeString()}</span>
+        `;
+    }
+
+    startStatusUpdates() {
+        this.statusUpdateInterval = setInterval(() => {
+            if (!this.isEmergencyActive) return;
+            
+            // Simulate random status updates (replace with real data)
+            const updateCount = Math.floor(this.roomsData.length * 0.1);
+            
+            for (let i = 0; i < updateCount; i++) {
+                const randomIndex = Math.floor(Math.random() * this.roomsData.length);
+                const room = this.roomsData[randomIndex];
+                
+                // Skip recently updated rooms
+                if (room.lastUpdated && (new Date() - room.lastUpdated) < 60000) continue;
+                
+                // Random status with emergency weighting
+                const rand = Math.random();
+                let newStatus;
+                if (rand < 0.4) newStatus = 'unsafe';
+                else if (rand < 0.7) newStatus = 'safe';
+                else if (rand < 0.9) newStatus = 'cleared';
+                else newStatus = 'unresponsive';
+                
+                this.updateRoomStatus(room.id, newStatus);
+            }
+        }, 10000); // Update every 10 seconds
+    }
+
+    updateStatusCounts() {
+        const counts = {
+            safe: this.roomsData.filter(room => room.status === 'safe').length,
+            unsafe: this.roomsData.filter(room => room.status === 'unsafe').length,
+            unresponsive: this.roomsData.filter(room => room.status === 'unresponsive').length,
+            cleared: this.roomsData.filter(room => room.status === 'cleared').length,
+            total: this.roomsData.length
+        };
+        
+        document.getElementById('safe-count').textContent = counts.safe;
+        document.getElementById('unsafe-count').textContent = counts.unsafe;
+        document.getElementById('unresponsive-count').textContent = counts.unresponsive;
+        document.getElementById('cleared-count').textContent = counts.cleared;
+        document.getElementById('total-count').textContent = counts.total;
+    }
+}
+
+// Usage
+const emergencyDashboard = new EmergencyResponseDashboard(mapsIndoorsInstance);
+
+mapsIndoorsInstance.addListener('ready', () => {
+    emergencyDashboard.loadRoomData();
+});
+
+// Emergency activation
+document.getElementById('activate-lockdown').addEventListener('click', () => {
+    emergencyDashboard.activateEmergency('lockdown');
+});
+
+// Room status updates via click
+mapsIndoorsInstance.addListener('click', (event) => {
+    if (event?.id && emergencyDashboard.isEmergencyActive) {
+        // Show context menu to update room status
+        showStatusContextMenu(event.id, event.pixel);
+    }
+});
+```
+
+### Explanation
+This solution creates a comprehensive emergency response system that visually represents room safety status during emergencies. It uses MapsIndoors display rules to color-code rooms based on their safety status (safe=green, unsafe=red, unresponsive=gray, cleared=blue). The system includes emergency type management, real-time status updates, and statistical dashboards for emergency coordinators.
+
+### Use Cases
+- Building emergency evacuation coordination
+- Safety status monitoring during lockdowns
+- Fire emergency response tracking
+- Medical emergency area isolation
+- Weather emergency shelter-in-place management
+
+### Important Notes
+⚠️ Must wait for MapsIndoors 'ready' event before applying display rules
+⚠️ Status updates should be throttled to avoid overwhelming the display
+⚠️ Color choices should be accessibility-friendly
+⚠️ Emergency banner requires proper CSS z-index to appear above map
+
