@@ -3680,3 +3680,535 @@ This code creates a complete category-based filtering system for MapsIndoors loc
 ⚠️ Solution ID must be provided for Integration API access
 ⚠️ Display rules are applied in bulk for better performance
 
+
+---
+
+## Real-time Location Updates with WebSocket Integration
+
+### Context
+Organizations need real-time location updates for IoT devices, people tracking, or dynamic content that changes frequently. This requires WebSocket integration with MapsIndoors to show live data without page refreshes.
+
+### Industry
+healthcare
+
+### Problem
+Need real-time updates of device locations, people positions, or dynamic content on MapsIndoors maps through WebSocket connections
+
+### Solution
+```javascript
+// Real-time Location Updates with WebSocket Integration
+class MapsIndoorsRealtimeUpdater {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.websocket = null;
+        this.locationMarkers = new Map();
+        this.updateQueue = [];
+        this.isProcessingQueue = false;
+        this.reconnectAttempts = 0;
+        this.maxReconnectAttempts = 5;
+        this.reconnectDelay = 1000;
+        
+        this.statusCallbacks = new Set();
+        this.locationUpdateCallbacks = new Set();
+    }
+
+    // Connect to WebSocket server for real-time updates
+    connect(websocketUrl, options = {}) {
+        const {
+            heartbeatInterval = 30000,
+            autoReconnect = true,
+            apiKey = null
+        } = options;
+
+        try {
+            // Add API key to URL if provided
+            const wsUrl = apiKey ? `${websocketUrl}?apiKey=${apiKey}` : websocketUrl;
+            
+            this.websocket = new WebSocket(wsUrl);
+            this.autoReconnect = autoReconnect;
+            
+            this.websocket.onopen = () => {
+                console.log('Connected to real-time location updates');
+                this.reconnectAttempts = 0;
+                this.notifyStatusCallbacks('connected');
+                
+                // Send heartbeat to keep connection alive
+                if (heartbeatInterval > 0) {
+                    this.startHeartbeat(heartbeatInterval);
+                }
+            };
+
+            this.websocket.onmessage = (event) => {
+                try {
+                    const message = JSON.parse(event.data);
+                    this.handleIncomingMessage(message);
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
+                }
+            };
+
+            this.websocket.onclose = (event) => {
+                console.log('WebSocket connection closed:', event.code, event.reason);
+                this.notifyStatusCallbacks('disconnected');
+                
+                if (this.autoReconnect && this.reconnectAttempts < this.maxReconnectAttempts) {
+                    setTimeout(() => {
+                        this.reconnectAttempts++;
+                        console.log(`Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+                        this.connect(websocketUrl, options);
+                    }, this.reconnectDelay * this.reconnectAttempts);
+                }
+            };
+
+            this.websocket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+                this.notifyStatusCallbacks('error', error);
+            };
+
+        } catch (error) {
+            console.error('Failed to establish WebSocket connection:', error);
+            this.notifyStatusCallbacks('error', error);
+        }
+    }
+
+    // Handle different types of incoming messages
+    handleIncomingMessage(message) {
+        switch (message.type) {
+            case 'location_update':
+                this.queueLocationUpdate(message.data);
+                break;
+            case 'location_batch':
+                message.data.forEach(update => this.queueLocationUpdate(update));
+                break;
+            case 'status_update':
+                this.handleStatusUpdate(message.data);
+                break;
+            case 'heartbeat':
+                // Respond to server heartbeat
+                this.sendMessage({ type: 'heartbeat_response' });
+                break;
+            default:
+                console.log('Unknown message type:', message.type);
+        }
+    }
+
+    // Queue location updates to prevent overwhelming the map
+    queueLocationUpdate(updateData) {
+        this.updateQueue.push({
+            ...updateData,
+            timestamp: Date.now()
+        });
+        
+        if (!this.isProcessingQueue) {
+            this.processUpdateQueue();
+        }
+    }
+
+    // Process queued updates in batches
+    async processUpdateQueue() {
+        if (this.isProcessingQueue || this.updateQueue.length === 0) {
+            return;
+        }
+
+        this.isProcessingQueue = true;
+        
+        try {
+            // Process updates in batches of 10
+            const batchSize = 10;
+            while (this.updateQueue.length > 0) {
+                const batch = this.updateQueue.splice(0, batchSize);
+                
+                await Promise.all(batch.map(update => this.processLocationUpdate(update)));
+                
+                // Small delay between batches to prevent overwhelming the map
+                if (this.updateQueue.length > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+        } finally {
+            this.isProcessingQueue = false;
+        }
+    }
+
+    // Process a single location update
+    async processLocationUpdate(updateData) {
+        const {
+            locationId,
+            coordinates,
+            status,
+            properties,
+            action = 'update'
+        } = updateData;
+
+        try {
+            switch (action) {
+                case 'create':
+                    await this.createLocation(updateData);
+                    break;
+                case 'update':
+                    await this.updateLocation(locationId, updateData);
+                    break;
+                case 'delete':
+                    await this.deleteLocation(locationId);
+                    break;
+                default:
+                    console.warn('Unknown action:', action);
+            }
+            
+            // Notify location update callbacks
+            this.notifyLocationUpdateCallbacks(updateData);
+            
+        } catch (error) {
+            console.error('Error processing location update:', error);
+        }
+    }
+
+    // Create new location with real-time data
+    async createLocation(data) {
+        const { locationId, coordinates, properties, status } = data;
+        
+        // Create marker for new location
+        const marker = new mapboxgl.Marker({
+            color: this.getStatusColor(status)
+        })
+        .setLngLat([coordinates.lng, coordinates.lat])
+        .addTo(this.getMapboxInstance());
+
+        // Add popup with location info
+        const popup = new mapboxgl.Popup({ offset: 25 })
+            .setHTML(`
+                <div style="padding: 10px;">
+                    <h4>${properties.name || 'Unknown Location'}</h4>
+                    <p>Status: ${status || 'Unknown'}</p>
+                    <p>Last Update: ${new Date().toLocaleTimeString()}</p>
+                </div>
+            `);
+        
+        marker.setPopup(popup);
+        
+        this.locationMarkers.set(locationId, {
+            marker,
+            popup,
+            data: data,
+            lastUpdate: Date.now()
+        });
+
+        console.log(`Created new location: ${locationId}`);
+    }
+
+    // Update existing location
+    async updateLocation(locationId, data) {
+        const existingLocation = this.locationMarkers.get(locationId);
+        
+        if (existingLocation) {
+            // Update marker position if coordinates changed
+            if (data.coordinates) {
+                existingLocation.marker.setLngLat([data.coordinates.lng, data.coordinates.lat]);
+            }
+            
+            // Update marker color if status changed
+            if (data.status) {
+                const newColor = this.getStatusColor(data.status);
+                existingLocation.marker.getElement().style.backgroundColor = newColor;
+            }
+            
+            // Update popup content
+            if (data.properties || data.status) {
+                const properties = { ...existingLocation.data.properties, ...data.properties };
+                existingLocation.popup.setHTML(`
+                    <div style="padding: 10px;">
+                        <h4>${properties.name || 'Unknown Location'}</h4>
+                        <p>Status: ${data.status || existingLocation.data.status}</p>
+                        <p>Last Update: ${new Date().toLocaleTimeString()}</p>
+                    </div>
+                `);
+            }
+            
+            // Update stored data
+            existingLocation.data = { ...existingLocation.data, ...data };
+            existingLocation.lastUpdate = Date.now();
+            
+        } else {
+            // Location doesn't exist, try to get it from MapsIndoors
+            try {
+                const location = await mapsindoors.services.LocationsService.getLocation(locationId);
+                if (location) {
+                    // Apply display rule update
+                    this.mapsIndoors.setDisplayRule(locationId, {
+                        visible: true,
+                        iconVisible: data.status !== 'hidden',
+                        polygonFillColor: this.getStatusColor(data.status),
+                        polygonVisible: true,
+                        polygonFillOpacity: 0.6
+                    });
+                }
+            } catch (error) {
+                console.warn(`Location ${locationId} not found in MapsIndoors:`, error);
+            }
+        }
+    }
+
+    // Delete location
+    async deleteLocation(locationId) {
+        const existingLocation = this.locationMarkers.get(locationId);
+        
+        if (existingLocation) {
+            existingLocation.marker.remove();
+            this.locationMarkers.delete(locationId);
+            console.log(`Deleted location: ${locationId}`);
+        } else {
+            // Hide location in MapsIndoors if it exists
+            this.mapsIndoors.setDisplayRule(locationId, {
+                visible: false,
+                iconVisible: false,
+                polygonVisible: false
+            });
+        }
+    }
+
+    // Get color based on status
+    getStatusColor(status) {
+        const statusColors = {
+            'online': '#4CAF50',
+            'offline': '#f44336',
+            'warning': '#ff9800',
+            'maintenance': '#9e9e9e',
+            'active': '#2196f3',
+            'inactive': '#607d8b'
+        };
+        
+        return statusColors[status] || '#666666';
+    }
+
+    // Send message to WebSocket server
+    sendMessage(message) {
+        if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+            this.websocket.send(JSON.stringify(message));
+        } else {
+            console.warn('WebSocket not connected, cannot send message');
+        }
+    }
+
+    // Start heartbeat to keep connection alive
+    startHeartbeat(interval) {
+        this.heartbeatInterval = setInterval(() => {
+            this.sendMessage({ type: 'heartbeat' });
+        }, interval);
+    }
+
+    // Stop heartbeat
+    stopHeartbeat() {
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+            this.heartbeatInterval = null;
+        }
+    }
+
+    // Handle status updates
+    handleStatusUpdate(statusData) {
+        console.log('Received status update:', statusData);
+        this.notifyStatusCallbacks('status_update', statusData);
+    }
+
+    // Event callback management
+    onStatusChange(callback) {
+        this.statusCallbacks.add(callback);
+        return () => this.statusCallbacks.delete(callback);
+    }
+
+    onLocationUpdate(callback) {
+        this.locationUpdateCallbacks.add(callback);
+        return () => this.locationUpdateCallbacks.delete(callback);
+    }
+
+    notifyStatusCallbacks(status, data = null) {
+        this.statusCallbacks.forEach(callback => {
+            try {
+                callback(status, data);
+            } catch (error) {
+                console.error('Error in status callback:', error);
+            }
+        });
+    }
+
+    notifyLocationUpdateCallbacks(updateData) {
+        this.locationUpdateCallbacks.forEach(callback => {
+            try {
+                callback(updateData);
+            } catch (error) {
+                console.error('Error in location update callback:', error);
+            }
+        });
+    }
+
+    // Get Mapbox instance from MapsIndoors
+    getMapboxInstance() {
+        return this.mapsIndoors.getMapView().getMap();
+    }
+
+    // Request location data from server
+    requestLocationData(filters = {}) {
+        this.sendMessage({
+            type: 'request_locations',
+            data: filters
+        });
+    }
+
+    // Subscribe to specific location updates
+    subscribeToLocation(locationId) {
+        this.sendMessage({
+            type: 'subscribe',
+            data: { locationId }
+        });
+    }
+
+    // Unsubscribe from location updates
+    unsubscribeFromLocation(locationId) {
+        this.sendMessage({
+            type: 'unsubscribe',
+            data: { locationId }
+        });
+    }
+
+    // Get connection status
+    getConnectionStatus() {
+        if (!this.websocket) return 'not_connected';
+        
+        switch (this.websocket.readyState) {
+            case WebSocket.CONNECTING:
+                return 'connecting';
+            case WebSocket.OPEN:
+                return 'connected';
+            case WebSocket.CLOSING:
+                return 'closing';
+            case WebSocket.CLOSED:
+                return 'closed';
+            default:
+                return 'unknown';
+        }
+    }
+
+    // Clean up and disconnect
+    disconnect() {
+        this.autoReconnect = false;
+        this.stopHeartbeat();
+        
+        if (this.websocket) {
+            this.websocket.close();
+            this.websocket = null;
+        }
+        
+        // Clean up markers
+        this.locationMarkers.forEach(({ marker }) => {
+            marker.remove();
+        });
+        this.locationMarkers.clear();
+        
+        console.log('Real-time updater disconnected');
+    }
+
+    // Get statistics
+    getStats() {
+        return {
+            connectionStatus: this.getConnectionStatus(),
+            activeMarkers: this.locationMarkers.size,
+            queueLength: this.updateQueue.length,
+            reconnectAttempts: this.reconnectAttempts,
+            isProcessingQueue: this.isProcessingQueue
+        };
+    }
+}
+
+// Usage Example
+let realtimeUpdater;
+
+mapsIndoorsInstance.addListener('ready', () => {
+    realtimeUpdater = new MapsIndoorsRealtimeUpdater(mapsIndoorsInstance);
+    
+    // Set up event listeners
+    realtimeUpdater.onStatusChange((status, data) => {
+        console.log('Connection status changed:', status, data);
+        updateConnectionUI(status);
+    });
+    
+    realtimeUpdater.onLocationUpdate((updateData) => {
+        console.log('Location updated:', updateData);
+        // Handle location update in your UI
+    });
+    
+    // Connect to WebSocket server
+    realtimeUpdater.connect('wss://your-websocket-server.com/locations', {
+        heartbeatInterval: 30000,
+        autoReconnect: true,
+        apiKey: 'your-api-key'
+    });
+});
+
+// Example UI update function
+function updateConnectionUI(status) {
+    const statusIndicator = document.getElementById('connection-status');
+    if (statusIndicator) {
+        statusIndicator.textContent = status;
+        statusIndicator.className = `status-indicator ${status}`;
+    }
+}
+
+// Example cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (realtimeUpdater) {
+        realtimeUpdater.disconnect();
+    }
+});
+
+// Mock WebSocket server message examples for testing:
+/*
+// Location update message
+{
+    "type": "location_update",
+    "data": {
+        "locationId": "device-123",
+        "coordinates": { "lat": 30.3603212, "lng": -97.7422623 },
+        "status": "online",
+        "properties": { "name": "Temperature Sensor 1", "temperature": 72 },
+        "action": "update"
+    }
+}
+
+// Batch update message
+{
+    "type": "location_batch",
+    "data": [
+        {
+            "locationId": "device-124",
+            "coordinates": { "lat": 30.3604212, "lng": -97.7423623 },
+            "status": "warning",
+            "action": "update"
+        },
+        {
+            "locationId": "device-125",
+            "coordinates": { "lat": 30.3605212, "lng": -97.7424623 },
+            "status": "offline",
+            "action": "update"
+        }
+    ]
+}
+*/
+```
+
+### Explanation
+This code creates a complete real-time location update system using WebSockets. Key features include: 1) WebSocket connection with auto-reconnect and heartbeat, 2) Queued update processing to prevent map overwhelming, 3) Support for create/update/delete operations, 4) Dynamic marker creation and updates with status-based colors, 5) Event callback system for status and location changes, 6) Integration with MapsIndoors display rules for existing locations. The system handles connection failures gracefully and provides statistics for monitoring.
+
+### Use Cases
+- IoT device tracking
+- People location monitoring
+- Equipment status updates
+- Emergency response tracking
+- Delivery and logistics monitoring
+
+### Important Notes
+⚠️ WebSocket server must send properly formatted JSON messages
+⚠️ Large volumes of updates can overwhelm the map rendering
+⚠️ Connection failures require proper reconnection logic
+⚠️ Markers should be cleaned up to prevent memory leaks
+⚠️ Status colors should be consistent with your application design
+
