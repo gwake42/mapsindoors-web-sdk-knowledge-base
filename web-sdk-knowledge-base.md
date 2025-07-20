@@ -94,9 +94,233 @@ This code uses MapsIndoors display rules to selectively hide visual elements of 
 - Selective display rule application based on location type
 
 ### Important Notes
-⚠️ Must wait for MapsIndoors ready event before applying display rules
-⚠️ Additional setTimeout may be needed for complex solutions
-⚠️ Use MapboxV3View instead of deprecated MapboxView
-⚠️ Set multiple opacity and visibility properties to ensure complete hiding
-⚠️ Keep visible: true to maintain location data accessibility
+â ï¸ Must wait for MapsIndoors ready event before applying display rules
+â ï¸ Additional setTimeout may be needed for complex solutions
+â ï¸ Use MapboxV3View instead of deprecated MapboxView
+â ï¸ Set multiple opacity and visibility properties to ensure complete hiding
+â ï¸ Keep visible: true to maintain location data accessibility
+
+
+---
+
+## Basic MapsIndoors Mall Demo with Debug Console
+
+### Context
+User was experiencing a blank screen when trying to load MapsIndoors. The issue was that the MapsIndoors and Mapbox scripts were being loaded at the bottom of the page after the JavaScript code tried to use them. Moving the scripts to the head section fixed the loading order issue.
+
+### Industry
+retail
+
+### Problem
+Getting a blank screen when trying to load a basic MapsIndoors mall demo due to improper script loading order
+
+### Solution
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors Mall Demo - Debug Version</title>
+    
+    <!-- Load scripts in head to ensure they're available -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=YOUR_API_KEY"></script>
+    
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        
+        #debug-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 10000;
+            max-width: 400px;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        #map {
+            width: 100vw;
+            height: 100vh;
+            background-color: #e0e0e0;
+        }
+        
+        .log-entry {
+            margin: 2px 0;
+            padding: 2px;
+        }
+        
+        .log-error {
+            color: red;
+            font-weight: bold;
+        }
+        
+        .log-success {
+            color: green;
+        }
+        
+        .log-info {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug-info">
+        <strong>Debug Console:</strong>
+        <div id="debug-log"></div>
+    </div>
+    
+    <div id="map"></div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            MAPBOX_TOKEN: 'pk.eyJ1IjoiZ2V3YS1tYXBzcGVvcGxlIiwiYSI6ImNsZzJudDB4ZTAwcnEzZnAwb2VvbTYwYnIifQ.w-cnsU-xP9jaly_qrgy_iA',
+            MAPSINDOORS_API_KEY: '350bfad2c9a944958b13d6d8',
+            MAP_CENTER: {
+                lat: 30.470393399091968,
+                lng: -97.80686386810669
+            },
+            INITIAL_ZOOM: 18
+        };
+
+        // Debug logging function
+        function debugLog(message, type = 'info') {
+            const logDiv = document.getElementById('debug-log');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // Test MapsIndoors initialization
+        function testMapsIndoors() {
+            debugLog('Testing MapsIndoors initialization...', 'info');
+            
+            try {
+                debugLog('Creating MapboxV3View...', 'info');
+                
+                const mapViewOptions = {
+                    accessToken: CONFIG.MAPBOX_TOKEN,
+                    element: document.getElementById('map'),
+                    center: CONFIG.MAP_CENTER,
+                    zoom: CONFIG.INITIAL_ZOOM
+                };
+
+                const mapView = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+                debugLog('✓ MapboxV3View created', 'success');
+
+                debugLog('Creating MapsIndoors instance...', 'info');
+                const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+                    mapView: mapView
+                });
+                debugLog('✓ MapsIndoors instance created', 'success');
+
+                // Add ready listener
+                mapsIndoorsInstance.addListener('ready', () => {
+                    debugLog('✓ MapsIndoors is READY!', 'success');
+                    
+                    // Add floor selector
+                    const floorSelectorElement = document.createElement('div');
+                    new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+                    
+                    const mapboxInstance = mapView.getMap();
+                    mapboxInstance.addControl({
+                        onAdd: function() { return floorSelectorElement; },
+                        onRemove: function() {}
+                    });
+                    
+                    debugLog('✓ Floor selector added', 'success');
+                    debugLog('Mall demo ready!', 'success');
+                });
+
+                // Add error listener
+                mapsIndoorsInstance.addListener('error', (error) => {
+                    debugLog(`MapsIndoors error: ${error.message || error}`, 'error');
+                });
+
+                debugLog('Waiting for MapsIndoors ready event...', 'info');
+
+            } catch (error) {
+                debugLog(`MapsIndoors error: ${error.message}`, 'error');
+                console.error('Full error:', error);
+            }
+        }
+
+        // Check if required libraries are loaded
+        function checkLibraries() {
+            debugLog('Checking for Mapbox GL JS...', 'info');
+            if (typeof mapboxgl === 'undefined') {
+                debugLog('ERROR: Mapbox GL JS not loaded!', 'error');
+                return false;
+            }
+            debugLog('✓ Mapbox GL JS loaded', 'success');
+
+            debugLog('Checking for MapsIndoors SDK...', 'info');
+            if (typeof mapsindoors === 'undefined') {
+                debugLog('ERROR: MapsIndoors SDK not loaded!', 'error');
+                return false;
+            }
+            debugLog('✓ MapsIndoors SDK loaded', 'success');
+
+            return true;
+        }
+
+        // Global error handlers
+        window.addEventListener('error', (e) => {
+            debugLog(`JavaScript error: ${e.message}`, 'error');
+        });
+
+        window.addEventListener('unhandledrejection', (e) => {
+            debugLog(`Unhandled promise rejection: ${e.reason}`, 'error');
+        });
+
+        // Start the testing process
+        debugLog('Starting MapsIndoors mall demo...', 'info');
+
+        // Wait for scripts to load, then start testing
+        setTimeout(() => {
+            if (checkLibraries()) {
+                testMapsIndoors();
+            } else {
+                debugLog('Cannot proceed - required libraries missing', 'error');
+            }
+        }, 1000);
+
+    </script>
+
+</body>
+</html>
+```
+
+### Explanation
+This is a basic MapsIndoors mall demo with debugging capabilities to help troubleshoot loading issues. The key fix was moving the script tags to the head section to ensure proper loading order. The code includes a debug console that shows real-time status updates during initialization, making it easy to identify where problems occur.
+
+### Use Cases
+- Creating a basic mall mapping application
+- Troubleshooting MapsIndoors loading issues
+- Setting up a foundation for retail wayfinding demos
+- Debugging script loading problems
+
+### Important Notes
+⚠️ Script loading order is critical - MapsIndoors and Mapbox scripts must be loaded in the head before any JavaScript tries to use them
+⚠️ The MapboxV3View must be used instead of the older MapboxView
+⚠️ A timeout is needed to ensure scripts are fully loaded before initialization
+⚠️ Debug console helps identify exactly where initialization fails
 
