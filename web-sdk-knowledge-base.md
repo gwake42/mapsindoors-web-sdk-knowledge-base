@@ -1123,3 +1123,249 @@ This code demonstrates the proper way to hide visual elements for specific locat
 ⚠️ Keep visible: true to maintain location data for search and routing functionality
 ⚠️ Test with different location types as some may require different property combinations
 
+
+---
+
+## Get Buildings List Without Map Using VenuesService
+
+### Context
+User needed to get a complete list of buildings from their MapsIndoors solution without showing a map interface. We tried multiple approaches including SolutionsService.getBuildings() (which doesn't exist) and complex venue processing before settling on the direct VenuesService.getBuildings() method as the cleanest solution.
+
+### Industry
+facility-management
+
+### Problem
+Need to retrieve a complete list of all buildings in a MapsIndoors solution without initializing or displaying a map interface
+
+### Solution
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors Buildings - No Map</title>
+    <!-- MapsIndoors JavaScript -->
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=YOUR_API_KEY"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .building-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            transition: transform 0.2s;
+        }
+
+        .building-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 10px;
+        }
+
+        .floor-tag {
+            display: inline-block;
+            background: #2c5aa0;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            margin: 2px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MapsIndoors Buildings Data</h1>
+        
+        <div class="controls">
+            <button class="btn" id="fetch-buildings">Fetch Buildings</button>
+            <button class="btn" id="clear-results">Clear Results</button>
+        </div>
+
+        <div id="status" class="loading">
+            Click "Fetch Buildings" to load building data...
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Using VenuesService.getBuildings() to get buildings directly
+        async function getBuildingsViaVenues() {
+            try {
+                console.log('Fetching buildings via VenuesService.getBuildings()...');
+                const buildings = await mapsindoors.services.VenuesService.getBuildings();
+                console.log('Buildings data:', buildings);
+                
+                if (!buildings || buildings.length === 0) {
+                    console.log('No buildings found or empty response');
+                    return [];
+                }
+                
+                // Process buildings data to ensure proper building names
+                const processedBuildings = buildings.map(building => {
+                    const floors = building.floors ? Object.keys(building.floors).sort((a, b) => parseInt(a) - parseInt(b)) : [];
+                    
+                    return {
+                        id: building.id,
+                        name: building.name || building.buildingInfo?.name || building.displayName || `Building ${building.id}`,
+                        venue: building.venue || building.venueId,
+                        floors: floors,
+                        floorCount: floors.length,
+                        address: building.address || building.buildingInfo?.address,
+                        geometry: building.geometry,
+                        bbox: building.bbox,
+                        anchor: building.anchor,
+                        floorData: building.floors
+                    };
+                });
+                
+                console.log('Processed buildings:', processedBuildings);
+                return processedBuildings;
+                
+            } catch (error) {
+                console.error('Error fetching buildings via VenuesService.getBuildings():', error);
+                throw error;
+            }
+        }
+
+        // Main fetch function
+        async function fetchBuildings() {
+            const startTime = Date.now();
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            const fetchBtn = document.getElementById('fetch-buildings');
+            
+            // Reset UI
+            statusDiv.innerHTML = '<div class="loading">Loading buildings...</div>';
+            resultsDiv.innerHTML = '';
+            fetchBtn.disabled = true;
+            
+            try {
+                const buildings = await getBuildingsViaVenues();
+                const loadTime = Date.now() - startTime;
+                
+                if (!buildings || buildings.length === 0) {
+                    statusDiv.innerHTML = '<div class="error">No buildings found or service returned empty result.</div>';
+                    return;
+                }
+                
+                // Display success message
+                statusDiv.innerHTML = `<div class="success">Successfully loaded ${buildings.length} building${buildings.length !== 1 ? 's' : ''} using VenuesService.getBuildings()</div>`;
+                
+                // Display buildings
+                displayBuildings(buildings);
+                
+            } catch (error) {
+                console.error('Failed to fetch buildings:', error);
+                statusDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            } finally {
+                fetchBtn.disabled = false;
+            }
+        }
+
+        function displayBuildings(buildings) {
+            const resultsDiv = document.getElementById('results');
+            
+            buildings.forEach(building => {
+                const buildingCard = document.createElement('div');
+                buildingCard.className = 'building-card';
+                
+                let floorsDisplay = '';
+                if (building.floors && building.floors.length > 0) {
+                    floorsDisplay = `
+                        <div class="floors-list">
+                            <strong>Floors:</strong><br>
+                            ${building.floors.map(floor => `<span class="floor-tag">Floor ${floor}</span>`).join('')}
+                        </div>
+                    `;
+                }
+                
+                buildingCard.innerHTML = `
+                    <div class="building-name">${building.name}</div>
+                    <div class="building-info">
+                        <div class="info-item">
+                            <div class="info-label">Building ID</div>
+                            <div class="info-value">${building.id}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Floor Count</div>
+                            <div class="info-value">${building.floorCount}</div>
+                        </div>
+                        ${building.venue ? `
+                            <div class="info-item">
+                                <div class="info-label">Venue</div>
+                                <div class="info-value">${building.venue}</div>
+                            </div>
+                        ` : ''}
+                        ${building.address ? `
+                            <div class="info-item">
+                                <div class="info-label">Address</div>
+                                <div class="info-value">${building.address}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    ${floorsDisplay}
+                `;
+                
+                resultsDiv.appendChild(buildingCard);
+            });
+        }
+
+        // Event listeners
+        document.getElementById('fetch-buildings').addEventListener('click', fetchBuildings);
+        document.getElementById('clear-results').addEventListener('click', () => {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('status').innerHTML = 'Click "Fetch Buildings" to load building data...';
+        });
+
+        // Auto-fetch on page load (optional)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                console.log('Page loaded, MapsIndoors should be ready');
+                // Uncomment the line below to auto-fetch on page load
+                // fetchBuildings();
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
+```
+
+### Explanation
+This solution uses the VenuesService.getBuildings() method to retrieve all building data without initializing a map. The code loads only the MapsIndoors SDK (no Mapbox required) and provides a clean interface to fetch and display building information including names, IDs, floor counts, venues, and addresses. The building data is processed to ensure proper name extraction with multiple fallbacks, and floors are displayed as visual tags sorted numerically.
+
+### Use Cases
+- Administrative dashboards needing building lists
+- Building management systems
+- Data export utilities
+- Reporting applications
+- Building directory websites
+- Asset management systems
+
+### Important Notes
+⚠️ Replace YOUR_API_KEY with actual MapsIndoors API key
+⚠️ VenuesService.getBuildings() is the correct method - not SolutionsService.getBuildings()
+⚠️ Only MapsIndoors SDK is needed - no Mapbox scripts required
+⚠️ Add delay before fetching to ensure MapsIndoors is fully loaded
+⚠️ Building names may be in different properties - use multiple fallbacks
+⚠️ Floor data comes as object keys that need to be sorted numerically
+
