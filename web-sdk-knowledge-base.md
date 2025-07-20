@@ -4501,3 +4501,23 @@ This tool provides a simple HTML interface to test the MapsIndoors VenuesService
 ⚠️ Some venues may not have all properties populated
 ⚠️ Error handling should account for various API response scenarios
 
+
+---
+
+## Test Entry - Debug Check
+
+
+
+### Problem
+Testing API connectivity and response
+
+### Solution
+```javascript
+console.log("API test from comprehensive guide");
+```
+
+### Explanation
+This implementation demonstrates MapsIndoors SDK usage patterns.
+
+
+
