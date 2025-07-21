@@ -4876,3 +4876,342 @@ This implementation integrates MapsIndoors with external booking systems using t
 ⚠️ Permission validation: Verify user permissions both in MapsIndoors and external system before allowing bookings
 ⚠️ Display rule conflicts: Booking status styling may conflict with other display rules - use specific filters
 
+
+---
+
+## Corporate Room Booking Demo with Waitlist Feature
+
+### Context
+Built as a demo for a banking corporate office environment, focusing on professional aesthetics and waitlist functionality rather than direct booking. Uses actual MapsIndoors room data from the AUSTINOFFICE venue to create a realistic corporate room finder application.
+
+### Industry
+corporate
+
+### Problem
+Creating a polished corporate room booking application with waitlist functionality instead of traditional booking, suitable for banking/corporate environments
+
+### Solution
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corporate Room Finder</title>
+    <!-- Mapbox CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #0a4d7e;
+            --primary-light: #d0e3f0;
+            --secondary-color: #1c86c5;
+            --tertiary-color: #e9f3fc;
+            --accent-color: #f0b941;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --radius-sm: 0.25rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            color: var(--gray-800);
+            background-color: var(--gray-100);
+            line-height: 1.5;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            flex: 0 0 400px;
+            background-color: white;
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-container {
+            padding: 20px;
+            background-color: white;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            background-color: var(--gray-100);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(28, 134, 197, 0.15);
+        }
+
+        .room-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .room-card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--gray-300);
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .room-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--gray-400);
+        }
+
+        .room-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(10, 77, 126, 0.15);
+        }
+
+        .map-container {
+            flex: 1;
+            height: 100%;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .floor-selector {
+            position: absolute;
+            right: 20px;
+            top: 160px;
+            background-color: white;
+            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            z-index: 100;
+        }
+
+        .floor-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .floor-btn:hover {
+            background-color: var(--gray-100);
+        }
+
+        .floor-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <!-- Sidebar content with room list -->
+        </div>
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.39.2/mapsindoors-4.39.2.js.gz?apikey=mapspeople"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize MapsIndoors
+            const mapViewOptions = {
+                accessToken: 'YOUR_MAPBOX_TOKEN',
+                element: document.getElementById('map'),
+                center: { lat: 30.3603212, lng: -97.7422623 },
+                zoom: 20,
+                maxZoom: 22,
+            };
+
+            const mapViewInstance = new mapsindoors.mapView.MapboxView(mapViewOptions);
+            const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+                mapView: mapViewInstance,
+            });
+            const mapboxInstance = mapViewInstance.getMap();
+
+            // Custom floor selector function
+            function addCustomFloorSelector() {
+                const floorSelectorContainer = document.createElement('div');
+                floorSelectorContainer.className = 'floor-selector';
+                document.querySelector('.map-container').appendChild(floorSelectorContainer);
+                
+                function updateFloorSelector() {
+                    floorSelectorContainer.innerHTML = '';
+                    const building = mapsIndoorsInstance.getBuilding();
+                    if (!building || !building.floors) return;
+                    
+                    const currentFloor = mapsIndoorsInstance.getFloor();
+                    const floors = Object.entries(building.floors)
+                        .sort(([a], [b]) => parseInt(b) - parseInt(a));
+                    
+                    floors.forEach(([floorIndex, floorInfo]) => {
+                        const button = document.createElement('button');
+                        button.className = `floor-btn ${floorIndex == currentFloor ? 'active' : ''}`;
+                        button.textContent = floorInfo.name || floorIndex;
+                        button.onclick = () => {
+                            mapsIndoorsInstance.setFloor(parseInt(floorIndex));
+                        };
+                        floorSelectorContainer.appendChild(button);
+                    });
+                }
+                
+                mapsIndoorsInstance.addListener('building_changed', updateFloorSelector);
+                mapsIndoorsInstance.addListener('floor_changed', updateFloorSelector);
+                setTimeout(updateFloorSelector, 1000);
+            }
+
+            // Load actual MapsIndoors rooms
+            mapsIndoorsInstance.addListener('ready', async function() {
+                addCustomFloorSelector();
+                
+                try {
+                    // Get meeting rooms from specific venue
+                    const rooms = await mapsindoors.services.LocationsService.getLocations({
+                        venue: 'AUSTINOFFICE',
+                        types: ['MeetingRoom', 'MeetingRoom Small', 'MeetingRoom Extra Small', 'MeetingRoom Medium', 'MeetingRoom Large'],
+                        take: 100
+                    });
+
+                    // Set display rules for room highlighting
+                    mapsIndoorsInstance.setDisplayRule(rooms.map(room => room.id), {
+                        visible: true,
+                        polygonVisible: true,
+                        polygonFillColor: '#0a4d7e',
+                        polygonFillOpacity: 0.3,
+                        polygonStrokeColor: '#0a4d7e',
+                        polygonStrokeOpacity: 0.8,
+                        polygonStrokeWidth: 1,
+                        zoomFrom: 16
+                    });
+
+                    // Handle room selection
+                    mapsIndoorsInstance.addListener('click', (event) => {
+                        if (event && event.id) {
+                            const room = rooms.find(r => r.id === event.id);
+                            if (room) {
+                                // Highlight selected room
+                                mapsIndoorsInstance.setDisplayRule(event.id, {
+                                    visible: true,
+                                    polygonVisible: true,
+                                    polygonFillColor: '#f0b941',
+                                    polygonFillOpacity: 0.5,
+                                    polygonStrokeColor: '#f0b941',
+                                    polygonStrokeOpacity: 1,
+                                    polygonStrokeWidth: 2,
+                                    zoomFrom: 16
+                                });
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading rooms:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
+
+### Explanation
+This code creates a professional room booking demo that integrates actual MapsIndoors location data with a polished UI suitable for corporate environments. Key features include:
+
+1. **MapsIndoors Integration**: Uses real meeting room data from AUSTINOFFICE venue with specific room types
+2. **Custom Floor Selector**: Clean, positioned floor selector that integrates with the overall design
+3. **Room Display Rules**: Visual highlighting of rooms with different states (normal vs selected)
+4. **Professional Styling**: Uses a corporate color scheme with proper spacing, shadows, and typography
+5. **Responsive Layout**: Sidebar with room list and full-width map container
+6. **Waitlist Functionality**: Instead of booking, users join waitlists for rooms (shown in full implementation)
+
+The application fetches actual MapsIndoors meeting rooms and displays them as clickable polygons on the map. When clicked, rooms are highlighted with visual feedback. The custom floor selector provides intuitive navigation between building floors.
+
+### Use Cases
+- Corporate office room booking systems
+- Banking facility management
+- Enterprise space reservation
+- Meeting room availability tracking
+- Professional office wayfinding
+- Corporate real estate management
+
+### Important Notes
+⚠️ Must use specific venue parameter ('AUSTINOFFICE') to get relevant room data
+⚠️ Custom floor selector requires building_changed and floor_changed listeners for proper updates
+⚠️ Display rules must be set after MapsIndoors ready event
+⚠️ Room types should match actual types in the venue (MeetingRoom variations)
+⚠️ MapboxView initialization requires valid Mapbox access token
+⚠️ Floor selector positioning may need adjustment based on other map controls
+
