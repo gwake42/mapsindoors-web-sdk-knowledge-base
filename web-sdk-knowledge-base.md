@@ -5365,3 +5365,218 @@ This bank desk booking system provides a complete solution for workspace reserva
 ⚠️ Consider desk equipment/accessibility requirements
 ⚠️ Plan for peak booking periods (Monday mornings, post-holidays)
 
+
+---
+
+## MapsIndoors Web SDK Filtering Approaches - No setFilter Method Available
+
+### Context
+Developer was asking about filtering capabilities in MapsIndoors Web SDK, specifically looking for a setFilter method similar to other mapping libraries. This solution provides comprehensive alternatives since no direct setFilter method exists.
+
+### Industry
+corporate
+
+### Problem
+The MapsIndoors Web SDK does not have a direct setFilter() method like other mapping SDKs. Developers need alternative approaches to filter and display locations based on various criteria such as type, floor, capacity, or custom properties.
+
+### Solution
+```javascript
+// 1. SERVER-SIDE FILTERING via LocationsService (Most Efficient)
+// Filter by type
+const meetingRooms = await mapsindoors.services.LocationsService.getLocations({
+    types: ['MeetingRoom', 'MeetingRoom Small', 'MeetingRoom Large'],
+    venue: 'YOUR_VENUE_ID',
+    take: 100
+});
+
+// Filter by categories
+const filteredByCategory = await mapsindoors.services.LocationsService.getLocations({
+    categories: ['category-key-1', 'category-key-2'],
+    take: 50
+});
+
+// Filter by search query
+const searchResults = await mapsindoors.services.LocationsService.getLocations({
+    q: 'conference room',
+    venue: 'YOUR_VENUE_ID'
+});
+
+// Filter by floor
+const floorLocations = await mapsindoors.services.LocationsService.getLocations({
+    floor: 2,
+    venue: 'YOUR_VENUE_ID'
+});
+
+// Filter by proximity
+const nearbyLocations = await mapsindoors.services.LocationsService.getLocations({
+    near: { lat: 30.3603212, lng: -97.7422623 },
+    radius: 100, // meters
+    take: 10
+});
+
+// 2. VISUAL FILTERING via Display Rules
+// Hide/show specific locations
+mapsIndoorsInstance.setDisplayRule(['location-id-1', 'location-id-2'], {
+    visible: false
+});
+
+// Hide all locations of certain types
+const allMeetingRooms = await mapsindoors.services.LocationsService.getLocations({
+    types: ['MeetingRoom']
+});
+const roomIds = allMeetingRooms.map(room => room.id);
+mapsIndoorsInstance.setDisplayRule(roomIds, {
+    visible: false
+});
+
+// 3. CLIENT-SIDE FILTERING with JavaScript
+// Get all locations then filter client-side
+const allLocations = await mapsindoors.services.LocationsService.getLocations({
+    venue: 'YOUR_VENUE_ID',
+    take: 1000
+});
+
+// Filter by capacity (custom property)
+const largeRooms = allLocations.filter(location => {
+    const capacity = location.properties.capacity;
+    return capacity && parseInt(capacity) > 10;
+});
+
+// Filter by name pattern
+const conferenceRooms = allLocations.filter(location => 
+    location.properties.name.toLowerCase().includes('conference')
+);
+
+// 4. CUSTOM FILTER CLASS (Comprehensive Solution)
+class LocationFilter {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.allLocations = [];
+        this.filteredLocations = [];
+    }
+
+    async initialize() {
+        // Load all locations
+        this.allLocations = await mapsindoors.services.LocationsService.getLocations({
+            venue: 'YOUR_VENUE_ID',
+            take: 1000
+        });
+    }
+
+    filterByType(types) {
+        this.filteredLocations = this.allLocations.filter(location => 
+            types.includes(location.properties.type)
+        );
+        this.updateDisplay();
+    }
+
+    filterByFloor(floor) {
+        this.filteredLocations = this.allLocations.filter(location => 
+            location.properties.floor === floor
+        );
+        this.updateDisplay();
+    }
+
+    filterByCapacity(minCapacity, maxCapacity) {
+        this.filteredLocations = this.allLocations.filter(location => {
+            const capacity = parseInt(location.properties.capacity || 0);
+            return capacity >= minCapacity && capacity <= maxCapacity;
+        });
+        this.updateDisplay();
+    }
+
+    filterByMultipleCriteria(criteria) {
+        this.filteredLocations = this.allLocations.filter(location => {
+            let matches = true;
+            
+            if (criteria.types && !criteria.types.includes(location.properties.type)) {
+                matches = false;
+            }
+            
+            if (criteria.floor && location.properties.floor !== criteria.floor) {
+                matches = false;
+            }
+            
+            if (criteria.searchTerm && !location.properties.name.toLowerCase().includes(criteria.searchTerm.toLowerCase())) {
+                matches = false;
+            }
+            
+            if (criteria.minCapacity) {
+                const capacity = parseInt(location.properties.capacity || 0);
+                if (capacity < criteria.minCapacity) matches = false;
+            }
+            
+            return matches;
+        });
+        this.updateDisplay();
+    }
+
+    updateDisplay() {
+        // Hide all locations first
+        const allIds = this.allLocations.map(loc => loc.id);
+        this.mapsIndoors.setDisplayRule(allIds, { visible: false });
+        
+        // Show filtered locations
+        const filteredIds = this.filteredLocations.map(loc => loc.id);
+        this.mapsIndoors.setDisplayRule(filteredIds, { visible: true });
+    }
+
+    clearFilter() {
+        const allIds = this.allLocations.map(loc => loc.id);
+        this.mapsIndoors.setDisplayRule(allIds, { visible: true });
+        this.filteredLocations = [...this.allLocations];
+    }
+
+    getFilteredLocations() {
+        return this.filteredLocations;
+    }
+}
+
+// USAGE EXAMPLE
+const filter = new LocationFilter(mapsIndoorsInstance);
+await filter.initialize();
+
+// Filter by type
+filter.filterByType(['MeetingRoom', 'MeetingRoom Large']);
+
+// Filter by multiple criteria
+filter.filterByMultipleCriteria({
+    types: ['MeetingRoom'],
+    floor: 2,
+    searchTerm: 'conference',
+    minCapacity: 8
+});
+
+// Clear all filters
+filter.clearFilter();
+```
+
+### Explanation
+The MapsIndoors Web SDK doesn't provide a setFilter() method, but offers four main filtering approaches:
+
+1. **Server-side filtering** using LocationsService.getLocations() with parameters like types, categories, floor, search query (q), and proximity (near/radius). This is the most efficient approach as it reduces data transfer.
+
+2. **Visual filtering** using setDisplayRule() to hide/show locations on the map without re-fetching data. Good for interactive filtering.
+
+3. **Client-side filtering** using JavaScript array methods after fetching all locations. Useful for complex custom criteria but requires loading all data first.
+
+4. **Custom filter classes** that combine multiple approaches for comprehensive filtering systems.
+
+The LocationFilter class example provides a reusable solution that loads all locations once, then applies various filters client-side while updating the visual display accordingly.
+
+### Use Cases
+- Interactive room booking systems where users filter by capacity, floor, or amenities
+- Wayfinding applications that show only relevant location types
+- Facility management dashboards with dynamic location filtering
+- Emergency response systems filtering by room status or type
+- Corporate space management with complex filtering criteria
+
+### Important Notes
+⚠️ No direct setFilter method exists in MapsIndoors Web SDK
+⚠️ LocationsService.getLocations() has a 'take' parameter limit - use multiple calls for large datasets
+⚠️ setDisplayRule() only controls visibility, doesn't remove locations from memory
+⚠️ Client-side filtering requires loading all data first, which may impact performance
+⚠️ Always use venue parameter in LocationsService calls for better performance
+⚠️ Floor parameter in LocationsService is a number, not a string
+⚠️ Display rules are applied per location ID, so batch operations are more efficient
+
