@@ -5215,3 +5215,153 @@ The application fetches actual MapsIndoors meeting rooms and displays them as cl
 ⚠️ MapboxView initialization requires valid Mapbox access token
 ⚠️ Floor selector positioning may need adjustment based on other map controls
 
+
+---
+
+## Bank Desk Booking System with MapsIndoors
+
+### Context
+Banking institutions need efficient desk booking systems for modern flexible work environments where employees don't have assigned permanent desks
+
+### Industry
+financial services
+
+### Problem
+Banks need a comprehensive desk booking system for employees to reserve workspaces, especially in modern flexible work environments where hot-desking is common.
+
+### Solution
+```javascript
+class BankDeskBooking {
+    constructor(mapsIndoorsInstance) {
+        this.mapsIndoors = mapsIndoorsInstance;
+        this.desks = [];
+        this.selectedDeskId = null;
+        
+        this.availabilityColors = {
+            'available': '#4CAF50',
+            'busy': '#f44336',
+            'selected': '#2196F3'
+        };
+    }
+
+    async loadDesks() {
+        // Load desk locations from MapsIndoors
+        const locations = await mapsindoors.services.LocationsService.getLocations({
+            types: ['Desk', 'Workstation'],
+            venue: 'BANK_VENUE',
+            take: 100
+        });
+
+        this.desks = locations.map(location => ({
+            id: location.id,
+            name: location.properties.name,
+            floor: location.properties.floor,
+            department: location.properties.department,
+            availability: this.checkAvailability(location.id),
+            equipment: this.getEquipment(location),
+            timeSlots: this.generateTimeSlots()
+        }));
+
+        this.updateDeskDisplayRules();
+        this.renderDeskList();
+    }
+
+    updateDeskDisplayRules() {
+        // Visual feedback on map
+        const availableDesks = this.desks.filter(desk => desk.availability === 'available').map(d => d.id);
+        const busyDesks = this.desks.filter(desk => desk.availability === 'busy').map(d => d.id);
+        
+        this.mapsIndoors.setDisplayRule(availableDesks, {
+            polygonVisible: true,
+            polygonFillColor: this.availabilityColors.available,
+            polygonFillOpacity: 0.4,
+            polygonStrokeColor: this.availabilityColors.available,
+            polygonStrokeOpacity: 0.8,
+            polygonStrokeWidth: 1,
+            zoomFrom: 16
+        });
+
+        this.mapsIndoors.setDisplayRule(busyDesks, {
+            polygonVisible: true,
+            polygonFillColor: this.availabilityColors.busy,
+            polygonFillOpacity: 0.4,
+            polygonStrokeColor: this.availabilityColors.busy,
+            polygonStrokeOpacity: 0.8,
+            polygonStrokeWidth: 1,
+            zoomFrom: 16
+        });
+    }
+
+    selectDesk(deskId) {
+        this.selectedDeskId = deskId;
+        const desk = this.desks.find(d => d.id === deskId);
+        if (!desk) return;
+
+        // Highlight selected desk
+        this.mapsIndoors.setDisplayRule(deskId, {
+            polygonVisible: true,
+            polygonFillColor: this.availabilityColors.selected,
+            polygonFillOpacity: 0.6,
+            polygonStrokeColor: this.availabilityColors.selected,
+            polygonStrokeOpacity: 1,
+            polygonStrokeWidth: 2,
+            zoomFrom: 16
+        });
+
+        // Center map on desk
+        this.mapsIndoors.setFloor(desk.floor);
+        this.showDeskDetails(desk);
+    }
+
+    async submitBooking(bookingData) {
+        const { deskId, date, timeSlot, purpose } = bookingData;
+        
+        // In real implementation, integrate with booking API
+        const booking = {
+            id: Date.now().toString(),
+            deskId,
+            date,
+            timeSlot,
+            purpose,
+            status: 'confirmed',
+            timestamp: new Date()
+        };
+
+        // Update desk availability
+        const desk = this.desks.find(d => d.id === deskId);
+        if (desk && desk.timeSlots[timeSlot]) {
+            desk.timeSlots[timeSlot] = 'busy';
+            desk.availability = 'busy';
+            this.updateDeskDisplayRules();
+        }
+
+        return booking;
+    }
+}
+
+// Usage
+mapsIndoorsInstance.addListener('ready', () => {
+    const bookingSystem = new BankDeskBooking(mapsIndoorsInstance);
+    bookingSystem.loadDesks();
+});
+```
+
+### Explanation
+This bank desk booking system provides a complete solution for workspace reservation in banking environments. It uses MapsIndoors to visualize desk availability with color-coded polygons, allows filtering by department/floor, and handles booking workflows. The system integrates visual feedback with the map, showing available (green), busy (red), and selected (blue) desks.
+
+### Use Cases
+- Hot-desking in bank branches
+- Flexible workspace management
+- Department-specific desk allocation
+- Meeting room-style booking for individual desks
+- Employee workspace planning
+- Office capacity management
+
+### Important Notes
+⚠️ Ensure real-time availability updates to prevent double bookings
+⚠️ Consider integration with Active Directory for employee authentication
+⚠️ Handle time zone considerations for multi-location banks
+⚠️ Implement booking cancellation policies
+⚠️ Consider desk equipment/accessibility requirements
+⚠️ Plan for peak booking periods (Monday mornings, post-holidays)
+
