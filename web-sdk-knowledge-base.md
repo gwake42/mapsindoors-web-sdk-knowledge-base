@@ -5580,3 +5580,815 @@ The LocationFilter class example provides a reusable solution that loads all loc
 ⚠️ Floor parameter in LocationsService is a number, not a string
 ⚠️ Display rules are applied per location ID, so batch operations are more efficient
 
+
+---
+
+## Dynamic 2D/3D View Switcher with Smooth Wall Extrusion
+
+### Context
+This solution addresses the need for intuitive 2D/3D mode switching in indoor mapping applications where users expect smooth visual transitions rather than abrupt mode changes. It's particularly valuable for applications where users need to examine floor plans in detail (2D) and then get spatial context through 3D visualization without jarring transitions.
+
+### Industry
+Multi-Industry
+
+### Problem
+Creating a smooth transition between 2D and 3D viewing modes in MapsIndoors based on camera tilt angle, with dynamic wall height extrusion that grows progressively as users tilt the map from top-down to perspective view
+
+### Solution
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors Dynamic 2D/3D View Switcher with Wall Extrusion</title>
+    
+    <!-- Mapbox CSS (load first) -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    
+    <!-- Mapbox JavaScript (load before MapsIndoors) -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    
+    <!-- MapsIndoors JavaScript (load after Mapbox) -->
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=mapspeople3d"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .view-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .view-indicator.view-2d {
+            border-left: 4px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .view-indicator.view-transition {
+            border-left: 4px solid #FF9800;
+            color: #FF9800;
+        }
+
+        .view-indicator.view-3d {
+            border-left: 4px solid #FF5722;
+            color: #FF5722;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 250px;
+        }
+
+        .control-group {
+            margin-bottom: 10px;
+        }
+
+        .control-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .control-value {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .tilt-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+            position: relative;
+        }
+
+        .tilt-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #FF9800 70%, #FF5722 100%);
+            transition: width 0.2s ease;
+            border-radius: 4px;
+        }
+
+        .tilt-threshold {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .threshold-45 {
+            left: 75%; /* 45 degrees out of 60 */
+        }
+
+        .toggle-button {
+            width: 100%;
+            padding: 8px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .toggle-button:hover {
+            background: #1976D2;
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 350px;
+            font-size: 14px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .info-text {
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 2000;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2196F3;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .extrusion-info {
+            color: #FF9800;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Loading MapsIndoors...</div>
+    </div>
+    
+    <div class="view-indicator view-2d" id="view-indicator">
+        <span id="view-mode">2D View</span>
+    </div>
+    
+    <div class="controls">
+        <div class="control-group">
+            <div class="control-label">Camera Tilt</div>
+            <div class="control-value" id="tilt-value">0°</div>
+            <div class="tilt-bar">
+                <div class="tilt-progress" id="tilt-progress"></div>
+                <div class="tilt-threshold threshold-45"></div>
+            </div>
+            <div class="extrusion-info" id="extrusion-info">Walls Height: 0.0</div>
+        </div>
+        
+        <div class="control-group">
+            <div class="control-label">Zoom Level</div>
+            <div class="control-value" id="zoom-value">20</div>
+        </div>
+        
+        <div class="control-group">
+            <div class="control-label">Current Floor</div>
+            <div class="control-value" id="floor-value">0</div>
+        </div>
+        
+        <div class="control-group">
+            <div class="control-label">View State</div>
+            <div class="control-value" id="view-state">2D Mode</div>
+        </div>
+        
+        <button class="toggle-button" id="manual-toggle">
+            Toggle 2D/3D Mode
+        </button>
+        
+        <button class="toggle-button" id="feature-toggle" style="margin-top: 5px;">
+            Toggle Features
+        </button>
+    </div>
+    
+    <div class="info-panel">
+        <div class="info-title">Dynamic View Switcher with Wall Extrusion</div>
+        <div class="info-text">
+            • <strong>0° - 1°:</strong> Pure 2D mode<br>
+            • <strong>Feature Toggle:</strong> Use proper MapsIndoors 2D/3D feature hiding<br>
+            • <strong>Wall Height Mode:</strong> Smooth wall growth with camera tilt<br>
+            • <strong>45°+:</strong> Full 3D mode with all 3D features<br>
+            • Wall height grows smoothly from 0 to 1.5<br>
+            • Drag to rotate/tilt the map and see the smooth transitions<br>
+            • Use the manual toggle button to override automatic mode
+        </div>
+    </div>
+
+    <script>
+        class CustomMap {
+            constructor() {
+                // View state
+                this.currentViewMode = '2d'; // '2d', 'transition', '3d'
+                this.manualOverride = false;
+                
+                // Threshold angles (in degrees)
+                this.transitionStartAngle = 1;
+                this.full3DAngle = 45;
+                this.maxWallsHeight = 1.5;
+                
+                // 2D/3D toggle state
+                this.is3DMode = false;
+                this.useFeatureToggle = false;
+                
+                // Feature arrays for 2D/3D toggle - will be initialized after MapsIndoors loads
+                this.features3DToHide = [];
+                this.features2DToHide = [];
+                
+                // MapsIndoors instances
+                this.mapsIndoorsInstance = null;
+                this.mapboxInstance = null;
+                this.locationIds = [];
+                
+                // Initialize
+                this.init();
+            }
+            
+            // Initialize feature types after MapsIndoors is loaded
+            initializeFeatureTypes() {
+                try {
+                    // Check if FeatureType exists and initialize arrays
+                    if (typeof mapsindoors !== 'undefined' && mapsindoors.FeatureType) {
+                        this.features3DToHide = [
+                            mapsindoors.FeatureType.WALLS3D,
+                            mapsindoors.FeatureType.MODEL3D,
+                            mapsindoors.FeatureType.EXTRUSION3D,
+                            mapsindoors.FeatureType.EXTRUDEDBUILDINGS
+                        ].filter(type => type !== undefined); // Filter out any undefined types
+                        
+                        this.features2DToHide = [
+                            mapsindoors.FeatureType.MODEL2D,
+                            mapsindoors.FeatureType.WALLS2D
+                        ].filter(type => type !== undefined);
+                        
+                        console.log('Feature types initialized:', {
+                            features3DToHide: this.features3DToHide,
+                            features2DToHide: this.features2DToHide
+                        });
+                    } else {
+                        console.warn('FeatureType not available, using string constants');
+                        // Fallback to string constants if FeatureType enum doesn't exist
+                        this.features3DToHide = ['WALLS3D', 'MODEL3D', 'EXTRUSION3D', 'EXTRUDEDBUILDINGS'];
+                        this.features2DToHide = ['MODEL2D', 'WALLS2D'];
+                    }
+                } catch (error) {
+                    console.error('Error initializing feature types:', error);
+                    // Fallback to empty arrays
+                    this.features3DToHide = [];
+                    this.features2DToHide = [];
+                }
+            }
+            
+            async init() {
+                try {
+                    await this.initializeMapsIndoors();
+                    this.setupEventListeners();
+                } catch (error) {
+                    console.error('Error initializing map:', error);
+                    this.hideLoading();
+                    alert('Error loading map. Please refresh the page.');
+                }
+            }
+            
+            async initializeMapsIndoors() {
+                // Initialize map with MapboxV3View
+                const mapViewOptions = {
+                    accessToken: 'pk.eyJ1IjoiZ2V3YS1tYXBzcGVvcGxlIiwiYSI6ImNsZzJudDB4ZTAwcnEzZnAwb2VvbTYwYnIifQ.w-cnsU-xP9jaly_qrgy_iA',
+                    element: document.getElementById('map'),
+                    center: { lat: 30.3603212, lng: -97.7422623 }, // Austin Office
+                    zoom: 20,
+                    maxZoom: 22,
+                };
+
+                const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+                this.mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+                    mapView: mapViewInstance,
+                });
+                this.mapboxInstance = mapViewInstance.getMap();
+                this.mapView = mapViewInstance; // Store reference for feature toggling
+
+                    // Wait for MapsIndoors to be ready
+                await new Promise((resolve) => {
+                    this.mapsIndoorsInstance.addListener('ready', async () => {
+                        console.log('MapsIndoors is ready');
+                        
+                        // Configure solution for 3D capability
+                        try {
+                            const solutionConfig = this.mapsIndoorsInstance.getSolutionConfig();
+                            // Enable 3D features in solution config
+                            solutionConfig.is3D = true;
+                            this.mapsIndoorsInstance.setSolutionConfig(solutionConfig);
+                            console.log('3D mode enabled in solution config');
+                            
+                            // Initialize feature arrays now that MapsIndoors is loaded
+                            this.initializeFeatureTypes();
+                            
+                            // Initialize in 2D mode (hide 3D features)
+                            this.hide3DFeatures();
+                        } catch (error) {
+                            console.warn('Could not configure 3D mode:', error);
+                        }
+                        
+                        await this.onMapReady();
+                        resolve();
+                    });
+                });
+
+                // Add floor selector
+                const floorSelectorElement = document.createElement('div');
+                new mapsindoors.FloorSelector(floorSelectorElement, this.mapsIndoorsInstance);
+                this.mapboxInstance.addControl({ 
+                    onAdd: () => floorSelectorElement,
+                    onRemove: () => {} 
+                });
+
+                // Handle errors
+                this.mapsIndoorsInstance.addListener('error', (error) => {
+                    console.error('MapsIndoors error:', error);
+                });
+            }
+            
+            async onMapReady() {
+                try {
+                    // Get all locations to apply display rules
+                    const locations = await mapsindoors.services.LocationsService.getLocations({
+                        take: 1000 // Get a large number of locations
+                    });
+                    
+                    this.locationIds = locations.map(location => location.id);
+                    console.log(`Found ${this.locationIds.length} locations`);
+                    
+                    // Set initial 2D view mode
+                    await this.setViewModeByAngle(0);
+                    
+                    // Update UI
+                    this.hideLoading();
+                    
+                } catch (error) {
+                    console.error('Error in onMapReady:', error);
+                    this.hideLoading();
+                }
+            }
+            
+            setupEventListeners() {
+                // Throttle function for performance
+                let updateTimeout = null;
+                const throttledUpdate = () => {
+                    if (updateTimeout) clearTimeout(updateTimeout);
+                    updateTimeout = setTimeout(() => {
+                        this.updateViewBasedOnTilt();
+                        this.updateCameraInfo();
+                    }, 16); // ~60fps
+                };
+                
+                // Add camera event listeners
+                this.mapboxInstance.on('move', throttledUpdate);
+                this.mapboxInstance.on('rotate', throttledUpdate);
+                this.mapboxInstance.on('pitch', throttledUpdate);
+                this.mapboxInstance.on('zoom', () => this.updateCameraInfo());
+                
+                // Manual toggle button
+                document.getElementById('manual-toggle').addEventListener('click', () => {
+                    this.manualOverride = !this.manualOverride;
+                    if (this.manualOverride) {
+                        // Cycle through modes: 2d -> transition -> 3d -> 2d
+                        const currentPitch = this.mapboxInstance.getPitch();
+                        if (this.currentViewMode === '2d') {
+                            this.setViewModeByAngle(25); // Mid-transition
+                        } else if (this.currentViewMode === 'transition') {
+                            this.setViewModeByAngle(50); // Full 3D
+                        } else {
+                            this.setViewModeByAngle(0); // Back to 2D
+                        }
+                    } else {
+                        // Return to automatic mode
+                        this.updateViewBasedOnTilt();
+                    }
+                });
+                
+                // Feature toggle button
+                document.getElementById('feature-toggle').addEventListener('click', () => {
+                    this.useFeatureToggle = !this.useFeatureToggle;
+                    
+                    if (this.useFeatureToggle) {
+                        // Use feature-based 2D/3D toggle
+                        this.is3DMode = !this.is3DMode;
+                        
+                        if (this.is3DMode) {
+                            this.hide2DFeatures();
+                            this.show3DFeatures();
+                        } else {
+                            this.hide3DFeatures();
+                            this.show2DFeatures();
+                        }
+                        
+                        console.log(`Feature toggle mode: ${this.is3DMode ? '3D' : '2D'}`);
+                    } else {
+                        // Return to wall height based mode
+                        this.showAllFeatures();
+                        this.updateViewBasedOnTilt();
+                    }
+                });
+                
+                // Floor change listener
+                this.mapsIndoorsInstance.addListener('floor_changed', () => {
+                    this.updateCameraInfo();
+                });
+                
+                // Initial camera info update
+                this.updateCameraInfo();
+            }
+            
+            async updateViewBasedOnTilt() {
+                if (!this.mapsIndoorsInstance || this.manualOverride || this.useFeatureToggle) return;
+                
+                const pitch = this.mapboxInstance.getPitch();
+                await this.setViewModeByAngle(pitch);
+            }
+            
+            async setViewModeByAngle(pitch) {
+                if (!this.locationIds || this.locationIds.length === 0) {
+                    console.warn('No location IDs available for display rules');
+                    return;
+                }
+                
+                let newViewMode;
+                
+                if (pitch <= this.transitionStartAngle) {
+                    // Pure 2D mode (0° - 1°) - ALL 3D features OFF, 2D features ON
+                    newViewMode = '2d';
+                    
+                    // Hide all 3D features, show all 2D features
+                    this.hideAll3DFeatures();
+                    this.showAll2DFeatures();
+                    
+                    // Also set display rule to ensure walls are off
+                    const displayRule = {
+                        walls3D: false,
+                        wallsVisible: false,
+                        wallsHeight: 0,
+                        extrusionVisible: false,
+                        model3DVisible: false,
+                        iconVisible: true,
+                        polygonVisible: true,
+                       // labelVisible: true,
+                        zoomFrom: 16
+                    };
+                    this.mapsIndoorsInstance.setDisplayRule(this.locationIds, displayRule);
+                    
+                } else if (pitch < this.full3DAngle) {
+                    // Transition mode (1° - 44°) - 3D walls with growing height, keep 2D features
+                    newViewMode = 'transition';
+                    
+                    // Hide most 3D features but allow walls, keep 2D features visible
+                    this.hideNon3DWallFeatures();
+                    this.showAll2DFeatures();
+                    
+                    // Calculate wall height based on angle (1° to 44° maps to 0 to 1.5)
+                    const transitionProgress = (pitch - this.transitionStartAngle) / (this.full3DAngle - this.transitionStartAngle);
+                    const wallsHeight = transitionProgress * this.maxWallsHeight;
+                    
+                    const displayRule = {
+                        walls3D: true, // Enable 3D walls
+                        wallsVisible: true,
+                        wallsHeight: wallsHeight,
+                        extrusionVisible: false, // Keep other 3D features off
+                        model3DVisible: false, // Keep 3D models off until full 3D
+                        iconVisible: true, // Keep 2D features visible
+                        polygonVisible: true,
+                        zoomFrom: 16
+                    };
+                    this.mapsIndoorsInstance.setDisplayRule(this.locationIds, displayRule);
+                    
+                } else {
+                    // Full 3D mode (45°+) - ALL 2D OFF, ALL 3D ON
+                    newViewMode = '3d';
+                    
+                    // Hide all 2D features, show all 3D features
+                    this.hideAll2DFeatures();
+                    this.showAll3DFeatures();
+                    
+                    const displayRule = {
+                        walls3D: true,
+                        wallsVisible: true,
+                        wallsHeight: this.maxWallsHeight,
+                        extrusionVisible: false,
+                        model3DVisible: true,
+                        iconVisible: false, // Hide 2D icons in full 3D
+                        polygonVisible: true,
+                        zoomFrom: 16
+                    };
+                    this.mapsIndoorsInstance.setDisplayRule(this.locationIds, displayRule);
+                }
+                
+                // Only update if the view mode has changed or if we're in transition mode
+                if (newViewMode !== this.currentViewMode || newViewMode === 'transition') {
+                    this.currentViewMode = newViewMode;
+                    console.log(`Setting view mode: ${newViewMode}, pitch: ${pitch.toFixed(1)}°, walls height: ${this.currentViewMode === 'transition' ? ((pitch - this.transitionStartAngle) / (this.full3DAngle - this.transitionStartAngle) * this.maxWallsHeight).toFixed(2) : (this.currentViewMode === '3d' ? this.maxWallsHeight : 0)}`);
+                    this.updateViewIndicator();
+                }
+            }
+            
+            updateViewIndicator() {
+                const indicator = document.getElementById('view-indicator');
+                const modeText = document.getElementById('view-mode');
+                const viewState = document.getElementById('view-state');
+                
+                let statusText = '';
+                if (this.useFeatureToggle) {
+                    statusText = ' (Feature Toggle)';
+                } else if (this.manualOverride) {
+                    statusText = ' (Manual)';
+                } else {
+                    statusText = ' (Auto)';
+                }
+                
+                if (this.useFeatureToggle) {
+                    if (this.is3DMode) {
+                        indicator.className = 'view-indicator view-3d';
+                        modeText.textContent = '3D Features' + statusText;
+                        viewState.textContent = '3D Features Mode';
+                    } else {
+                        indicator.className = 'view-indicator view-2d';
+                        modeText.textContent = '2D Features' + statusText;
+                        viewState.textContent = '2D Features Mode';
+                    }
+                } else {
+                    if (this.currentViewMode === '2d') {
+                        indicator.className = 'view-indicator view-2d';
+                        modeText.textContent = '2D View' + statusText;
+                        viewState.textContent = '2D Mode';
+                    } else if (this.currentViewMode === 'transition') {
+                        indicator.className = 'view-indicator view-transition';
+                        modeText.textContent = 'Transition' + statusText;
+                        viewState.textContent = 'Transition Mode';
+                    } else {
+                        indicator.className = 'view-indicator view-3d';
+                        modeText.textContent = '3D View' + statusText;
+                        viewState.textContent = '3D Mode';
+                    }
+                }
+            }
+            
+            updateCameraInfo() {
+                if (!this.mapboxInstance) return;
+                
+                // Get camera properties
+                const pitch = this.mapboxInstance.getPitch();
+                const zoom = this.mapboxInstance.getZoom();
+                const currentFloor = this.mapsIndoorsInstance ? this.mapsIndoorsInstance.getFloor() : 0;
+                
+                // Calculate current walls height
+                let wallsHeight = 0;
+                if (pitch > this.transitionStartAngle && pitch < this.full3DAngle) {
+                    const transitionProgress = (pitch - this.transitionStartAngle) / (this.full3DAngle - this.transitionStartAngle);
+                    wallsHeight = transitionProgress * this.maxWallsHeight;
+                } else if (pitch >= this.full3DAngle) {
+                    wallsHeight = this.maxWallsHeight;
+                }
+                
+                // Update tilt display
+                document.getElementById('tilt-value').textContent = `${Math.round(pitch)}°`;
+                
+                // Update walls height display
+                document.getElementById('extrusion-info').textContent = `Walls Height: ${wallsHeight.toFixed(2)}`;
+                
+                // Update tilt progress bar (0-60 degrees range)
+                const tiltProgress = Math.min(pitch / 60 * 100, 100);
+                document.getElementById('tilt-progress').style.width = `${tiltProgress}%`;
+                
+                // Update zoom display
+                document.getElementById('zoom-value').textContent = zoom.toFixed(1);
+                
+                // Update floor display
+                document.getElementById('floor-value').textContent = currentFloor || 0;
+            }
+            
+            hideLoading() {
+                const loading = document.getElementById('loading');
+                if (loading) {
+                    loading.style.display = 'none';
+                }
+            }
+            
+            // 2D/3D Feature Toggle Methods
+            hideAll3DFeatures() {
+                if (this.mapView && this.mapView.hideFeatures && this.features3DToHide.length > 0) {
+                    try {
+                        this.mapView.hideFeatures(this.features3DToHide);
+                        console.log('Hidden all 3D features:', this.features3DToHide);
+                    } catch (error) {
+                        console.error('Error hiding 3D features:', error);
+                    }
+                }
+            }
+            
+            hideAll2DFeatures() {
+                if (this.mapView && this.mapView.hideFeatures && this.features2DToHide.length > 0) {
+                    try {
+                        this.mapView.hideFeatures(this.features2DToHide);
+                        console.log('Hidden all 2D features:', this.features2DToHide);
+                    } catch (error) {
+                        console.error('Error hiding 2D features:', error);
+                    }
+                }
+            }
+            
+            hideNon3DWallFeatures() {
+                // Hide 3D features except walls (for transition mode)
+                if (this.mapView && this.mapView.hideFeatures) {
+                    try {
+                        const non3DWallFeatures = this.features3DToHide.filter(feature => {
+                            // Keep WALLS3D visible, hide others
+                            const featureStr = feature.toString ? feature.toString() : feature;
+                            return !featureStr.includes('WALLS3D') && !featureStr.includes('walls3d');
+                        });
+                        
+                        if (non3DWallFeatures.length > 0) {
+                            this.mapView.hideFeatures(non3DWallFeatures);
+                            console.log('Hidden non-wall 3D features:', non3DWallFeatures);
+                        }
+                    } catch (error) {
+                        console.error('Error hiding non-wall 3D features:', error);
+                    }
+                }
+            }
+            
+            showAll3DFeatures() {
+                // Show all 3D features by ensuring 2D features are hidden
+                this.hideAll2DFeatures();
+                // Reset any feature hiding to show all 3D
+                if (this.mapView && this.mapView.hideFeatures) {
+                    try {
+                        // Only hide 2D features, let all 3D show
+                        this.mapView.hideFeatures(this.features2DToHide);
+                        console.log('Showing all 3D features, hiding 2D features');
+                    } catch (error) {
+                        console.error('Error showing 3D features:', error);
+                    }
+                }
+            }
+            
+            showAll2DFeatures() {
+                // Show all 2D features by not hiding them
+                // In transition mode, we want 2D features visible alongside 3D walls
+                console.log('Keeping 2D features visible');
+            }
+            
+            hide3DFeatures() {
+                this.hideAll3DFeatures();
+            }
+            
+            hide2DFeatures() {
+                this.hideAll2DFeatures();
+            }
+            
+            show3DFeatures() {
+                this.showAll3DFeatures();
+            }
+            
+            show2DFeatures() {
+                this.showAll2DFeatures();
+            }
+            
+            showAllFeatures() {
+                if (this.mapView && this.mapView.hideFeatures) {
+                    try {
+                        this.mapView.hideFeatures([]);
+                        console.log('Showing all features');
+                    } catch (error) {
+                        console.error('Error showing all features:', error);
+                    }
+                }
+            }
+        }
+        
+        // Initialize the custom map when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, initializing custom map...');
+            new CustomMap();
+        });
+        
+        // Fallback initialization if DOMContentLoaded already fired
+        if (document.readyState === 'loading') {
+            // Document is still loading
+        } else {
+            // Document is already loaded
+            console.log('Document already loaded, initializing custom map...');
+            new CustomMap();
+        }
+    </script>
+</body>
+</html>
+```
+
+### Explanation
+This implementation creates a sophisticated 2D/3D view switching system with three distinct modes:
+
+**Core Functionality:**
+- **Pure 2D Mode (0°-1° tilt):** All 3D features disabled, 2D features visible, no wall extrusion
+- **Transition Mode (1°-45° tilt):** Gradual wall height growth from 0 to 1.5 units, 2D features remain visible alongside growing 3D walls
+- **Full 3D Mode (45°+ tilt):** Complete 3D experience with all 3D features enabled, 2D features hidden
+
+**Technical Implementation:**
+- Uses Mapbox camera pitch events to detect user interaction
+- Dynamically calculates wall height using linear interpolation based on tilt angle
+- Applies MapsIndoors display rules to control feature visibility
+- Implements both feature-based hiding (using FeatureType enums) and display rule-based control
+- Includes performance optimization with throttled event handlers (60fps updates)
+- Provides manual override and feature toggle modes for testing
+
+**Advanced Features:**
+- Real-time visual feedback with color-coded indicators and progress bars
+- Automatic feature type initialization with fallback support
+- Comprehensive error handling and console logging
+- Responsive UI controls showing current camera state
+- Floor selector integration
+
+### Use Cases
+- Interactive building exploration where users transition from 2D floor plans to 3D spatial understanding
+- Wayfinding applications that need both detailed 2D layout views and 3D context
+- Real estate applications showing properties from floor plan to architectural visualization
+- Campus navigation systems transitioning between map view and building interior visualization
+- Healthcare facility navigation with both schematic and spatial views
+- Conference venue exploration combining floor plans with 3D venue layouts
+
+### Important Notes
+⚠️ Must load Mapbox CSS and JS before MapsIndoors SDK to prevent styling conflicts
+⚠️ Requires solution configuration with is3D: true to enable 3D features
+⚠️ FeatureType enums may not be available in all SDK versions - includes fallback to string constants
+⚠️ Display rules and feature hiding work differently - this solution uses both for maximum compatibility
+⚠️ Performance sensitive - uses throttled event handlers to maintain 60fps during camera movements
+⚠️ Location IDs must be retrieved before applying display rules
+⚠️ Manual override and feature toggle modes will conflict with automatic tilt-based switching
+⚠️ Wall height calculations are linear - consider easing functions for smoother visual transitions
+⚠️ Some 3D features may not be available depending on the dataset and solution configuration
+
