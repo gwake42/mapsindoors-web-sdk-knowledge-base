@@ -6393,17 +6393,3 @@ This implementation creates a sophisticated 2D/3D view switching system with thr
 ⚠️ Some 3D features may not be available depending on the dataset and solution configuration
 
 
-## Examples
-
-
-### GitHub Integration Test
-
-**Description:** Verifying GitHub integration is functional after setting all credentials
-
-**Code:**
-```javascript
-// GitHub commits should work now
-const mapsIndoors = new MapsIndoors();
-console.log('GitHub integration verified!');
-```
-
