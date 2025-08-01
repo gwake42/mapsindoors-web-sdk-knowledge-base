@@ -6393,3 +6393,102 @@ This implementation creates a sophisticated 2D/3D view switching system with thr
 ⚠️ Some 3D features may not be available depending on the dataset and solution configuration
 
 
+
+## Examples
+
+
+### Moving Asset Tracking with Custom Markers - Mapbox Integration
+
+**Description:** Real-time asset tracking system using MapsIndoors with Mapbox as the base map. Shows smooth animation between positions and custom marker styling for vehicles, equipment, or personnel tracking.
+
+**Code:**
+```javascript
+// Initialize MapsIndoors with Mapbox
+const mapViewOptions = {
+    accessToken: 'your-mapbox-token',
+    element: document.getElementById('map'),
+    center: { lat: 30.3603212, lng: -97.7422623 },
+    zoom: 18,
+    maxZoom: 22,
+};
+
+// Use MapboxV3View
+const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+    mapView: mapViewInstance,
+});
+const mapboxInstance = mapViewInstance.getMap();
+
+// Create custom marker with custom icon
+function createAssetMarker(position, iconUrl) {
+    const customElement = document.createElement('div');
+    customElement.style.cssText = `
+        width: 40px;
+        height: 40px;
+        background-image: url('${iconUrl}');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        cursor: pointer;
+    `;
+    
+    const marker = new mapboxgl.Marker({
+        element: customElement,
+        anchor: 'center'
+    })
+    .setLngLat([position.lng, position.lat])
+    .addTo(mapboxInstance);
+    
+    return marker;
+}
+
+// Animate marker movement
+function animateMarkerMovement(marker, fromCoords, toCoords, duration = 800) {
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const currentLat = fromCoords.lat + (toCoords.lat - fromCoords.lat) * progress;
+        const currentLng = fromCoords.lng + (toCoords.lng - fromCoords.lng) * progress;
+        
+        marker.setLngLat([currentLng, currentLat]);
+        
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    animate();
+}
+
+// Update position from API
+async function updateAssetPosition(assetId) {
+    try {
+        const response = await fetch(`/api/assets/${assetId}/position`, {
+            method: "POST" // or GET depending on your API
+        });
+        
+        const result = await response.json();
+        const { lat, lng, floor } = result.data;
+        
+        const newPosition = { lat, lng };
+        const oldPosition = currentPosition;
+        
+        // Update floor if changed
+        if (floor !== currentFloor) {
+            mapsIndoorsInstance.setFloor(floor);
+            currentFloor = floor;
+        }
+        
+        // Animate marker to new position
+        animateMarkerMovement(assetMarker, oldPosition, newPosition);
+        
+        currentPosition = newPosition;
+    } catch (error) {
+        console.error('Error updating position:', error);
+    }
+}
+```
+
