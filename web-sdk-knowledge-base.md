@@ -6591,3 +6591,47 @@ async function updateAssetPosition(assetId) {
 }
 ```
 
+
+### MapsIndoors Solution Config - Custom Selection Icon
+
+**Description:** How to customize the selection state icon in MapsIndoors by modifying the solution configuration. This example shows how to change the default selection icon to a custom room-occupied icon.
+
+**Code:**
+```javascript
+// Wait for MapsIndoors to be ready
+return new Promise((resolve, reject) => {
+    this.mapsIndoorsInstance.addListener('ready', async () => {
+        console.log('MapsIndoors is ready');
+        try {
+            // Get the Solution Config object
+            const solutionConfig = this.mapsIndoorsInstance.getSolutionConfig();
+            console.log('Original selection icon:', solutionConfig.stateDisplayRules.selection.icon);
+            
+            // Get the selection state DisplayRule
+            const selectionIconDisplayRule = solutionConfig.stateDisplayRules.selection;
+            
+            // Update the selection icon
+            selectionIconDisplayRule.icon = "https://media.mapsindoors.com/57e4e4992e74800ef8b69718/media/room-occupied.svg";
+            
+            // Update the SolutionConfig to apply the changes
+            this.mapsIndoorsInstance.setSolutionConfig(solutionConfig);
+            console.log('Updated selection icon:', solutionConfig.stateDisplayRules.selection.icon);
+            
+            // Continue with your existing logic
+            await this.loadLocations();
+            this.setupMapEventListeners();
+            resolve();
+        } catch (error) {
+            console.error('Error in MapsIndoors ready handler:', error);
+            reject(error);
+        }
+    });
+
+    // Optional: Add error listener for additional error handling
+    this.mapsIndoorsInstance.addListener('error', (error) => {
+        console.error('MapsIndoors error:', error);
+        reject(error);
+    });
+});
+```
+
