@@ -6492,3 +6492,102 @@ async function updateAssetPosition(assetId) {
 }
 ```
 
+
+### Moving Asset Tracking with Custom Markers - Google Maps Integration
+
+**Description:** Real-time asset tracking system using MapsIndoors with Google Maps as the base map provider. Shows smooth animation and integration with Google's mapping services for vehicles, equipment, or personnel tracking.
+
+**Code:**
+```javascript
+// Load Google Maps API with geometry library
+// <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY&libraries=geometry"></script>
+
+// Initialize MapsIndoors with Google Maps
+const mapViewOptions = {
+    element: document.getElementById('map'),
+    center: { lat: 30.3603212, lng: -97.7422623 },
+    zoom: 18,
+    maxZoom: 22,
+    mapTypeId: google.maps.MapTypeId.ROADMAP
+};
+
+// Use GoogleMapsView
+const mapViewInstance = new mapsindoors.mapView.GoogleMapsView(mapViewOptions);
+const mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+    mapView: mapViewInstance,
+});
+const googleMap = mapViewInstance.getMap();
+
+// Create Google Maps marker with custom icon
+function createAssetMarker(position, iconUrl) {
+    const marker = new google.maps.Marker({
+        position: position,
+        map: googleMap,
+        icon: {
+            url: iconUrl,
+            scaledSize: new google.maps.Size(40, 40),
+            anchor: new google.maps.Point(20, 20)
+        },
+        title: 'Asset Tracker'
+    });
+    
+    return marker;
+}
+
+// Animate marker movement using Google Maps
+function animateMarkerMovement(marker, fromCoords, toCoords, duration = 800) {
+    const startTime = Date.now();
+    
+    const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const currentLat = fromCoords.lat + (toCoords.lat - fromCoords.lat) * progress;
+        const currentLng = fromCoords.lng + (toCoords.lng - fromCoords.lng) * progress;
+        
+        marker.setPosition({ lat: currentLat, lng: currentLng });
+        
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        }
+    };
+    
+    animate();
+}
+
+// Calculate distance using Google geometry
+function calculateDistance(coord1, coord2) {
+    const point1 = new google.maps.LatLng(coord1.lat, coord1.lng);
+    const point2 = new google.maps.LatLng(coord2.lat, coord2.lng);
+    return google.maps.geometry.spherical.computeDistanceBetween(point1, point2);
+}
+
+// Update position from API
+async function updateAssetPosition(assetId) {
+    try {
+        const response = await fetch(`/api/assets/${assetId}/position`, {
+            method: "POST"
+        });
+        
+        const result = await response.json();
+        const { lat, lng, floor } = result.data;
+        
+        const newPosition = { lat, lng };
+        const oldPosition = currentPosition;
+        
+        // Update floor if changed
+        if (floor !== currentFloor) {
+            mapsIndoorsInstance.setFloor(floor);
+            currentFloor = floor;
+        }
+        
+        // Animate marker to new position
+        animateMarkerMovement(assetMarker, oldPosition, newPosition);
+        
+        currentPosition = newPosition;
+    } catch (error) {
+        console.error('Error updating position:', error);
+    }
+}
+```
+
