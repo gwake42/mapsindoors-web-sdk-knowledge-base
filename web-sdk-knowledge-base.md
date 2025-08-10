@@ -6635,3 +6635,520 @@ return new Promise((resolve, reject) => {
 });
 ```
 
+
+### Hide Buildings in MapsIndoors - Three Methods
+
+**Description:** Complete example demonstrating three different methods to hide/show buildings in MapsIndoors: 1) Toggling MI_BUILDING layer visibility, 2) Using Display Rules API, and 3) Hiding all building-related layers. Includes interactive toggle controls and status display.
+
+**Code:**
+```javascript
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MapsIndoors - Hide Buildings (3 Methods)</title>
+    
+    <!-- Mapbox CSS (always load first) -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
+    
+    <!-- Mapbox JavaScript (load before MapsIndoors) -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
+    
+    <!-- MapsIndoors JavaScript (load after Mapbox) -->
+    <script src="https://app.mapsindoors.com/mapsindoors/js/sdk/4.41.1/mapsindoors-4.41.1.js.gz?apikey=mapspeople"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 350px;
+            z-index: 1000;
+        }
+        
+        .control-panel h2 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .method-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .method-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .method-title {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .method-description {
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background-color: #ccc;
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .toggle-switch.active {
+            background-color: #4CAF50;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+        
+        .toggle-label {
+            font-size: 13px;
+            color: #666;
+            user-select: none;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .status-value {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 999;
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+        
+        .button:hover {
+            background: #2980b9;
+        }
+        
+        .button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .reset-button {
+            margin-top: 15px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <div>Loading MapsIndoors...</div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <div class="control-panel">
+        <h2>Building Visibility Controls</h2>
+        
+        <!-- Method 1: MI_BUILDING Layer -->
+        <div class="method-section">
+            <div class="method-title">Method 1: MI_BUILDING Layer</div>
+            <div class="method-description">
+                Toggles the Mapbox layer 'MI_BUILDING' visibility directly
+            </div>
+            <div class="toggle-container">
+                <div id="toggle1" class="toggle-switch active"></div>
+                <span class="toggle-label">Buildings visible</span>
+            </div>
+        </div>
+        
+        <!-- Method 2: Display Rules -->
+        <div class="method-section">
+            <div class="method-title">Method 2: Display Rules</div>
+            <div class="method-description">
+                Uses MapsIndoors display rules to hide building polygons
+            </div>
+            <div class="toggle-container">
+                <div id="toggle2" class="toggle-switch active"></div>
+                <span class="toggle-label">Buildings visible</span>
+            </div>
+        </div>
+        
+        <!-- Method 3: All Building Layers -->
+        <div class="method-section">
+            <div class="method-title">Method 3: All Building Layers</div>
+            <div class="method-description">
+                Toggles all building-related layers including outlines and extrusions
+            </div>
+            <div class="toggle-container">
+                <div id="toggle3" class="toggle-switch active"></div>
+                <span class="toggle-label">Buildings visible</span>
+            </div>
+        </div>
+        
+        <!-- Status Display -->
+        <div class="status">
+            <div class="status-item">
+                <span>Buildings found:</span>
+                <span id="building-count" class="status-value">0</span>
+            </div>
+            <div class="status-item">
+                <span>Layers detected:</span>
+                <span id="layer-count" class="status-value">0</span>
+            </div>
+            <div class="status-item">
+                <span>Current floor:</span>
+                <span id="current-floor" class="status-value">0</span>
+            </div>
+        </div>
+        
+        <!-- Reset Button -->
+        <button class="button reset-button" id="reset-all">Reset All to Visible</button>
+    </div>
+    
+    <script>
+        // Global variables
+        let mapsIndoorsInstance;
+        let mapboxInstance;
+        let buildings = [];
+        let buildingIds = [];
+        let detectedLayers = [];
+        
+        // Toggle states
+        let method1Active = true;
+        let method2Active = true;
+        let method3Active = true;
+        
+        // Initialize MapsIndoors
+        async function initializeMapsIndoors() {
+            try {
+                // Map configuration
+                const mapViewOptions = {
+                    accessToken: 'pk.eyJ1IjoiZ2V3YS1tYXBzcGVvcGxlIiwiYSI6ImNsZzJudDB4ZTAwcnEzZnAwb2VvbTYwYnIifQ.w-cnsU-xP9jaly_qrgy_iA',
+                    element: document.getElementById('map'),
+                    center: { lat: 30.3603212, lng: -97.7422623 }, // Austin Office
+                    zoom: 19,
+                    maxZoom: 22,
+                };
+                
+                // Initialize MapsIndoors with MapboxV3View
+                const mapViewInstance = new mapsindoors.mapView.MapboxV3View(mapViewOptions);
+                mapsIndoorsInstance = new mapsindoors.MapsIndoors({
+                    mapView: mapViewInstance,
+                });
+                mapboxInstance = mapViewInstance.getMap();
+                
+                // Add floor selector
+                const floorSelectorElement = document.createElement('div');
+                new mapsindoors.FloorSelector(floorSelectorElement, mapsIndoorsInstance);
+                mapboxInstance.addControl({
+                    onAdd: function() { return floorSelectorElement; },
+                    onRemove: function() {}
+                });
+                
+                // Wait for MapsIndoors to be ready
+                mapsIndoorsInstance.addListener('ready', async () => {
+                    console.log('MapsIndoors is ready');
+                    
+                    // Hide loading indicator
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // Load building data
+                    await loadBuildingData();
+                    
+                    // Detect available layers
+                    detectBuildingLayers();
+                    
+                    // Setup toggle listeners
+                    setupToggleListeners();
+                    
+                    // Update floor display
+                    updateFloorDisplay();
+                });
+                
+                // Listen for floor changes
+                mapsIndoorsInstance.addListener('floor_changed', () => {
+                    updateFloorDisplay();
+                });
+                
+                // Error handling
+                mapsIndoorsInstance.addListener('error', (error) => {
+                    console.error('MapsIndoors error:', error);
+                });
+                
+            } catch (error) {
+                console.error('Initialization error:', error);
+                document.getElementById('loading').innerHTML = 'Error loading MapsIndoors';
+            }
+        }
+        
+        // Load building data
+        async function loadBuildingData() {
+            try {
+                // Get all buildings using VenuesService
+                buildings = await mapsindoors.services.VenuesService.getBuildings();
+                buildingIds = buildings.map(building => building.id);
+                
+                console.log(`Found ${buildings.length} buildings:`, buildings);
+                document.getElementById('building-count').textContent = buildings.length;
+                
+            } catch (error) {
+                console.error('Error loading buildings:', error);
+            }
+        }
+        
+        // Detect available building layers
+        function detectBuildingLayers() {
+            const possibleLayers = [
+                'MI_BUILDING',
+                'MI_BUILDING_OUTLINE',
+                'MI_BUILDING_EXTRUSION',
+                'MI_BUILDING_FILL',
+                'MI_BUILDING_SHADOW'
+            ];
+            
+            detectedLayers = [];
+            
+            possibleLayers.forEach(layerId => {
+                if (mapboxInstance.getLayer(layerId)) {
+                    detectedLayers.push(layerId);
+                    console.log(`Detected layer: ${layerId}`);
+                }
+            });
+            
+            document.getElementById('layer-count').textContent = detectedLayers.length;
+            console.log('All detected layers:', detectedLayers);
+        }
+        
+        // Method 1: Toggle MI_BUILDING layer
+        function toggleMethod1(show) {
+            if (mapboxInstance.getLayer('MI_BUILDING')) {
+                mapboxInstance.setLayoutProperty(
+                    'MI_BUILDING', 
+                    'visibility', 
+                    show ? 'visible' : 'none'
+                );
+                console.log(`Method 1: MI_BUILDING layer ${show ? 'shown' : 'hidden'}`);
+            } else {
+                console.warn('MI_BUILDING layer not found');
+            }
+        }
+        
+        // Method 2: Toggle using Display Rules
+        function toggleMethod2(show) {
+            if (buildingIds.length === 0) {
+                console.warn('No building IDs available for display rules');
+                return;
+            }
+            
+            // Set display rule for all buildings
+            mapsIndoorsInstance.setDisplayRule(buildingIds, {
+                visible: show,
+                polygonVisible: show,
+                polygonFillOpacity: show ? 0.3 : 0,
+                polygonStrokeOpacity: show ? 0.8 : 0
+            });
+            
+            console.log(`Method 2: Display rules ${show ? 'shown' : 'hidden'} for ${buildingIds.length} buildings`);
+        }
+        
+        // Method 3: Toggle all building-related layers
+        function toggleMethod3(show) {
+            detectedLayers.forEach(layerId => {
+                if (mapboxInstance.getLayer(layerId)) {
+                    mapboxInstance.setLayoutProperty(
+                        layerId, 
+                        'visibility', 
+                        show ? 'visible' : 'none'
+                    );
+                }
+            });
+            
+            console.log(`Method 3: ${detectedLayers.length} layers ${show ? 'shown' : 'hidden'}`);
+        }
+        
+        // Setup toggle listeners
+        function setupToggleListeners() {
+            // Method 1 toggle
+            document.getElementById('toggle1').addEventListener('click', function() {
+                method1Active = !method1Active;
+                this.classList.toggle('active', method1Active);
+                this.nextElementSibling.textContent = method1Active ? 'Buildings visible' : 'Buildings hidden';
+                toggleMethod1(method1Active);
+            });
+            
+            // Method 2 toggle
+            document.getElementById('toggle2').addEventListener('click', function() {
+                method2Active = !method2Active;
+                this.classList.toggle('active', method2Active);
+                this.nextElementSibling.textContent = method2Active ? 'Buildings visible' : 'Buildings hidden';
+                toggleMethod2(method2Active);
+            });
+            
+            // Method 3 toggle
+            document.getElementById('toggle3').addEventListener('click', function() {
+                method3Active = !method3Active;
+                this.classList.toggle('active', method3Active);
+                this.nextElementSibling.textContent = method3Active ? 'Buildings visible' : 'Buildings hidden';
+                toggleMethod3(method3Active);
+            });
+            
+            // Reset button
+            document.getElementById('reset-all').addEventListener('click', function() {
+                // Reset all methods to visible
+                method1Active = true;
+                method2Active = true;
+                method3Active = true;
+                
+                // Update UI
+                document.querySelectorAll('.toggle-switch').forEach(toggle => {
+                    toggle.classList.add('active');
+                    toggle.nextElementSibling.textContent = 'Buildings visible';
+                });
+                
+                // Apply visibility
+                toggleMethod1(true);
+                toggleMethod2(true);
+                toggleMethod3(true);
+                
+                console.log('All building visibility reset to visible');
+            });
+        }
+        
+        // Update floor display
+        function updateFloorDisplay() {
+            const currentFloor = mapsIndoorsInstance.getFloor();
+            document.getElementById('current-floor').textContent = 
+                currentFloor !== null ? currentFloor : 'Ground';
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            initializeMapsIndoors();
+        });
+        
+        // Add some helper functions for debugging
+        window.debugMapsIndoors = {
+            getBuildings: () => buildings,
+            getBuildingIds: () => buildingIds,
+            getLayers: () => detectedLayers,
+            getInstance: () => mapsIndoorsInstance,
+            getMapbox: () => mapboxInstance,
+            listAllLayers: () => {
+                const style = mapboxInstance.getStyle();
+                const layers = style.layers.filter(layer => 
+                    layer.id.includes('MI_') || 
+                    layer.id.includes('BUILDING')
+                );
+                console.table(layers.map(l => ({
+                    id: l.id,
+                    type: l.type,
+                    source: l.source,
+                    visibility: mapboxInstance.getLayoutProperty(l.id, 'visibility')
+                })));
+                return layers;
+            }
+        };
+        
+        console.log('Debug functions available via window.debugMapsIndoors');
+    </script>
+</body>
+</html>
+```
+
